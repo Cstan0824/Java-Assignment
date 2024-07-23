@@ -1,5 +1,6 @@
 package com.example;
 
+import java.global.GlobalClass;
 import java.sql.Connection;
 import static java.sql.DriverManager.getConnection;
 import java.sql.SQLException;
@@ -7,7 +8,8 @@ import java.sql.SQLException;
 public class Main {
     public static void main(String[] args) {
         mySQLConnection();
-        // access the test method from the GlobalClass
+        GlobalClass.test();
+
     }
 
     public static void mySQLConnection() {
