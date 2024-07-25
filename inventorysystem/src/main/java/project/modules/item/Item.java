@@ -1,4 +1,4 @@
-package project.modules;
+package project.modules.item;
 
 import java.util.ArrayList;
 
@@ -7,7 +7,6 @@ import project.global.CrudRepository;
 
 public class Item implements CrudRepository<Integer> {
     //Data Fields
-
     private int Item_ID = 0;
     private int Item_Category_ID;
     private int Vendor_ID;
@@ -152,11 +151,21 @@ public class Item implements CrudRepository<Integer> {
         this.Read(_Id);
     }
 
-    public Item(String _UserID) {
+    //for inserting new item
+    public Item(int _ItemCategoryID, int _VendorID, String _ItemName, String _ItemDesc, int _ItemQuantity,
+            double _ItemPrice, String _UserID) {
         //get from database if the value is null
         this.Item_ID = 0; // get the current icrement value from database
 
+        //Insert value
+        this.Item_Category_ID = _ItemCategoryID;
+        this.Vendor_ID = _VendorID;
+        this.Item_name = _ItemName;
+        this.Item_Desc = _ItemDesc;
+        this.Item_Quantity = _ItemQuantity;
+        this.Item_Price = _ItemPrice;
         this.Item_Created_By = _UserID; // User ID
         this.Item_Modified_By = _UserID; // User ID
+
     }
 }
