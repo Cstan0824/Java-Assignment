@@ -8,13 +8,14 @@ public class SqlConnector {
 
     public static Connection mySQLConnection() {
         // MySQL connection string
+        
         String url = "jdbc:mysql://localhost:3306/crud";
         String user = "root";
         String password = "";
 
         // Connection object
         Connection connection = null;
-        
+
         try {
             // Establish the connection
             connection = DriverManager.getConnection(url, user, password);
