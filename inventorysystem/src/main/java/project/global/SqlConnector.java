@@ -9,7 +9,7 @@ public class SqlConnector {
     public static Connection mySQLConnection() {
         // MySQL connection string
         
-        String url = "jdbc:mysql://localhost:3306/crud";
+        String url = "jdbc:mysql://localhost:3306/furniture_db";
         String user = "root";
         String password = "";
 
