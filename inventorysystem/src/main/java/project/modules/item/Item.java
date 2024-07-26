@@ -2,10 +2,10 @@ package project.modules.item;
 
 import java.util.ArrayList;
 
-//import user defined package
 import project.global.CrudRepository;
+import project.global.SqlConnector;
 
-public class Item implements CrudRepository<Integer> {
+public class Item implements CrudRepository<Integer>, Cloneable {
     //Data Fields
     private int Item_ID = 0;
     private int Item_Category_ID;
@@ -34,6 +34,10 @@ public class Item implements CrudRepository<Integer> {
         this.Item_Category_ID = _ItemCategoryID;
     }
 
+    public int getItem_Category_ID() {
+        return this.Item_Category_ID;
+    }
+
     //Vendor_ID
     public void setVendor_ID(int _VendorID) {
         if (_VendorID < 0) {
@@ -41,6 +45,10 @@ public class Item implements CrudRepository<Integer> {
         }
         this.Vendor_ID = _VendorID;
     }
+
+    public int getVendor_ID() {
+        return this.Vendor_ID;
+    }    
 
     //Item_name
     public String getItem_Name() {
@@ -93,10 +101,23 @@ public class Item implements CrudRepository<Integer> {
     //Methods
     @Override
     public boolean Create() {
-        //Connect to database
-        //Insert into database  
+        SqlConnector connector = new SqlConnector();
+
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return false;
+        }
+
+        String query = "INSERT INTO item (Item_Category_ID, Vendor_ID, Item_name, Item_Desc, Item_Quantity, Item_Price, Item_Created_By, Item_Modified_By) VALUES ("
+                + this.Item_Category_ID + ", " + this.Vendor_ID + ", '" + this.Item_name + "', '" + this.Item_Desc
+                + "', " + this.Item_Quantity + ", " + this.Item_Price + ", '" + this.Item_Created_By + "', '"
+                + this.Item_Modified_By + "');";
+
+        boolean QueryExecuted = connector.ExecuteDML(query);
+        
         // return true if no error occurs
-        return true;
+        connector.Disconnect();
+        return QueryExecuted;
     }
 
     /***
@@ -105,67 +126,111 @@ public class Item implements CrudRepository<Integer> {
      * @summary: Read the item from the database    
     } */
    @Override
-    public final void Read(Integer _Id) {
-        //Connect to database
-        //Select from database
-        // return Item if no error occurs else return null
-    }
+   public final void Read(Integer _Id) {
+       SqlConnector connector = new SqlConnector();
+       connector.Connect();
+       if (!connector.isConnected()) {
+           return;
+       }
 
-    //No resize is needed just use Array instead of ArrayList<>
-    public static ArrayList<Item> ReadAll() {
-        //Connect to database
-        //Select from database
-        // return Array if no error occurs else return null
-        return new ArrayList<Item>();
-    }
+       String query = "SELECT * FROM item WHERE Item_ID = " + _Id + ";";
+       ArrayList<Item> items = connector.ExecuteRead(query, Item.class);
 
-    public static ArrayList<Item> Read(String _field, String _value) {
-        //Connect to database
-        //Select from database
-        // return Array if no error occurs else return null
-        return new ArrayList<Item>();
-    }
+       connector.Disconnect();
+
+       if (items == null || items.isEmpty()) {
+           return;
+       }
+
+       Item item = items.get(0); //get the first result
+
+       this.Item_ID = item.getItem_ID();
+       this.Item_Category_ID = item.getItem_Category_ID();
+       this.Vendor_ID = item.getVendor_ID();
+       this.Item_name = item.getItem_Name();
+       this.Item_Desc = item.getItem_Desc();
+       this.Item_Quantity = item.getItem_Quantity();
+       this.Item_Price = item.getItem_Price();
+       this.Item_Created_By = item.Item_Created_By;
+       this.Item_Modified_By = item.Item_Modified_By;
+
+   }
+
+   public static ArrayList<Item> ReadAll() {
+
+
+       SqlConnector connector = new SqlConnector();
+       connector.Connect();
+       if (!connector.isConnected()) {
+           return null;
+       }
+
+       String query = "SELECT * FROM item;";
+       ArrayList<Item> items = connector.ExecuteRead(query, Item.class);
+       connector.Disconnect();
+
+       return items;
+   }
+
+   public static ArrayList<Item> Read(String _field, String _value) {
+
+       SqlConnector connector = new SqlConnector();
+       connector.Connect();
+       if (!connector.isConnected()) {
+           return null;
+       }
+
+       String query = "SELECT * FROM item WHERE " + _field + " = '" + _value + "';";
+       ArrayList<Item> items = connector.ExecuteRead(query, Item.class);
+
+       connector.Disconnect();
+
+       return items;
+   }
 
     @Override
     public boolean Update(Integer _Id) {
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return false;
+        }
+
+        String query = "UPDATE item SET Item_Category_ID = " + this.Item_Category_ID + ", Vendor_ID = " + this.Vendor_ID
+                + ", Item_name = '" + this.Item_name + "', Item_Desc = '" + this.Item_Desc + "', Item_Quantity = "
+                + this.Item_Quantity + ", Item_Price = " + this.Item_Price + ", Item_Modified_By = '" + this.Item_Modified_By
+                + "' WHERE Item_ID = " + _Id + ";";
         
-        //Connect to database
-        //Update database
-        // return true if the item modified successfully else false
-        return true;
+        boolean QueryExecuted = connector.ExecuteDML(query);
+
+        connector.Disconnect();
+
+        return QueryExecuted;
     }
 
     @Override
     public boolean Remove(Integer _Id) {
-        //Connect to database
-        //Delete from database
-        // return true if the item removed successfully else false
-        return true;
+
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return false;
+        }
+
+        String query = "DELETE FROM item WHERE Item_ID = " + _Id + ";";
+        boolean QueryExecuted = connector.ExecuteDML(query);
+
+        connector.Disconnect();
+        
+        return QueryExecuted;
     }
 
     //Constructor
     public Item() {
     }
 
+    //Search by ID
     public Item(Integer _Id) {
         this.Read(_Id);
-    }
-
-    //for inserting new item
-    public Item(int _ItemCategoryID, int _VendorID, String _ItemName, String _ItemDesc, int _ItemQuantity,
-            double _ItemPrice, String _UserID) {
-        //get from database if the value is null
-        this.Item_ID = 0; // get the current icrement value from database
-
-        //Insert value
-        this.Item_Category_ID = _ItemCategoryID;
-        this.Vendor_ID = _VendorID;
-        this.Item_name = _ItemName;
-        this.Item_Desc = _ItemDesc;
-        this.Item_Quantity = _ItemQuantity;
-        this.Item_Price = _ItemPrice;
-        this.Item_Created_By = _UserID; // User ID
-        this.Item_Modified_By = _UserID; // User ID
-
     }
 }
