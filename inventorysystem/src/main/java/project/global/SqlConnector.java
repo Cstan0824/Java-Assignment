@@ -31,7 +31,7 @@ public class SqlConnector {
             this.conn = DriverManager.getConnection(this.URL, this.USER, this.PASSWORD);
 
         } catch (SQLException e) {
-
+            System.out.println("Connection Error: " + e.getMessage());
         }
 
     }
@@ -44,6 +44,7 @@ public class SqlConnector {
             }
             return false;
         } catch (SQLException e) {
+            System.out.println("Disconnection Error: " + e.getMessage());
             return false;
         }
     }
@@ -52,6 +53,7 @@ public class SqlConnector {
         try {
             return this.conn != null && !this.conn.isClosed();
         } catch (SQLException e) {
+            System.out.println("Check Connection Error: " + e.getMessage());
             return false;
         }
     }
@@ -62,13 +64,15 @@ public class SqlConnector {
         }
 
         try {
-            ResultSet result = this.conn.createStatement().executeQuery(_query); //pending to change to prepare statement
+            ResultSet result = this.conn.createStatement().executeQuery(_query); 
             if (result == null) {
                 return null;
             }
 
             return this.<T>ToArrayList(result, _typeClass);
-        } catch (SQLException e) {
+        } catch (SQLException e) 
+        {
+            System.out.println("Read Error: " + e.getMessage());
             return null;
         }
     }
@@ -79,13 +83,57 @@ public class SqlConnector {
             return false;
         }
         try {
-            PreparedStatement statement = conn.prepareStatement(_query);
-            statement.executeUpdate();
+            this.conn.createStatement().executeUpdate(_query);
             return true;
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            System.out.println("DML Error: " + e.getMessage());
             return false;
         }
 
+    }
+
+    public boolean PrepareExecuteDML(String _query, Object... values) 
+    {
+        if (!isConnected()) {
+            return false;
+        }
+        try {
+            PreparedStatement statement = this.conn.prepareStatement(_query);
+            if (values.length != statement.getParameterMetaData().getParameterCount()) {
+                return false;
+            }
+            for (int i = 0; i < values.length; i++) {
+                statement.setObject(i + 1, values[i]);
+            }
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Prepare DML Error: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    public <T> ArrayList<T> PrepareExecuteRead(String _query, Class<T> _typeClass, Object... values) {
+        if (!isConnected()) {
+            return null;
+        }
+        try {
+            PreparedStatement statement = this.conn.prepareStatement(_query);
+            if (values.length != statement.getParameterMetaData().getParameterCount()) {
+                return null;
+            }
+            for (int i = 0; i < values.length; i++) {
+                statement.setObject(i + 1, values[i]);
+            }
+            ResultSet result = statement.executeQuery();
+            if (result == null) {
+                return null;
+            }
+            return this.<T>ToArrayList(result, _typeClass);
+        } catch (SQLException e) {
+            System.out.println("Prepare Read Error: " + e.getMessage());
+            return null;
+        }
     }
 
     //convert the ResultSet to ArrayList
@@ -108,7 +156,9 @@ public class SqlConnector {
                 }
                 list.add(instance);
             }
-        } catch (Exception e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | SecurityException
+                | SQLException e) {
+            System.out.println("Convert Error: " + e.getMessage());
             return null;
         }
 

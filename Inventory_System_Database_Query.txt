@@ -1,0 +1,136 @@
+-- Drop existing tables if they exist
+DROP TABLE IF EXISTS Item_StockFlow;
+DROP TABLE IF EXISTS Item;
+DROP TABLE IF EXISTS StockFlow;
+DROP TABLE IF EXISTS Vendor_ItemCategory;
+DROP TABLE IF EXISTS Vendor;
+DROP TABLE IF EXISTS Item_Category;
+DROP TABLE IF EXISTS Retailer;
+DROP TABLE IF EXISTS User;
+DROP TABLE IF EXISTS Entity;
+
+-- Create the tables with a generalized entity table
+CREATE TABLE User (
+  User_ID VARCHAR(100),
+  User_Name VARCHAR(100),
+  User_Password VARCHAR(100),
+  User_Email VARCHAR(100),
+  OTP_Code VARCHAR(6),
+  User_Type VARCHAR(10),
+  User_Regis_Date DATE DEFAULT CURRENT_DATE,
+  PRIMARY KEY (User_ID)
+);
+
+
+CREATE TABLE Retailer (
+  Retailer_ID VARCHAR(100),
+  User_ID VARCHAR(100),
+  Retailer_Address VARCHAR(255),
+  PRIMARY KEY (Retailer_ID)
+);
+
+CREATE TABLE Item_Category (
+  Item_Category_ID INT AUTO_INCREMENT,
+  Item_Type VARCHAR(100),
+  PRIMARY KEY (Item_Category_ID)
+);
+
+CREATE TABLE Vendor (
+  Vendor_ID VARCHAR(100),
+  Item_Category_ID INT,
+  Vendor_Name VARCHAR(100),
+  Vendor_Address VARCHAR(255),
+  Vendor_Created_By VARCHAR(100),
+  Vendor_Modified_By VARCHAR(100),
+  PRIMARY KEY (Vendor_ID)
+);
+
+CREATE TABLE Vendor_ItemCategory (
+  Item_Category_ID INT,
+  Vendor_ID VARCHAR(100),
+  PRIMARY KEY (Vendor_ID, Item_Category_ID),
+  FOREIGN KEY (Vendor_ID) REFERENCES Vendor(Vendor_ID),
+  FOREIGN KEY (Item_Category_ID) REFERENCES Item_Category(Item_Category_ID)
+);
+
+CREATE TABLE StockFlow (
+  Stock_Flow_ID INT AUTO_INCREMENT,
+  Stock_Recipient_ID VARCHAR(100),
+  Stock_Flow_Status VARCHAR(10),
+  Stock_Flow_Date DATE DEFAULT CURRENT_DATE,
+  Stock_Flow_Created_By VARCHAR(100),
+  Stock_Flow_Modified_By VARCHAR(100),
+  PRIMARY KEY (Stock_Flow_ID)
+);
+
+CREATE TABLE Item (
+  Item_ID INT AUTO_INCREMENT,
+  Item_Category_ID INT,
+  Vendor_ID VARCHAR(100),
+  Item_Name VARCHAR(100),
+  Item_Desc TEXT,
+  Item_Quantity INT,
+  Item_Price DECIMAL(10, 2),
+  Item_Location VARCHAR(255),
+  Item_Created_By VARCHAR(100),
+  Item_Modified_By VARCHAR(100),
+  PRIMARY KEY (Item_ID)
+);
+
+CREATE TABLE Item_StockFlow (
+  Item_ID INT,
+  Stock_Flow_ID INT,
+  Item_Quantity INT,
+  PRIMARY KEY (Item_ID, Stock_Flow_ID),
+  FOREIGN KEY (Item_ID) REFERENCES Item(Item_ID),
+  FOREIGN KEY (Stock_Flow_ID) REFERENCES StockFlow(Stock_Flow_ID)
+);
+
+-- Sample data for User
+INSERT INTO User (User_ID, User_Name, User_Password, User_Email, OTP_Code, User_Type)
+VALUES 
+('admin1', 'Admin One', 'password123', 'admin1@example.com', '123456', 'admin'),
+('user1', 'User One', 'password123', 'user1@example.com', '654321', 'user');
+
+-- Sample data for Retailer
+INSERT INTO Retailer (Retailer_ID, User_ID, Retailer_Address)
+VALUES
+('retailer1', 'admin1', '123 Main St, Anytown, USA'),
+('retailer2', 'user1', '456 Oak St, Anytown, USA');
+
+-- Sample data for Item_Category
+INSERT INTO Item_Category (Item_Type)
+VALUES
+('Furniture'),
+('Electronics'),
+('Appliances');
+
+-- Sample data for Vendor
+INSERT INTO Vendor (Vendor_ID, Item_Category_ID, Vendor_Name, Vendor_Address, Vendor_Created_By, Vendor_Modified_By)
+VALUES
+('vendor1', 1, 'Furniture Vendor', '789 Maple St, Anytown, USA', 'admin1', 'admin1'),
+('vendor2', 2, 'Electronics Vendor', '101 Pine St, Anytown, USA', 'admin1', 'admin1');
+
+-- Sample data for Vendor_ItemCategory
+INSERT INTO Vendor_ItemCategory (Item_Category_ID, Vendor_ID)
+VALUES
+(1, 'vendor1'),
+(2, 'vendor2');
+
+-- Sample data for StockFlow
+INSERT INTO StockFlow (Stock_Recipient_ID, Stock_Flow_Status, Stock_Flow_Date, Stock_Flow_Created_By, Stock_Flow_Modified_By)
+VALUES
+('retailer1', 'Pending', '2024-07-01 10:00:00', 'admin1', 'admin1'),
+('vendor1', 'Completed', '2024-07-02 12:00:00', 'admin1', 'admin1');
+
+-- Sample data for Item
+INSERT INTO Item (Item_Category_ID, Vendor_ID, Item_Name, Item_Desc, Item_Quantity, Item_Price, Item_Location, Item_Created_By, Item_Modified_By)
+VALUES
+(1, 'vendor1', 'Dining Table', 'A wooden dining table', 10, 199.99, 'Warehouse A', 'admin1', 'admin1'),
+(2, 'vendor2', 'Laptop', 'A high-performance laptop', 5, 999.99, 'Warehouse B', 'admin1', 'admin1');
+
+-- Sample data for Item_StockFlow
+INSERT INTO Item_StockFlow (Item_ID, Stock_Flow_ID, Item_Quantity)
+VALUES
+(1, 1, 5),
+(2, 2, 3);
