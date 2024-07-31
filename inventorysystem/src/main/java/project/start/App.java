@@ -1,16 +1,13 @@
 package project.start;
 
-import java.sql.Connection;
-import static java.sql.DriverManager.getConnection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
+import project.IO.Output;
 import project.modules.item.Item;
 
 public class App {
     public static void main(String[] args) {
-        testDeleteItem();
-        //mySQLConnection();
+        testOutput();
     }
 
     public static void testCreateItem() 
@@ -43,7 +40,7 @@ public class App {
         }
 
         // Read all items by category
-        ArrayList<Item> itemsByCategory = Item.Read("Item_Category_ID", "1");
+        ArrayList<Item> itemsByCategory = Item.Read("Item_Category_ID","1");
         for (Item item : itemsByCategory) {
             System.out.println("Item read all by category: " + item.getItem_Name());
         }
@@ -73,37 +70,13 @@ public class App {
         System.out.println("Item removed: " + removed);
     }
 
-    public static void mySQLConnection() {
-        // MySQL connection string
-        String url = "jdbc:mysql://localhost:3306/movie_society";
-        String user = "root";
-        String password = "";
+    public static void testOutput() {
+        // Test Output
+        ArrayList<Item> items = Item.ReadAll();
+        Output.<Item>PrintClassFieldsAsTable(items, Item.class);
 
-        // Connection object
-        Connection connection = null;
+        //Menu
+        Output.PrintCrudMenu(Item.class);
 
-        try {
-
-            // Establish the connection
-            connection = getConnection(url, user, password);
-
-            if (connection != null) {
-                System.out.println("Connected to the database!");
-            } else {
-                System.out.println("Failed to connect to the database.");
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Connection failed. Check output console." + e.getMessage());
-        } finally {
-            // Close the connection if it was opened
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    System.out.println("Connection Unable to close.");
-                }
-            }
-        }
     }
 }

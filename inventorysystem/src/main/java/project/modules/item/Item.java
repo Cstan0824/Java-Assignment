@@ -131,6 +131,7 @@ public class Item implements CrudRepository<Integer> {
         return QueryExecuted;
     }
 
+    
     /***
      * @params: Pass in the Item ID
      * @return: Item object
@@ -164,6 +165,7 @@ public class Item implements CrudRepository<Integer> {
        this.Item_Price = item.getItem_Price();
        this.Item_Created_By = item.getItem_Created_By();
        this.Item_Modified_By = item.getItem_Modified_By();
+
    }
 
     public static ArrayList<Item> ReadAll() {

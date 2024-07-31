@@ -9,6 +9,15 @@ DROP TABLE IF EXISTS Retailer;
 DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS Entity;
 
+DROP TABLE IF EXISTS T_Item_StockFlow;
+DROP TABLE IF EXISTS T_Item;
+DROP TABLE IF EXISTS T_StockFlow;
+DROP TABLE IF EXISTS T_Vendor_ItemCategory;
+DROP TABLE IF EXISTS M_Vendor;
+DROP TABLE IF EXISTS T_Item_Category;
+DROP TABLE IF EXISTS M_Retailer;
+DROP TABLE IF EXISTS M_User;
+DROP TABLE IF EXISTS M_Entity;
 -- Create the tables with a generalized entity table
 CREATE TABLE User (
   User_ID VARCHAR(100),

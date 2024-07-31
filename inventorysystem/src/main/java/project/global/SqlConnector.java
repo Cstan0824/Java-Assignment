@@ -124,7 +124,8 @@ public class SqlConnector {
             if (values.length != statement.getParameterMetaData().getParameterCount()) {
                 return null;
             }
-            for (int i = 0; i < values.length; i++) {
+            for (int i = 0; i < values.length; i++) 
+            {
                 statement.setObject(i + 1, values[i]);
             }
             ResultSet result = statement.executeQuery();
@@ -153,19 +154,16 @@ public class SqlConnector {
                 T instance = _typeClass.newInstance();
 
                 for (Field field : _typeClass.getDeclaredFields()) {
-                    //set the data field accessible
-                    field.setAccessible(true);
+
+                    field.setAccessible(true); //set the data field accessible temp
                     Object value = _result.getObject(field.getName());
-                    if (value != null) {
-                        // Handle specific type conversions
-                        if (field.getType() == double.class && value instanceof BigDecimal) {
-                            value = ((BigDecimal) value).doubleValue();
-                        } else if (field.getType() == int.class && value instanceof Integer) {
-                            value = ((Integer) value);
-                        }
-                        //System.out.println(field.getName() + " : " + value); --print out the data, for debug use
-                        field.set(instance, value);
+                    if (field.getType() == double.class && value instanceof BigDecimal) {
+                        value = ((BigDecimal) value).doubleValue();
+                    } else if (field.getType() == int.class && value instanceof Integer) {
+                        value = ((Integer) value);
                     }
+                    //System.out.println(field.getName() + " : " + value); --print out the data, for debug use
+                    field.set(instance, value);
                 }
                 list.add(instance);
             }
