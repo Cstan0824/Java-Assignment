@@ -1,6 +1,7 @@
 package project.global;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -113,7 +114,8 @@ public class SqlConnector {
         }
     }
     
-    public <T> ArrayList<T> PrepareExecuteRead(String _query, Class<T> _typeClass, Object... values) {
+    public <T> ArrayList<T> PrepareExecuteRead(String _query, Class<T> _typeClass, Object... values) 
+    {
         if (!isConnected()) {
             return null;
         }
@@ -151,8 +153,19 @@ public class SqlConnector {
                 T instance = _typeClass.newInstance();
 
                 for (Field field : _typeClass.getDeclaredFields()) {
+                    //set the data field accessible
+                    field.setAccessible(true);
                     Object value = _result.getObject(field.getName());
-                    field.set(instance, value);
+                    if (value != null) {
+                        // Handle specific type conversions
+                        if (field.getType() == double.class && value instanceof BigDecimal) {
+                            value = ((BigDecimal) value).doubleValue();
+                        } else if (field.getType() == int.class && value instanceof Integer) {
+                            value = ((Integer) value);
+                        }
+                        //System.out.println(field.getName() + " : " + value); --print out the data, for debug use
+                        field.set(instance, value);
+                    }
                 }
                 list.add(instance);
             }

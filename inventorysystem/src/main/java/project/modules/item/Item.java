@@ -98,6 +98,18 @@ public class Item implements CrudRepository<Integer> {
         this.Item_Price = _ItemPrice;
     }
 
+
+    //Item_Created_By
+    public String getItem_Created_By() {
+        return this.Item_Created_By;
+    }
+
+    //Item_Modified_By
+    public String getItem_Modified_By() {
+        return this.Item_Modified_By;
+    }
+
+
     //Methods
     @Override
     public boolean Create() {
@@ -150,9 +162,8 @@ public class Item implements CrudRepository<Integer> {
        this.Item_Desc = item.getItem_Desc();
        this.Item_Quantity = item.getItem_Quantity();
        this.Item_Price = item.getItem_Price();
-       this.Item_Created_By = item.Item_Created_By;
-       this.Item_Modified_By = item.Item_Modified_By;
-
+       this.Item_Created_By = item.getItem_Created_By();
+       this.Item_Modified_By = item.getItem_Modified_By();
    }
 
     public static ArrayList<Item> ReadAll() {

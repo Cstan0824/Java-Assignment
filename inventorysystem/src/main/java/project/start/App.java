@@ -9,7 +9,7 @@ import project.modules.item.Item;
 
 public class App {
     public static void main(String[] args) {
-        testReadItem();
+        testDeleteItem();
         //mySQLConnection();
     }
 
@@ -38,17 +38,14 @@ public class App {
 
         // Read all items
         ArrayList<Item> items = Item.ReadAll();
-        System.out.println("All items: ");
-        for (Item item : items) 
-        {
-            System.out.println(item.getItem_Name());
+        for (Item item : items) {
+            System.out.println("Item read all: " + item.getItem_Name());
         }
 
-        // Read items by a specific field value
-        ArrayList<Item> itemsByField = Item.Read("Item_name", "Updated Test Item");
-        System.out.println("Items with name 'Updated Test Item': ");
-        for (Item item : itemsByField) {
-            System.out.println(item.getItem_Name());
+        // Read all items by category
+        ArrayList<Item> itemsByCategory = Item.Read("Item_Category_ID", "1");
+        for (Item item : itemsByCategory) {
+            System.out.println("Item read all by category: " + item.getItem_Name());
         }
     }
 
@@ -66,7 +63,7 @@ public class App {
 
     public static void testDeleteItem() {
         // Assuming the item was created with ID 1 for testing purposes
-        int itemId = 1;
+        int itemId = 4;
 
         // Read the item by ID
         Item readItem = new Item(itemId);
