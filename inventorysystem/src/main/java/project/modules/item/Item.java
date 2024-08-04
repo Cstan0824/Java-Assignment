@@ -2,10 +2,9 @@ package project.modules.item;
 
 import java.util.ArrayList;
 
-import project.global.CrudRepository;
 import project.global.SqlConnector;
 
-public class Item implements CrudRepository<Integer> {
+public class Item{
     //Data Fields
     private int Item_ID = 0;
     private int Item_Category_ID;
@@ -111,8 +110,7 @@ public class Item implements CrudRepository<Integer> {
 
 
     //Methods
-    @Override
-    public boolean Create() {
+    public boolean Add() {
         SqlConnector connector = new SqlConnector();
 
         connector.Connect();
@@ -126,7 +124,6 @@ public class Item implements CrudRepository<Integer> {
                 this.Item_name, this.Item_Desc, this.Item_Quantity, this.Item_Price,
                 this.Item_Created_By, this.Item_Modified_By);
 
-        // return true if no error occurs
         connector.Disconnect();
         return QueryExecuted;
     }
@@ -137,8 +134,7 @@ public class Item implements CrudRepository<Integer> {
      * @return: Item object
      * @summary: Read the item from the database    
     } */
-   @Override
-   public final void Read(Integer _Id) {
+   public final void Get(Integer _Id) {
        SqlConnector connector = new SqlConnector();
        connector.Connect();
        if (!connector.isConnected()) {
@@ -168,7 +164,7 @@ public class Item implements CrudRepository<Integer> {
 
    }
 
-    public static ArrayList<Item> ReadAll() {
+    public static ArrayList<Item> GetAll() {
 
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -183,7 +179,7 @@ public class Item implements CrudRepository<Integer> {
         return items;
     }
 
-    public static ArrayList<Item> Read(String _field, String _value) {
+    public static ArrayList<Item> Get(String _field, String _value) {
 
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -199,7 +195,6 @@ public class Item implements CrudRepository<Integer> {
         return items;
     }
 
-    @Override
     public boolean Update(Integer _Id) {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -209,17 +204,17 @@ public class Item implements CrudRepository<Integer> {
 
         String query = "UPDATE ITEM SET Item_Category_ID = ?, Vendor_ID = ?, Item_name = ?, Item_Desc = ?, Item_Quantity = ?, Item_Price = ?, Item_Modified_By = ? WHERE Item_ID = ?";
 
-        boolean QueryExecuted = connector.PrepareExecuteDML(query, this.Item_Category_ID, this.Vendor_ID,
-                this.Item_name, this.Item_Desc, this.Item_Quantity, this.Item_Price, this.Item_Modified_By,
+        boolean QueryExecuted = connector.PrepareExecuteDML(query,
+                this.Item_Category_ID, this.Vendor_ID,
+                this.Item_name, this.Item_Desc, this.Item_Quantity,
+                this.Item_Price, this.Item_Modified_By,
                 _Id.toString());
 
         connector.Disconnect();
 
         return QueryExecuted;
     }
-
-    @Override
-    public boolean Remove(Integer _Id) {
+    public static boolean Remove(Integer _Id) {
 
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -228,7 +223,8 @@ public class Item implements CrudRepository<Integer> {
         }
 
         String query = "DELETE FROM ITEM WHERE Item_ID = ?;";
-        boolean QueryExecuted = connector.PrepareExecuteDML(query, _Id.toString());
+        boolean QueryExecuted = connector.PrepareExecuteDML(query,
+                _Id.toString());
 
         connector.Disconnect();
 
@@ -241,6 +237,6 @@ public class Item implements CrudRepository<Integer> {
 
     //Search by ID
     public Item(Integer _Id) {
-        this.Read(_Id);
+        this.Get(_Id);
     }
 }

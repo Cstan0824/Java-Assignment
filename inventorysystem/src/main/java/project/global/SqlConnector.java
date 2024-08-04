@@ -90,7 +90,6 @@ public class SqlConnector {
             System.out.println("DML Error: " + e.getMessage());
             return false;
         }
-
     }
 
     public boolean PrepareExecuteDML(String _query, Object... values) 
@@ -124,8 +123,7 @@ public class SqlConnector {
             if (values.length != statement.getParameterMetaData().getParameterCount()) {
                 return null;
             }
-            for (int i = 0; i < values.length; i++) 
-            {
+            for (int i = 0; i < values.length; i++) {
                 statement.setObject(i + 1, values[i]);
             }
             ResultSet result = statement.executeQuery();
@@ -138,16 +136,48 @@ public class SqlConnector {
             return null;
         }
     }
+    
+    public void PrepareDMLStackBatch(String _query, Object... _values) {
+        if (!isConnected()) {
+            return;
+        }
+        try {
+            PreparedStatement statement = this.conn.prepareStatement(_query);
+            if (_values.length != statement.getParameterMetaData().getParameterCount()) {
+                return;
+            }
+            for (int i = 0; i < _values.length; i++) {
+                statement.setObject(i + 1, _values[i]);
+            }
+            statement.addBatch();
+
+        } catch (SQLException e) {
+            System.out.println("Prepare DML Error: " + e.getMessage());
+        }
+    }
+    
+    public boolean ExecuteStackBatch()
+    {
+        if (!isConnected()) {
+            return false;
+        }
+        try {
+            this.conn.createStatement().executeBatch();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("DML Error: " + e.getMessage());
+            return false;
+        }
+    }
 
     //convert the ResultSet to ArrayList
-    private <T> ArrayList<T> ToArrayList(ResultSet _result,Class<T> _typeClass)
+    private <T> ArrayList<T> ToArrayList(ResultSet _result, Class<T> _typeClass)
     {
         if (_result == null) {
             return null;
         }
 
         ArrayList<T> list = new ArrayList<>();
-
         try {
             while (_result.next()) {
                 //Create a new instance of the object
@@ -161,6 +191,7 @@ public class SqlConnector {
                         value = ((BigDecimal) value).doubleValue();
                     } else if (field.getType() == int.class && value instanceof Integer) {
                         value = ((Integer) value);
+                        
                     }
                     //System.out.println(field.getName() + " : " + value); --print out the data, for debug use
                     field.set(instance, value);
