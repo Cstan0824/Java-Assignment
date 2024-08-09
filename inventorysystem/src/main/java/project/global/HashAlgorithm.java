@@ -1,29 +1,30 @@
 package project.global;
 
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
-//PBKDF2(Password-Based Key Derivation Function 2)
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+
+//PBKDF2(Password-Based Key Derivation Function 2) 
 //no idea what shit is this 
-public class HashAlgorithm {
+public class HashAlgorithm { 
     private static final int ITERATIONS = 65536; // the number of iterations the pbkdf2 will run
     private static final int KEY_LENGTH = 256; // the length of derived key in bit
     private static final String ALGORITHM = "PBKDF2WithHmacSHA512"; //Specified type of algorithm used in the pbkdf2
     // HMAC - Hash-based Message Authentication Code
-    //SHA512 - produce 512 bit of hash value
+    // SHA512 - produce 512 bit of hash value
 
-    private static byte[] generateSalt() {
+    public static byte[] generateSalt() {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
         return salt;
     }
     
-    private static String HashPassword(String _password, byte[] _salt)
+    public static String HashPassword(String _password, byte[] _salt)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
             
         //generate hash txt with the password
@@ -36,7 +37,7 @@ public class HashAlgorithm {
         return enc.encodeToString(_salt) + ":" + enc.encodeToString(hash);
     }
 
-    private static boolean VerifyPassword(String _password, String _hashedPassword, byte[] _salt)
+    public static boolean VerifyPassword(String _password, String _hashedPassword, byte[] _salt)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
         //get hashed part
         String[] parts = _hashedPassword.split(":");

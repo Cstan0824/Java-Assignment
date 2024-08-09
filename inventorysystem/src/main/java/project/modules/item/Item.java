@@ -195,7 +195,7 @@ public class Item{
         return items;
     }
 
-    public boolean Update(Integer _Id) {
+    public boolean Update() {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
         if (!connector.isConnected()) {
@@ -208,7 +208,7 @@ public class Item{
                 this.Item_Category_ID, this.Vendor_ID,
                 this.Item_name, this.Item_Desc, this.Item_Quantity,
                 this.Item_Price, this.Item_Modified_By,
-                _Id.toString());
+                this.Item_ID);
 
         connector.Disconnect();
 

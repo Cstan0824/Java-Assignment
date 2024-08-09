@@ -1,82 +1,36 @@
 package project.start;
 
-import java.util.ArrayList;
-
-import project.IO.Output;
-import project.modules.item.Item;
-
 public class App {
-    public static void main(String[] args) {
-        testOutput();
-    }
-
-    public static void testCreateItem() 
+    public static void main(String[] args) 
     {
-        // Create item
-        Item newItem = new Item();
-        newItem.setItem_Category_ID(1);
-        newItem.setVendor_ID("vendor3");
-        newItem.setItem_name("Test Item");
-        newItem.setItem_Desc("This is a test item");
-        newItem.setItem_Quantity(10);
-        newItem.setItem_Price(100.50);
 
-        boolean created = newItem.Create();
-        System.out.println("Item created: " + created);
+        //menu
+        menu("Add Item", "Add Stock", "Add Stock Flow", "Add Vendor", "Add Category", "Add User",
+                "Add Stock In Automation", "Add Stock Out Automation", "Add Stock Flow Automation");
+                
+        System.out.printf("Enter your choice: %s %s", "testing 123", "testing 12312312312");
     }
 
-    public static void testReadItem() {
-        // Assuming the item was created with ID 1 for testing purposes
-        int itemId = 1;
-
-        // Read the item by ID
-        Item readItem = new Item(itemId);
-        System.out.println("Item read by ID: " + readItem.getItem_Name());
-
-        // Read all items
-        ArrayList<Item> items = Item.ReadAll();
-        for (Item item : items) {
-            System.out.println("Item read all: " + item.getItem_Name());
-        }
-
-        // Read all items by category
-        ArrayList<Item> itemsByCategory = Item.Read("Item_Category_ID","1");
-        for (Item item : itemsByCategory) {
-            System.out.println("Item read all by category: " + item.getItem_Name());
+    public static void menu(String... values) {
+        //print menu based on the arg passed in
+        for (int i = 0; i < values.length; i++) {
+            System.out.println(i + 1 + ". " + values[i]);
         }
     }
 
-    public static void testUpdateItem() {
-        // Assuming the item was created with ID 1 for testing purposes
-        int itemId = 1;
+    public static void test() {
+        Stock stock = new Stock();
+        stock.setStock_Receipent_ID("123");
+        stock.setStock_Flow_Category(1);
+        stock.setStock_Flow_Date(new Date(2021, 1, 1));
+        stock.setStock_Flow_Total_Price(1000);
+        stock.setStock_Flow_Created_By("admin");
+        stock.setStock_Flow_Modified_By("admin");
 
-        // Read the item by ID
-        Item readItem = new Item(itemId);
-        readItem.setItem_name("Updated Test Item");
-        readItem.setItem_Desc("This is an updated test item");
-        boolean updated = readItem.Update(itemId);
-        System.out.println("Item updated: " + updated);
-    }
+        stock.Add();
 
-    public static void testDeleteItem() {
-        // Assuming the item was created with ID 1 for testing purposes
-        int itemId = 4;
-
-        // Read the item by ID
-        Item readItem = new Item(itemId);
-
-        // Remove the item
-        boolean removed = readItem.Remove(itemId);
-        System.out.println("Item removed: " + removed);
-    }
-
-    public static void testOutput() {
-        // Test Output
-        ArrayList<Item> items = Item.ReadAll();
-        Output.<Item>PrintClassFieldsAsTable(items, Item.class);
-
-        //Menu
-        Output.PrintCrudMenu(Item.class);
-
+        for (Object elem : col) {
+            new Stock("123").remove();
+        }
     }
 }
