@@ -1,0 +1,134 @@
+-- Drop existing tables if they exist
+DROP TABLE IF EXISTS Item_StockFlow;
+DROP TABLE IF EXISTS Item;
+DROP TABLE IF EXISTS StockFlow;
+DROP TABLE IF EXISTS Vendor_ItemCategory;
+DROP TABLE IF EXISTS Vendor;
+DROP TABLE IF EXISTS Item_Category;
+DROP TABLE IF EXISTS Retailer;
+DROP TABLE IF EXISTS User;
+DROP TABLE IF EXISTS Entity;
+DROP TABLE IF EXISTS AutoStockIn;
+
+
+DROP TABLE IF EXISTS T_Item_StockFlow;
+DROP TABLE IF EXISTS T_Item;
+DROP TABLE IF EXISTS T_StockFlow;
+DROP TABLE IF EXISTS T_Vendor_ItemCategory;
+DROP TABLE IF EXISTS M_Vendor;
+DROP TABLE IF EXISTS T_Item_Category;
+DROP TABLE IF EXISTS M_Retailer;
+DROP TABLE IF EXISTS M_User;
+DROP TABLE IF EXISTS M_Entity;
+
+DROP TABLE IF EXISTS Sys_RunNo;
+DROP TABLE IF EXISTS Admin;
+DROP TABLE IF EXISTS Transaction;
+DROP TABLE IF EXISTS AutoReplenishment;
+
+CREATE TABLE Sys_RunNo (
+  Sys_Prefix VARCHAR(10) NOT NULL,
+  Sys_Next INT NOT NULL,
+  Sys_Desc VARCHAR(255)
+);
+
+CREATE TABLE Item_Category (
+  Item_Category_ID INT AUTO_INCREMENT,
+  Item_Type VARCHAR(100),
+  PRIMARY KEY (Item_Category_ID)
+);
+
+CREATE TABLE Vendor (
+  Vendor_ID VARCHAR(100),
+  Item_Category_ID INT,
+  Vendor_Name VARCHAR(100),
+  Vendor_Address VARCHAR(255),
+  Vendor_Created_By VARCHAR(100),
+  Vendor_Modified_By VARCHAR(100),
+  PRIMARY KEY (Vendor_ID),
+  FOREIGN KEY (Item_Category_ID) REFERENCES Item_Category(Item_Category_ID)
+);
+
+CREATE TABLE Vendor_ItemCategory (
+  Item_Category_ID INT,
+  Vendor_ID VARCHAR(100),
+  PRIMARY KEY (Vendor_ID, Item_Category_ID),
+  FOREIGN KEY (Vendor_ID) REFERENCES Vendor(Vendor_ID),
+  FOREIGN KEY (Item_Category_ID) REFERENCES Item_Category(Item_Category_ID)
+);
+
+CREATE TABLE AutoReplenishment (
+  AutoReplenishment_ID INT AUTO_INCREMENT,
+  Item_ID INT,
+  Item_Threshold INT,
+  PRIMARY KEY (AutoReplenishment_ID),
+  FOREIGN KEY (Item_ID) REFERENCES Item(Item_ID)
+);
+
+CREATE TABLE Admin (
+  Admin_ID VARCHAR(100),
+  Admin_Name VARCHAR(100) NOT NULL,
+  Admin_Password VARCHAR(255) NOT NULL,
+  Admin_Email VARCHAR(100) NOT NULL,
+  OTP_Code VARCHAR(6),
+  Admin_Reg_Date DATE DEFAULT CURRENT_DATE,
+  PRIMARY KEY (Admin_ID)
+);
+
+CREATE TABLE Item (
+  Item_ID INT AUTO_INCREMENT,
+  Item_Category_ID INT,
+  Vendor_ID VARCHAR(100),
+  Item_Name VARCHAR(100),
+  Item_Desc TEXT,
+  Item_Quantity INT,
+  Item_Price DECIMAL(10, 2),
+  Item_Location VARCHAR(255),
+  Item_Created_By VARCHAR(100),
+  Item_Modified_By VARCHAR(100),
+  PRIMARY KEY (Item_ID),
+  FOREIGN KEY (Item_Category_ID) REFERENCES Item_Category(Item_Category_ID),
+  FOREIGN KEY (Vendor_ID) REFERENCES Vendor(Vendor_ID)
+);
+
+CREATE TABLE Vehicle (
+  Vehicle_Plate VARCHAR(15) NOT NULL,
+  Vehicle_Type VARCHAR(50) NOT NULL,
+  PRIMARY KEY (Vehicle_Plate)
+);
+
+CREATE TABLE Schedule (
+  Schedule_ID INT AUTO_INCREMENT,
+  Doc_No VARCHAR(20) NOT NULL,
+  Vehicle_Plate VARCHAR(15) NOT NULL,
+  Time_Slot TIME NOT NULL,
+  Schedule_Date DATE NOT NULL,
+  PRIMARY KEY (Schedule_ID),
+  FOREIGN KEY (Vehicle_Plate) REFERENCES Vehicle(Vehicle_Plate)
+  -- Removed foreign key reference to Transaction since Doc_No is not guaranteed to be unique
+);
+
+CREATE TABLE Retailer (
+  Retailer_ID VARCHAR(100),
+  Retailer_Name VARCHAR(100) NOT NULL,
+  Retailer_Password VARCHAR(255) NOT NULL,
+  Retailer_Email VARCHAR(100) NOT NULL,
+  OTP_Code VARCHAR(6),
+  Retailer_Reg_Date DATE NOT NULL DEFAULT CURRENT_DATE,
+  Retailer_Address VARCHAR(255) NOT NULL,
+  Retailer_Created_By VARCHAR(100),
+  PRIMARY KEY (Retailer_ID)
+);
+
+CREATE TABLE Transaction (
+  Item_ID INT NOT NULL,
+  Doc_No VARCHAR(20) NOT NULL,
+  Transaction_Date DATE NOT NULL,
+  Quantity INT NOT NULL,
+  Transaction_Mode INT NOT NULL,
+  Transaction_Recipient VARCHAR(100),
+  Transaction_Created_By VARCHAR(100),
+  Transaction_Modified_By VARCHAR(100),
+  PRIMARY KEY (Item_ID, Doc_No),
+  FOREIGN KEY (Item_ID) REFERENCES Item(Item_ID)
+);

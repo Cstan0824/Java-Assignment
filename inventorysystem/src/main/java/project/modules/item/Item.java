@@ -2,9 +2,10 @@ package project.modules.item;
 
 import java.util.ArrayList;
 
+import project.global.CrudOperation;
 import project.global.SqlConnector;
 
-public class Item{
+public class Item implements CrudOperation{
     //Data Fields
     private int Item_ID = 0;
     private int Item_Category_ID;
@@ -110,6 +111,7 @@ public class Item{
 
 
     //Methods
+    @Override
     public boolean Add() {
         SqlConnector connector = new SqlConnector();
 
@@ -134,20 +136,21 @@ public class Item{
      * @return: Item object
      * @summary: Read the item from the database    
     } */
-   public final void Get(Integer _Id) {
+   @Override
+   public final boolean Get() {
        SqlConnector connector = new SqlConnector();
        connector.Connect();
        if (!connector.isConnected()) {
-           return;
+           return false;
        }
 
        String query = "SELECT * FROM item WHERE Item_ID = ?;";
-       ArrayList<Item> items = connector.PrepareExecuteRead(query, Item.class, _Id.toString());
+       ArrayList<Item> items = connector.PrepareExecuteRead(query, Item.class, this.Item_ID);
 
        connector.Disconnect();
 
        if (items == null || items.isEmpty()) {
-           return;
+           return false;
        }
 
        Item item = items.get(0); //get the first result
@@ -162,6 +165,8 @@ public class Item{
        this.Item_Created_By = item.getItem_Created_By();
        this.Item_Modified_By = item.getItem_Modified_By();
 
+       return true;
+
    }
 
     public static ArrayList<Item> GetAll() {
@@ -173,7 +178,7 @@ public class Item{
         }
 
         String query = "SELECT * FROM item;";
-        ArrayList<Item> items = connector.ExecuteRead(query, Item.class);
+        ArrayList<Item> items = connector.<Item>ExecuteRead(query, Item.class);
         connector.Disconnect();
 
         return items;
@@ -195,6 +200,7 @@ public class Item{
         return items;
     }
 
+    @Override
     public boolean Update() {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -214,7 +220,9 @@ public class Item{
 
         return QueryExecuted;
     }
-    public static boolean Remove(Integer _Id) {
+
+    @Override
+    public boolean Remove() {
 
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -224,7 +232,7 @@ public class Item{
 
         String query = "DELETE FROM ITEM WHERE Item_ID = ?;";
         boolean QueryExecuted = connector.PrepareExecuteDML(query,
-                _Id.toString());
+                this.Item_ID);
 
         connector.Disconnect();
 
@@ -237,6 +245,7 @@ public class Item{
 
     //Search by ID
     public Item(Integer _Id) {
-        this.Get(_Id);
+        this.Item_ID = _Id;
+        this.Get();
     }
 }

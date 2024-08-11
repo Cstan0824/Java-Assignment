@@ -211,7 +211,8 @@ public class SqlConnector {
     }
 
     //convert the ResultSet to ArrayList
-    private <T> ArrayList<T> ToArrayList(ResultSet _result, Class<T> _typeClass)
+    @SuppressWarnings("unlikely-arg-type")
+    private <T> ArrayList<T> ToArrayList(ResultSet _result, Class<T> _typeClass) 
     {
         if (_result == null) {
             return null;
@@ -231,6 +232,19 @@ public class SqlConnector {
                         value = ((BigDecimal) value).doubleValue();
                     } else if (field.getType() == int.class && value instanceof Integer) {
                         value = ((Integer) value);
+                    } else if (!field.getType().equals(String.class) && field.getType() == Object.class && value instanceof Object) {
+                        //idk what shit is this - 11/08/2024
+                        String tempID = field.getName() + "_ID";
+
+                        value = _result.getObject(tempID);
+                        Class<?> tempClass = field.getType();
+                        Object tempInstance = tempClass.newInstance();
+
+                        Field tempField = tempClass.getField(tempID);
+                        tempField.setAccessible(true);
+
+                        tempField.set(tempInstance, value);
+                        value = tempInstance; //overwrite the value with the object
 
                     }
                     //System.out.println(field.getName() + " : " + value); --print out the data, for debug use
@@ -239,7 +253,9 @@ public class SqlConnector {
                 list.add(instance);
             }
         } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | SecurityException
-                | SQLException e) {
+                | SQLException | NoSuchFieldException e)
+
+        {
             System.out.println("Convert Error: " + e.getMessage());
             return null;
         }
