@@ -7,7 +7,7 @@ import project.global.SqlConnector;
 
 public class Item implements CrudOperation{
     //Data Fields
-    private int Item_ID = 0;
+    private int Item_ID;
     private int Item_Category_ID;
     private String Vendor_ID;
 
@@ -104,9 +104,17 @@ public class Item implements CrudOperation{
         return this.Item_Created_By;
     }
 
+    public void setItem_Created_By(String _ItemCreatedBy) {
+        this.Item_Created_By = _ItemCreatedBy;
+    }
+
     //Item_Modified_By
     public String getItem_Modified_By() {
         return this.Item_Modified_By;
+    }
+
+    public void setItem_Modified_By(String _ItemModifiedBy) {
+        this.Item_Modified_By = _ItemModifiedBy;
     }
 
 
@@ -239,13 +247,20 @@ public class Item implements CrudOperation{
         return QueryExecuted;
     }
 
+    public boolean AddStock(int _ItemQuantity) {
+        if (_ItemQuantity < 0) {
+            return false;
+        }
+        this.Item_Quantity += _ItemQuantity;
+        this.Update();
+        return true;
+    }
+
     //Constructor
     public Item() {
     }
 
-    //Search by ID
     public Item(Integer _Id) {
         this.Item_ID = _Id;
-        this.Get();
     }
 }

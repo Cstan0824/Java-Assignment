@@ -42,8 +42,8 @@ INSERT INTO Vehicle (Vehicle_Plate, Vehicle_Type) VALUES
 ('XYZ789', 'Van'),
 ('LMN456', 'SUV');
 
-INSERT INTO Schedule (Doc_No, Vehicle_ID, Time_Slot, Schedule_Date) VALUES
-('DO001', 1, '08:00:00', '2024-08-15');
+INSERT INTO Schedule (Doc_No, Vehicle_Plate, Time_Slot, Schedule_Date) VALUES
+('DO001','ABC123', '08:00:00', '2024-08-15');
 
 INSERT INTO Retailer (Retailer_ID, Retailer_Name, Retailer_Password, Retailer_Email, OTP_Code, Retailer_Reg_Date, Retailer_Address, Retailer_Created_By) VALUES
 ('R001', 'Retailer One', 'retail123', 'retailer1@example.com', '123456', CURRENT_DATE, '123 Retail St, Cityville', 'Admin'),

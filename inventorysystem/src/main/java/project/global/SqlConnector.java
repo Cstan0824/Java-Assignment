@@ -211,7 +211,7 @@ public class SqlConnector {
     }
 
     //convert the ResultSet to ArrayList
-    @SuppressWarnings("unlikely-arg-type")
+    //idk what shit is this - 11/08/2024 - but it works - 16/08/2024
     private <T> ArrayList<T> ToArrayList(ResultSet _result, Class<T> _typeClass) 
     {
         if (_result == null) {
@@ -223,31 +223,30 @@ public class SqlConnector {
             while (_result.next()) {
                 //Create a new instance of the object
                 T instance = _typeClass.newInstance();
-
                 for (Field field : _typeClass.getDeclaredFields()) {
-
                     field.setAccessible(true); //set the data field accessible temp
-                    Object value = _result.getObject(field.getName());
-                    if (field.getType() == double.class && value instanceof BigDecimal) {
-                        value = ((BigDecimal) value).doubleValue();
-                    } else if (field.getType() == int.class && value instanceof Integer) {
-                        value = ((Integer) value);
-                    } else if (!field.getType().equals(String.class) && field.getType() == Object.class && value instanceof Object) {
-                        //idk what shit is this - 11/08/2024
-                        String tempID = field.getName() + "_ID";
+                    Object value = (!field.getType().equals(String.class) && Object.class.isAssignableFrom(field.getType())) ?
+                            _result.getObject(field.getName() + "_ID") :
+                            _result.getObject(field.getName())
+                            ;                    
 
-                        value = _result.getObject(tempID);
+                    if (field.getType() == double.class) {
+                        value = ((BigDecimal) value).doubleValue();
+                    } else if (field.getType() == int.class) {
+                        value = ((Integer) value);
+                    } else if (!field.getType().equals(String.class) && Object.class.isAssignableFrom(field.getType())) {
+                        String tempID = field.getName() + "_ID";
+                        tempID = tempID.substring(0, 1).toUpperCase() + tempID.substring(1);
+
                         Class<?> tempClass = field.getType();
                         Object tempInstance = tempClass.newInstance();
-
-                        Field tempField = tempClass.getField(tempID);
+                       
+                        Field tempField = tempClass.getDeclaredField(tempID);
                         tempField.setAccessible(true);
-
                         tempField.set(tempInstance, value);
-                        value = tempInstance; //overwrite the value with the object
-
+                        value = tempInstance;
                     }
-                    //System.out.println(field.getName() + " : " + value); --print out the data, for debug use
+                    //System.out.println(i + ". " + field.getName() + " : " + value); //--print out the data, for debug use
                     field.set(instance, value);
                 }
                 list.add(instance);
@@ -257,6 +256,7 @@ public class SqlConnector {
 
         {
             System.out.println("Convert Error: " + e.getMessage());
+            System.out.println("Convert Error: " + e.getClass());
             return null;
         }
 
@@ -281,7 +281,6 @@ public class SqlConnector {
             System.out.println("Convert Error: " + e.getMessage());
             return null;
         }
-
         return list;
     }
 }

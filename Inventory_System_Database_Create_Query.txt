@@ -57,13 +57,6 @@ CREATE TABLE Vendor_ItemCategory (
   FOREIGN KEY (Item_Category_ID) REFERENCES Item_Category(Item_Category_ID)
 );
 
-CREATE TABLE AutoReplenishment (
-  AutoReplenishment_ID INT AUTO_INCREMENT,
-  Item_ID INT,
-  Item_Threshold INT,
-  PRIMARY KEY (AutoReplenishment_ID),
-  FOREIGN KEY (Item_ID) REFERENCES Item(Item_ID)
-);
 
 CREATE TABLE Admin (
   Admin_ID VARCHAR(100),
@@ -90,6 +83,15 @@ CREATE TABLE Item (
   FOREIGN KEY (Item_Category_ID) REFERENCES Item_Category(Item_Category_ID),
   FOREIGN KEY (Vendor_ID) REFERENCES Vendor(Vendor_ID)
 );
+
+CREATE TABLE AutoReplenishment (
+  AutoReplenishment_ID INT AUTO_INCREMENT,
+  Item_ID INT,
+  Item_Threshold INT,
+  PRIMARY KEY (AutoReplenishment_ID),
+  FOREIGN KEY (Item_ID) REFERENCES Item(Item_ID)
+);
+
 
 CREATE TABLE Vehicle (
   Vehicle_Plate VARCHAR(15) NOT NULL,

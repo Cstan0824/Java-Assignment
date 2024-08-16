@@ -7,16 +7,16 @@ import project.global.SqlConnector;
 import project.modules.item.Item;
 
 public class AutoReplenishment implements CrudOperation {
-    private String AutoReplenishment_ID;
+    private int AutoReplenishment_ID;
     private Item item;
-    private int Item_Treshold;
+    private int Item_Threshold;
 
     //getter and setter methods
-    public String getAutoReplenishment_ID() {
+    public int getAutoReplenishment_ID() {
         return this.AutoReplenishment_ID;
     }
 
-    public void setAutoReplenishment_ID(String _AutoReplenishment_ID) {
+    public void setAutoReplenishment_ID(int _AutoReplenishment_ID) {
         this.AutoReplenishment_ID = _AutoReplenishment_ID;
     }
 
@@ -28,12 +28,12 @@ public class AutoReplenishment implements CrudOperation {
         this.item = _item;
     }
 
-    public int getItem_Treshold() {
-        return this.Item_Treshold;
+    public int getItem_Threshold() {
+        return this.Item_Threshold;
     }
 
-    public void setItem_Treshold(int _Item_Treshold) {
-        this.Item_Treshold = _Item_Treshold;
+    public void setItem_Threshold(int _Item_Threshold) {
+        this.Item_Threshold = _Item_Threshold;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class AutoReplenishment implements CrudOperation {
         AutoReplenishment result = results.get(0);
         this.AutoReplenishment_ID = result.getAutoReplenishment_ID();
         this.item = result.getItem();
-        this.Item_Treshold = result.getItem_Treshold();
+        this.Item_Threshold = result.getItem_Threshold();
 
         connector.Disconnect();
         return false;
@@ -100,9 +100,9 @@ public class AutoReplenishment implements CrudOperation {
             return false;
         }
 
-        String query = "INSERT INTO AutoReplenishment (Item_ID, Item_Treshold) VALUES (?, ?);";
+        String query = "INSERT INTO AutoReplenishment (Item_ID, Item_Threshold) VALUES (?, ?);";
 
-        boolean QueryExecuted = connector.PrepareExecuteDML(query, this.item.getItem_ID(), this.Item_Treshold);
+        boolean QueryExecuted = connector.PrepareExecuteDML(query, this.item.getItem_ID(), this.Item_Threshold);
 
         connector.Disconnect();
         return QueryExecuted;
@@ -145,9 +145,9 @@ public class AutoReplenishment implements CrudOperation {
             return false;
         }
 
-        String query = "UPDATE AutoReplenishment SET Item_Treshold = ? WHERE Item_ID = ?;";
+        String query = "UPDATE AutoReplenishment SET Item_Threshold = ? WHERE Item_ID = ?;";
 
-        boolean QueryExecuted = connector.PrepareExecuteDML(query, this.Item_Treshold, this.item.getItem_ID());
+        boolean QueryExecuted = connector.PrepareExecuteDML(query, this.Item_Threshold, this.item.getItem_ID());
 
         connector.Disconnect();
 
@@ -159,10 +159,10 @@ public class AutoReplenishment implements CrudOperation {
         ArrayList<AutoReplenishment> autoReplenishments = GetAll();
 
         autoReplenishments.forEach(replenishment->{
-            if(replenishment.getItem().getItem_Quantity() <= replenishment.getItem_Treshold()){
+            if(replenishment.getItem().getItem_Quantity() <= replenishment.getItem_Threshold()){
                 replenishment.getItem()
                         .setItem_Quantity(
-                                replenishment.getItem().getItem_Quantity() + (replenishment.getItem_Treshold() * 2)
+                                replenishment.getItem().getItem_Quantity() + (replenishment.getItem_Threshold() * 2)
                             );
                 replenishment.getItem().Update();
             }
@@ -183,6 +183,6 @@ public class AutoReplenishment implements CrudOperation {
     public AutoReplenishment(AutoReplenishment _autoReplenishment) {
         this.AutoReplenishment_ID = _autoReplenishment.getAutoReplenishment_ID();
         this.item = _autoReplenishment.getItem();
-        this.Item_Treshold = _autoReplenishment.getItem_Treshold();
+        this.Item_Threshold = _autoReplenishment.getItem_Threshold();
     }
 }
