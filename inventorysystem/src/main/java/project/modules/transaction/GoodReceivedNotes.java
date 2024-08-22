@@ -29,7 +29,7 @@ public class GoodReceivedNotes extends Transaction {
         return QueryExecuted;
     }
 
-    @Override
+    @Override //Human Error[wrong item quantity]
     public boolean Update() {
         SqlConnector connector = new SqlConnector();
 
@@ -51,8 +51,8 @@ public class GoodReceivedNotes extends Transaction {
         connector.Disconnect();
         return QueryExecuted;
     }
-
-    @Override
+    
+    @Override//Human Error[]
     public boolean Remove() {
         SqlConnector connector = new SqlConnector();
 

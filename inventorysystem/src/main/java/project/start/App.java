@@ -1,24 +1,69 @@
 package project.start;
 
+import java.io.File;
+import java.io.StringReader;
+
 import project.global.MailSender;
 import project.global.MailTemplate;
+import project.global.PdfConverter;
 import project.modules.item.Item;
 import project.modules.transaction.AutoReplenishment;
 
 public class App {
     public static void main(String[] args) {
-       
-
-        
-
+        test_PdfConverter_Mail();
     }
+
+    //test Pdf Converter function
+    //Done
+    public static void testPdfConverter() {
+        String directory = "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global";
+        String fileName = "sameple.pdf";
+        String html = "<html><head></head><body><h1>Hello World</h1></body></html>";
+
+        PdfConverter pdf = new PdfConverter(
+                new File(directory, fileName),
+                new StringReader(html));
+
+        pdf.Save();
+    }
+
+    //test Pdf Converter + Mail function
+    //Done
+    public static void test_PdfConverter_Mail() {
+        //Pdf Converter
+        String directory = "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global";
+        String fileName = "sameple.pdf";
+        File file = new File(directory, fileName);
+        String html = "<html><head></head><body><h1>Hello World</h1></body></html>";
+
+        PdfConverter pdf = new PdfConverter(
+                file,
+                new StringReader(html));
+
+        pdf.Save();
+
+        //Send mail
+        MailSender mail = new MailSender("tarumtmoviesociety@gmail.com", "tancs8803@gmail.com", "Purchase Order",
+                new MailTemplate("346759", MailTemplate.TemplateType.PURCHASE_ORDER));
+         mail.AttachFile(file.getAbsolutePath());
+        mail.Send();
+    }
+
     //test Mail function
-    //Pending
+    //Done
     public static void testMail() {
         //Send mail
-        MailSender mail = new MailSender("Admin Or Retailer Email", "Vendor Email", "Purchase Order",
+        MailSender mail = new MailSender("tarumtmoviesociety@gmail.com", "tancs8803@gmail.com", "Purchase Order",
+                new MailTemplate("346759", MailTemplate.TemplateType.OTP));
+        mail.Send();
+    }
+    //Done
+    public static void testMailWithAttachment() {
+        //Send mail
+        MailSender mail = new MailSender("tarumtmoviesociety@gmail.com", "tancs8803@gmail.com", "Purchase Order",
                 new MailTemplate("PO00001", MailTemplate.TemplateType.PURCHASE_ORDER));
-        mail.AttachFile("C:\\Users\\User\\Desktop\\test.txt");
+        mail.AttachFile("C:/Users/PREDATOR/Downloads/Profile.pdf");
         mail.Send();
     }
 
@@ -135,4 +180,5 @@ public class App {
         System.out.println("Item Price: " + autoReplenishment.getItem().getItem_Price());
         System.out.println("Item Treshold: " + autoReplenishment.getItem_Threshold());
     }
+
 }

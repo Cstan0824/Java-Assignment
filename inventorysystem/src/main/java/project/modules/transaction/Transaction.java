@@ -5,7 +5,7 @@ import java.util.Date;
 import project.global.CrudOperation;
 import project.modules.item.Item;
 
-public abstract class Transaction implements  CrudOperation {
+public abstract class Transaction implements CrudOperation {
     private Item item;
     private String Doc_No;
     private Date Transaction_Date;

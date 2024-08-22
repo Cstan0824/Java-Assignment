@@ -21,6 +21,13 @@
   <dependencies>
 
     <dependency>
+      <groupId>com.github.librepdf</groupId>
+      <artifactId>openpdf</artifactId>
+      <version>1.2.19</version>
+    </dependency>
+
+
+    <dependency>
       <groupId>io.vlinx</groupId>
       <artifactId>mailsender</artifactId>
       <version>1.0.0</version>

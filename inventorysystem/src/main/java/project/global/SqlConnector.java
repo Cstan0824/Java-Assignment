@@ -211,7 +211,7 @@ public class SqlConnector {
     }
 
     //convert the ResultSet to ArrayList
-    //idk what shit is this - 11/08/2024 - but it works - 16/08/2024
+    //IDK WHAT 7 IS THIS BUT IT WORKS - 16/08/2024
     private <T> ArrayList<T> ToArrayList(ResultSet _result, Class<T> _typeClass) 
     {
         if (_result == null) {
