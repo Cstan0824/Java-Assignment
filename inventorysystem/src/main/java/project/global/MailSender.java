@@ -83,10 +83,10 @@ public class MailSender {
         return true;
     }
 
-    public void AttachFile(String _file) {
+    public void AttachFile(File _file) {
         try {
 
-            this.mimeBodyPart.attachFile(new File(_file));
+            this.mimeBodyPart.attachFile(_file);
             this.message.setContent(this.multipart);
 
         } catch (MessagingException | IOException e) {
@@ -144,6 +144,16 @@ public class MailSender {
 
     public MailSender(String _Sender, String _Recipient, String _Subject, MailTemplate _mailTemplate) {
         this.Sender = _Sender;
+        this.Recipient = _Recipient;
+        this.Subject = _Subject;
+        this.Body = _mailTemplate.getTemplate();
+
+        Session session = this.MailServerConfiguration();
+        this.MailInitialization(session);
+    }
+
+    public MailSender(String _Recipient, String _Subject, MailTemplate _mailTemplate) {
+         this.Sender = "tarumtmoviesociety@gmail.com";
         this.Recipient = _Recipient;
         this.Subject = _Subject;
         this.Body = _mailTemplate.getTemplate();

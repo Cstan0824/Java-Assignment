@@ -43,8 +43,8 @@ public class PdfConverter {
         
     }
     
-    public PdfConverter(File _file, StringReader _htmlString) {
+    public PdfConverter(File _file, PdfTemplate _pdfTemplate) {
         this.file = _file;
-        this.htmlString = _htmlString;
+        this.htmlString = new StringReader(_pdfTemplate.getContent());
     }
 }

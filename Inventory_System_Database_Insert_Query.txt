@@ -49,8 +49,8 @@ INSERT INTO Retailer (Retailer_ID, Retailer_Name, Retailer_Password, Retailer_Em
 ('R001', 'Retailer One', 'retail123', 'retailer1@example.com', '123456', CURRENT_DATE, '123 Retail St, Cityville', 'Admin'),
 ('R002', 'Retailer Two', 'retail456', 'retailer2@example.com', '654321', CURRENT_DATE, '456 Retail Ave, Townsville', 'Admin');
 
-INSERT INTO Transaction (Item_ID, Doc_No, Transaction_Date, Quantity, Transaction_Mode, Transaction_Recipient, Transaction_Created_By, Transaction_Modified_By) VALUES
-(1, 'PO001', '2024-08-15', 20, 0, 'John Doe', 'Admin', 'Admin'),
-(1, 'GRN001', '2024-08-16', 20, 0, 'Jane Smith', 'Admin', 'Admin'),
-(2, 'SO001', '2024-08-17', 10, 1, 'Retailer One', 'Admin', 'Admin'),
-(2,'DO001','2024-08-18',10,1,'Retailer One','Admin','Admin');
+INSERT INTO Transaction (Item_ID, Doc_No, Transaction_Date, VirtualStock, OnHandStock, Transaction_Mode, Transaction_Recipient, Transaction_Created_By, Transaction_Modified_By) VALUES
+(1, 'PO001', '2024-08-15', 20, 20, 0, 'John Doe', 'Admin', 'Admin'),
+(1, 'GRN001', '2024-08-16', 0, 20, 0, 'Jane Smith', 'Admin', 'Admin'),
+(2, 'SO001', '2024-08-17', 0, 10, 1, 'Retailer One', 'Admin', 'Admin'),
+(2,'DO001','2024-08-18',0, 10,1,'Retailer One','Admin','Admin');
