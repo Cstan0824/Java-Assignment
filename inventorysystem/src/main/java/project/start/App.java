@@ -1,7 +1,6 @@
 package project.start;
 
 import java.io.File;
-import java.io.StringReader;
 
 import project.global.MailSender;
 import project.global.MailTemplate;
@@ -21,7 +20,7 @@ public class App {
     public static void testPdfConverter() {
         String directory = "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global";
         String fileName = "sameple.pdf";
-        String html = "<html><head></head><body><h1>Hello World</h1></body></html>";
+        //String html = "<html><head></head><body><h1>Hello World</h1></body></html>";
 
         PdfConverter pdf;
         pdf = new PdfConverter(
@@ -38,7 +37,7 @@ public class App {
         String directory = "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf";
         String fileName = "sameple.pdf";
         File file = new File(directory, fileName);
-        String html = "<html><head></head><body><h1>Hello World</h1></body></html>";
+        //String html = "<html><head></head><body><h1>Hello World</h1></body></html>";
 
         PdfConverter pdf = new PdfConverter(file, new PdfTemplate(new PurchaseOrder(), PdfTemplate.TemplateType.PURCHASE_ORDER));
 

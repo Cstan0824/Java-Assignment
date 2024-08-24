@@ -261,6 +261,10 @@ public class MailTemplate {
         return "The Order For " + _DocNo + "is Confirmed";
     }
 
+    private String FollowOrderStatus(String _DiffStock) {
+        return "The Stock has been changed by " + _DiffStock;
+    }
+
     public enum TemplateType {
         OTP,
         PURCHASE_ORDER,
@@ -268,7 +272,8 @@ public class MailTemplate {
         SALES_ORDER,
         ORDER_CANCELLATION,
         REORDERING,
-        ORDER_CONFIRMATION
+        ORDER_CONFIRMATION,
+        FOLLOW_ORDER_STATUS
     }
 
     public MailTemplate(String _Content, TemplateType _templateType) {
@@ -293,6 +298,10 @@ public class MailTemplate {
                 break;
             case ORDER_CONFIRMATION:
                 this.Content = this.OrderConfirmation(_Content);
+                break;
+            case FOLLOW_ORDER_STATUS:
+            this.Content = this.FollowOrderStatus(_Content);
+                break;
             default:
                 break;
         }

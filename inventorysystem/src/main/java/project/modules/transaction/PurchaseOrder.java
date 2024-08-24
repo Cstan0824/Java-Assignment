@@ -62,10 +62,15 @@ public class PurchaseOrder extends Transaction {
 
     //Only change vendor or item will use this method
     //Item_ID, Transaction_date, Quantity, Transaction_Receipent
-    //need to combine with GRN - check if the user has already receive the stock; if yes user cant Update anymore
+    //Just compare the OnHand and Virtual stock
+    //Done
     @Override
-    public boolean Update() {
+    public boolean Update() 
+    {
         Transaction OldPurchaseOrder = PurchaseOrder.Get(this.getDoc_No());
+        if (OldPurchaseOrder.getOnHandStock() > 0) {
+            return false; //User has already receive the stock
+        }
 
         //Scenario 1: Change vendor
         //Scenario 2: Only change item but still same vendor
@@ -79,7 +84,6 @@ public class PurchaseOrder extends Transaction {
             MailSender PurchaseOrderMail = new MailSender("tancs8803@gmail.com", "Purchase Order",
                     new MailTemplate(this.getDoc_No(), MailTemplate.TemplateType.PURCHASE_ORDER));
             PurchaseOrderMail.Send();
-
         } else if (this.getItem().getItem_ID() != OldPurchaseOrder.getItem().getItem_ID()) {
             //Send Reordering to vendor
             //generate pdf
@@ -110,7 +114,6 @@ public class PurchaseOrder extends Transaction {
                 this.getDoc_No());
 
         connector.Disconnect();
-
         return QueryExecuted;
     }
 
@@ -147,8 +150,8 @@ public class PurchaseOrder extends Transaction {
     }
 
     @Override
-    //Need to combine with GRN
-    //Check the stock status and ask user whether they want to proceed with the stock[send mail to the vendor for follow up status] or change vendor
+    //Check the stock status and ask user whether they want to proceed with the stock[send mail to the vendor for follow up status]
+    //Done
     public boolean Get() {
         Transaction purchaseOrder = PurchaseOrder.Get(this.getDoc_No());
 
@@ -156,7 +159,7 @@ public class PurchaseOrder extends Transaction {
             return false;
         }
 
-        //initialise the value
+        //initialize the value
         this.setItem(purchaseOrder.getItem());
         this.setTransaction_Date(purchaseOrder.getTransaction_Date());
         this.setVirtualStock(purchaseOrder.getVirtualStock());
@@ -166,8 +169,22 @@ public class PurchaseOrder extends Transaction {
         this.setTransaction_Created_By(purchaseOrder.getTransaction_Created_By());
         this.setTransaction_Modified_By(purchaseOrder.getTransaction_Modified_By());
 
+        //Check the stock status
+        int diff = this.getVirtualStock() - this.getOnHandStock();
+        if (diff == 0) {
+            return true;
+        }
 
+        //Ask user whether they want to proceed with the stock
+        boolean userAccept = true;
 
+        if (!userAccept) {
+            return true;
+        }
+
+        MailSender mail = new MailSender("tancs8803@gmail.com", "Follow Up The Status",
+                new MailTemplate(diff + "", MailTemplate.TemplateType.FOLLOW_ORDER_STATUS));
+        mail.Send();
 
         return true;
     }

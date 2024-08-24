@@ -51,6 +51,7 @@ INSERT INTO Retailer (Retailer_ID, Retailer_Name, Retailer_Password, Retailer_Em
 
 INSERT INTO Transaction (Item_ID, Doc_No, Transaction_Date, VirtualStock, OnHandStock, Transaction_Mode, Transaction_Recipient, Transaction_Created_By, Transaction_Modified_By) VALUES
 (1, 'PO001', '2024-08-15', 20, 20, 0, 'John Doe', 'Admin', 'Admin'),
-(1, 'GRN001', '2024-08-16', 0, 20, 0, 'Jane Smith', 'Admin', 'Admin'),
+(1, 'GRN001', '2024-08-16', 0, 10, 0, 'Jane Smith', 'Admin', 'Admin'),
+(1, 'GRN002', '2024-08-16', 0, 10, 0, 'Jane Smith', 'Admin', 'Admin'),
 (2, 'SO001', '2024-08-17', 0, 10, 1, 'Retailer One', 'Admin', 'Admin'),
 (2,'DO001','2024-08-18',0, 10,1,'Retailer One','Admin','Admin');
