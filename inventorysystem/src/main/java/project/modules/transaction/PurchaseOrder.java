@@ -3,6 +3,7 @@ package project.modules.transaction;
 import java.io.File;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import project.global.MailSender;
 import project.global.MailTemplate;
@@ -28,10 +29,11 @@ public class PurchaseOrder extends Transaction {
             return false;
         }
 
-        String query = "INSERT INTO Transaction(Item_ID, Doc_No, Transaction_Date, VirtualStock,OnHandStock, Transaction_Mode, Transaction_Receipient, Transaction_Created_By, Transaction_Modified_By) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Transaction(Item_ID, Doc_No, Source_Doc_No, Transaction_Date, Quantity, Transaction_Mode, Transaction_Receipient, Transaction_Created_By, Transaction_Modified_By) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
         boolean QueryExecuted = connector.PrepareExecuteDML(query,
                 this.getItem().getItem_ID(), this.getDoc_No(),
-                this.getTransaction_Date(), this.getVirtualStock(), this.getOnHandStock(), this.getTransaction_Mode(),
+                this.getSource_Doc_No(),
+                this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(),
                 this.getTransaction_Receipient(),
                 this.getTransaction_Created_By(), this.getTransaction_Modified_By());
 
@@ -62,15 +64,19 @@ public class PurchaseOrder extends Transaction {
 
     //Only change vendor or item will use this method
     //Item_ID, Transaction_date, Quantity, Transaction_Receipent
-    //Just compare the OnHand and Virtual stock
     //Done
     @Override
-    public boolean Update() 
-    {
-        Transaction OldPurchaseOrder = PurchaseOrder.Get(this.getDoc_No());
-        if (OldPurchaseOrder.getOnHandStock() > 0) {
-            return false; //User has already receive the stock
+    public boolean Update() {
+
+        ArrayList<Transaction> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
+                GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
+
+        //Check whether the good receive note is exist or not
+        if (goodReceiveNotes != null && !goodReceiveNotes.isEmpty()) {
+            //The stock is already reiceived
+            return false;
         }
+        Transaction OldPurchaseOrder = PurchaseOrder.Get(this.getDoc_No());
 
         //Scenario 1: Change vendor
         //Scenario 2: Only change item but still same vendor
@@ -84,6 +90,7 @@ public class PurchaseOrder extends Transaction {
             MailSender PurchaseOrderMail = new MailSender("tancs8803@gmail.com", "Purchase Order",
                     new MailTemplate(this.getDoc_No(), MailTemplate.TemplateType.PURCHASE_ORDER));
             PurchaseOrderMail.Send();
+
         } else if (this.getItem().getItem_ID() != OldPurchaseOrder.getItem().getItem_ID()) {
             //Send Reordering to vendor
             //generate pdf
@@ -104,11 +111,11 @@ public class PurchaseOrder extends Transaction {
         if (!connector.isConnected()) {
             return false;
         }
-        String query = "UPDATE Transaction SET Item_ID = ?, Transaction_Date = ?, VirtualStock = ?, OnHandStock = ?, Transaction_Receipient = ?, Transaction_Modified_By = ? WHERE Doc_No = ?";
+        String query = "UPDATE Transaction SET Item_ID = ?, Transaction_Date = ?, Quantity = ?, Transaction_Receipient = ?, Transaction_Modified_By = ? WHERE Doc_No = ?";
 
         boolean QueryExecuted = connector.PrepareExecuteDML(query,
                 this.getItem().getItem_ID(), this.getTransaction_Date(),
-                this.getVirtualStock(), this.getOnHandStock(),
+                this.getQuantity(),
                 this.getTransaction_Receipient(),
                 this.getTransaction_Modified_By(),
                 this.getDoc_No());
@@ -119,7 +126,17 @@ public class PurchaseOrder extends Transaction {
 
     @Override
     //Done
+    //need to check if already received the stock or not
     public boolean Remove() {
+        ArrayList<Transaction> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
+                GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
+
+        //Check whether the good receive note is exist or not
+        if (goodReceiveNotes != null && !goodReceiveNotes.isEmpty()) {
+            //The stock is already reiceived
+            return false;
+        }
+
         SqlConnector connector = new SqlConnector();
         connector.Connect();
 
@@ -137,7 +154,7 @@ public class PurchaseOrder extends Transaction {
         }
 
         //Generate Order Cancellation Mail - send to vendor
-        MailSender mail = new MailSender( "tancs8803@gmail.com", "Order Cancelled",
+        MailSender mail = new MailSender("tancs8803@gmail.com", "Order Cancelled",
                 new MailTemplate(this.getDoc_No(), MailTemplate.TemplateType.ORDER_CANCELLATION));
         mail.Send();
 
@@ -162,38 +179,47 @@ public class PurchaseOrder extends Transaction {
         //initialize the value
         this.setItem(purchaseOrder.getItem());
         this.setTransaction_Date(purchaseOrder.getTransaction_Date());
-        this.setVirtualStock(purchaseOrder.getVirtualStock());
-        this.setOnHandStock(purchaseOrder.getOnHandStock());
+        this.setQuantity(purchaseOrder.getQuantity());
         this.setTransaction_Mode(purchaseOrder.getTransaction_Mode());
         this.setTransaction_Receipient(purchaseOrder.getTransaction_Receipient());
         this.setTransaction_Created_By(purchaseOrder.getTransaction_Created_By());
         this.setTransaction_Modified_By(purchaseOrder.getTransaction_Modified_By());
 
+        int VirtualStock = this.getQuantity();
+        int OnHandStock = 0;
+
         //Check the stock status
-        int diff = this.getVirtualStock() - this.getOnHandStock();
+        ArrayList<Transaction> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
+                GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
+
+        if (goodReceiveNotes != null && !goodReceiveNotes.isEmpty()) {
+            for (Transaction goodReceiveNote : goodReceiveNotes) {
+                OnHandStock += goodReceiveNote.getQuantity();
+            }
+        }
+
+        Integer diff = VirtualStock - OnHandStock;
         if (diff == 0) {
             return true;
         }
 
         //Ask user whether they want to proceed with the stock
-        boolean userAccept = true;
-
-        if (!userAccept) {
+        if (!ProceedWithStock()) {
             return true;
         }
 
-        MailSender mail = new MailSender("tancs8803@gmail.com", "Follow Up The Status",
-                new MailTemplate(diff + "", MailTemplate.TemplateType.FOLLOW_ORDER_STATUS));
+        MailSender mail = new MailSender("tancs8803@gmail.com", "Follow Up Order Status",
+                new MailTemplate(diff.toString(), MailTemplate.TemplateType.FOLLOW_ORDER_STATUS));
         mail.Send();
 
         return true;
     }
 
-    @Override 
+    @Override
     public String GenerateDocNo() {
         return "PO" + String.format("%05d", SystemRunNo.Get("PO"));
     }
-    
+
     public static Transaction Get(String _DocNo) {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -208,28 +234,50 @@ public class PurchaseOrder extends Transaction {
 
         connector.Disconnect();
 
-        if(purchaseOrders == null || purchaseOrders.isEmpty()) {
+        if (purchaseOrders == null || purchaseOrders.isEmpty()) {
             return null;
         }
 
         //Save the value to instances
         return purchaseOrders.get(0);
-        
+
     }
+
+    //Ask user whether they want to proceed with the stock
+    private boolean ProceedWithStock() {
+
+        try (Scanner scanner = new Scanner(System.in)) {
+            String userResponse;
+            do {
+                System.out.println("Do you want to follow up the status of the stock? [Y/N]");
+                userResponse = scanner.next();
+                scanner.nextLine();
+            } while (userResponse.equalsIgnoreCase("Y") || userResponse.equalsIgnoreCase("N"));
+
+            if (userResponse.equalsIgnoreCase("Y")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //Constructor
     public PurchaseOrder() {
+        this.setTransaction_Mode(TransactionMode.STOCK_IN);
+        //Get current date
+        this.setTransaction_Date(new Date(System.currentTimeMillis()));
     }
 
     public PurchaseOrder(String _DocNo) {
+        this.setTransaction_Mode(TransactionMode.STOCK_IN);
         this.setDoc_No(_DocNo);
     }
 
-    public PurchaseOrder(Item _item, String _Doc_No, Date _Transaction_Date, int _VirtualStock,int _OnHandStock, int _Transaction_Mode,
+    public PurchaseOrder(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity,
             String _Transaction_Receipient, String _Transaction_Created_By, String _Transaction_Modified_By) {
-        super(_item, _Doc_No, _Transaction_Date, _VirtualStock, _OnHandStock, _Transaction_Mode,
+        super(_item, _Doc_No, _Transaction_Date, _Quantity, TransactionMode.STOCK_IN,
                 _Transaction_Receipient,
                 _Transaction_Created_By, _Transaction_Modified_By);
     }
 
-    
 }

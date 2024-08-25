@@ -1,10 +1,16 @@
 package project.modules.transaction;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import project.global.CrudOperation;
+import project.global.MailSender;
+import project.global.MailTemplate;
+import project.global.PdfConverter;
+import project.global.PdfTemplate;
 import project.global.SqlConnector;
 import project.modules.item.Item;
+
 
 public class AutoReplenishment implements CrudOperation {
     private int AutoReplenishment_ID;
@@ -158,16 +164,70 @@ public class AutoReplenishment implements CrudOperation {
 
         ArrayList<AutoReplenishment> autoReplenishments = GetAll();
 
-        autoReplenishments.forEach(replenishment->{
-            if(replenishment.getItem().getItem_Quantity() <= replenishment.getItem_Threshold()){
+        autoReplenishments.forEach((AutoReplenishment replenishment) -> {
+            if (replenishment.getItem().getItem_Quantity() <= replenishment.getItem_Threshold()) {
+                int RestockQuantity = replenishment.getItem_Threshold() * 2;
+                //Send Purchase Order
+                SendPurchaseOrder(replenishment, RestockQuantity);
+
+                //Assume the stock is all Received - Will do future Modification Maybe :)
+                GenerateGoodReceivedNotes(replenishment, RestockQuantity);
+
+                //Update Item Quantity
                 replenishment.getItem()
                         .setItem_Quantity(
-                                replenishment.getItem().getItem_Quantity() + (replenishment.getItem_Threshold() * 2)
-                            );
+                                replenishment.getItem().getItem_Quantity() + RestockQuantity);
                 replenishment.getItem().Update();
             }
         });
-        //need to execute the transaction class also
+    }
+    
+    private static void SendPurchaseOrder(AutoReplenishment _replenishment, int _RestockQuantity) {
+        //Purchase Order
+        Transaction purchaseOrder = new PurchaseOrder();
+        String PO_NO = purchaseOrder.GenerateDocNo();
+        purchaseOrder.setDoc_No(PO_NO);
+        purchaseOrder.setQuantity(_RestockQuantity);
+        purchaseOrder.setItem(_replenishment.getItem());
+        purchaseOrder.setTransaction_Receipient("Vendor Name");
+        purchaseOrder.setTransaction_Created_By("System");
+        purchaseOrder.setTransaction_Modified_By("System");
+
+        purchaseOrder.Add();
+
+        //Generate PDF
+        File file = new File("");
+
+        PdfConverter pdf = new PdfConverter(file,
+                new PdfTemplate(purchaseOrder, PdfTemplate.TemplateType.PURCHASE_ORDER));
+        pdf.Save();
+
+        //Email
+        //Send Order to Vendor
+        MailSender purchaseOrderMail = new MailSender("tancs8803@gmail.com", "Purchase Order",
+                new MailTemplate(purchaseOrder.getDoc_No(), MailTemplate.TemplateType.PURCHASE_ORDER));
+        purchaseOrderMail.AttachFile(file);
+        purchaseOrderMail.Send();
+    }
+    
+    private static void GenerateGoodReceivedNotes(AutoReplenishment _replenishment, int _RestockQuantity) {
+        //Good Received Notes
+        Transaction goodReceivedNotes = new GoodReceivedNotes();
+        String GRN_NO = goodReceivedNotes.GenerateDocNo();
+        goodReceivedNotes.setDoc_No(GRN_NO);
+        goodReceivedNotes.setQuantity(_RestockQuantity);
+        goodReceivedNotes.setItem(_replenishment.getItem());
+        goodReceivedNotes.setTransaction_Receipient("Warehouse");
+        goodReceivedNotes.setTransaction_Created_By("System");
+        goodReceivedNotes.setTransaction_Modified_By("System");
+
+        goodReceivedNotes.Add();
+
+        //Email
+        //Send Order Confirmation to Vendor
+        MailSender goodReceivedNotesMail = new MailSender("tancs8803@gmail.com", "Order Confirmation",
+                new MailTemplate(goodReceivedNotes.getDoc_No(), MailTemplate.TemplateType.ORDER_CONFIRMATION));
+        goodReceivedNotesMail.Send();
     }
 
     

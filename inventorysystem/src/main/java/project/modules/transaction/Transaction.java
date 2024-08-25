@@ -8,9 +8,9 @@ import project.modules.item.Item;
 public abstract class Transaction implements CrudOperation {
     private Item item;
     private String Doc_No;
+    private String Source_Doc_No;
     private Date Transaction_Date;
-    private int OnHandStock;
-    private int VirtualStock;
+    private int Quantity;
     private int Transaction_Mode;
     private String Transaction_Receipient;
     private String Transaction_Created_By;
@@ -32,6 +32,14 @@ public abstract class Transaction implements CrudOperation {
         this.Doc_No = _Doc_No;
     }
 
+    public String getSource_Doc_No() {
+        return this.Source_Doc_No;
+    }
+
+    public void setSource_Doc_No(String _Source_Doc_No) {
+        this.Source_Doc_No = _Source_Doc_No;
+    }
+
     public Date getTransaction_Date() {
         return this.Transaction_Date;
     }
@@ -40,21 +48,15 @@ public abstract class Transaction implements CrudOperation {
         this.Transaction_Date = _Transaction_Date;
     }
 
-    public int getOnHandStock() {
-        return this.OnHandStock;
+    public int getQuantity() {
+        return this.Quantity;
     }
 
-    public void setOnHandStock(int _OnHandStock) {
-        this.OnHandStock = _OnHandStock;
+    public void setQuantity(int _Quantity) {
+        this.Quantity = _Quantity;
     }
 
-    public int getVirtualStock() {
-        return this.VirtualStock;
-    }
-
-    public void setVirtualStock(int _VirtualStock) {
-        this.VirtualStock = _VirtualStock;
-    }
+    
 
     public int getTransaction_Mode() {
         return this.Transaction_Mode;
@@ -107,18 +109,18 @@ public abstract class Transaction implements CrudOperation {
 
     public abstract String GenerateDocNo();
 
+
     //Item
     public Transaction() {
     }
     
     //initialize all the value
-    public Transaction(Item _item, String _Doc_No, Date _Transaction_Date, int _VirtualStock,int _OnHandStock, int _Transaction_Mode,
+    public Transaction(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity, int _Transaction_Mode,
             String _Transaction_Receipient, String _Transaction_Created_By, String _Transaction_Modified_By) {
         this.item = _item;
         this.Doc_No = _Doc_No;
         this.Transaction_Date = _Transaction_Date;
-        this.VirtualStock = _VirtualStock;
-        this.OnHandStock = _OnHandStock;
+        this.Quantity = _Quantity;
         this.Transaction_Mode = _Transaction_Mode;
         this.Transaction_Receipient = _Transaction_Receipient;
         this.Transaction_Created_By = _Transaction_Created_By;
