@@ -1,13 +1,14 @@
 package project.start;
 
 import java.io.File;
-import java.io.StringReader;
 
 import project.global.MailSender;
 import project.global.MailTemplate;
 import project.global.PdfConverter;
+import project.global.PdfTemplate;
 import project.modules.item.Item;
 import project.modules.transaction.AutoReplenishment;
+import project.modules.transaction.PurchaseOrder;
 
 public class App {
     public static void main(String[] args) {
@@ -19,11 +20,12 @@ public class App {
     public static void testPdfConverter() {
         String directory = "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global";
         String fileName = "sameple.pdf";
-        String html = "<html><head></head><body><h1>Hello World</h1></body></html>";
+        //String html = "<html><head></head><body><h1>Hello World</h1></body></html>";
 
-        PdfConverter pdf = new PdfConverter(
+        PdfConverter pdf;
+        pdf = new PdfConverter(
                 new File(directory, fileName),
-                new StringReader(html));
+                new PdfTemplate(new PurchaseOrder(), PdfTemplate.TemplateType.PURCHASE_ORDER));
 
         pdf.Save();
     }
@@ -32,21 +34,20 @@ public class App {
     //Done
     public static void test_PdfConverter_Mail() {
         //Pdf Converter
-        String directory = "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global";
+        String directory = "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf";
         String fileName = "sameple.pdf";
         File file = new File(directory, fileName);
-        String html = "<html><head></head><body><h1>Hello World</h1></body></html>";
+        //String html = "<html><head></head><body><h1>Hello World</h1></body></html>";
 
-        PdfConverter pdf = new PdfConverter(
-                file,
-                new StringReader(html));
+        PdfConverter pdf = new PdfConverter(file, new PdfTemplate(new PurchaseOrder(), PdfTemplate.TemplateType.PURCHASE_ORDER));
 
         pdf.Save();
 
         //Send mail
         MailSender mail = new MailSender("tarumtmoviesociety@gmail.com", "tancs8803@gmail.com", "Purchase Order",
                 new MailTemplate("346759", MailTemplate.TemplateType.PURCHASE_ORDER));
-         mail.AttachFile(file.getAbsolutePath());
+        mail.AttachFile(file);
+
         mail.Send();
     }
 
@@ -63,7 +64,7 @@ public class App {
         //Send mail
         MailSender mail = new MailSender("tarumtmoviesociety@gmail.com", "tancs8803@gmail.com", "Purchase Order",
                 new MailTemplate("PO00001", MailTemplate.TemplateType.PURCHASE_ORDER));
-        mail.AttachFile("C:/Users/PREDATOR/Downloads/Profile.pdf");
+        mail.AttachFile(new File("C:/Users/PREDATOR/Downloads/Profile.pdf"));
         mail.Send();
     }
 

@@ -236,40 +236,71 @@ public class MailTemplate {
         return html;
     }
 
-
     //For Transaction Module
-    private String PurchaseOrderMail(String _DocNo) {
+    private String PurchaseOrder(String _DocNo) {
         return "Your Purchase Order No is " + _DocNo;
     }
 
-    private String GoodReceivedNotesMail(String _DocNo) {
+    private String GoodReceivedNotes(String _DocNo) {
         return "Your Good Received Notes No is " + _DocNo;
     }
 
-    private String SaleOrderMail(String _DocNo) {
+    private String SaleOrder(String _DocNo) {
         return "Your Sale Order No is " + _DocNo;
     }
 
-    public static class TemplateType {
-        public static final int OTP = 0;
-        public static final int PURCHASE_ORDER = 1;
-        public static final int GOOD_RECEIVED_NOTES = 2;
-        public static final int SALES_ORDER = 3;
+    private String OrderCancellation(String _DocNo) {
+        return "Your Order Cancellation No is " + _DocNo;
     }
 
-    public MailTemplate(String _Content, int _templateType) {
+    private String Reordering(String _DocNo) {
+        return "Reordering No is" + _DocNo;
+    }
+
+    private String OrderConfirmation(String _DocNo) {
+        return "The Order For " + _DocNo + "is Confirmed";
+    }
+
+    private String FollowOrderStatus(String _DiffStock) {
+        return "The Stock has been changed by " + _DiffStock;
+    }
+
+    public enum TemplateType {
+        OTP,
+        PURCHASE_ORDER,
+        GOOD_RECEIVED_NOTES,
+        SALES_ORDER,
+        ORDER_CANCELLATION,
+        REORDERING,
+        ORDER_CONFIRMATION,
+        FOLLOW_ORDER_STATUS
+    }
+
+    public MailTemplate(String _Content, TemplateType _templateType) {
         switch (_templateType) {
-            case 0:
+            case OTP:
                 this.Content = this.OTPMail(_Content);
                 break;
-            case 1:
-                this.Content = this.PurchaseOrderMail(_Content);
+            case PURCHASE_ORDER:
+                this.Content = this.PurchaseOrder(_Content);
                 break;
-            case 2:
-                this.Content = this.GoodReceivedNotesMail(_Content);
+            case GOOD_RECEIVED_NOTES:
+                this.Content = this.GoodReceivedNotes(_Content);
                 break;
-            case 3:
-                this.Content = this.SaleOrderMail(_Content);
+            case SALES_ORDER:
+                this.Content = this.SaleOrder(_Content);
+                break;
+            case ORDER_CANCELLATION:
+                this.Content = this.OrderCancellation(_Content);
+                break;
+            case REORDERING:
+                this.Content = this.Reordering(_Content);
+                break;
+            case ORDER_CONFIRMATION:
+                this.Content = this.OrderConfirmation(_Content);
+                break;
+            case FOLLOW_ORDER_STATUS:
+            this.Content = this.FollowOrderStatus(_Content);
                 break;
             default:
                 break;
