@@ -8,14 +8,130 @@ import project.global.MailSender;
 import project.global.MailTemplate;
 import project.global.PdfConverter;
 import project.global.PdfTemplate;
+import project.global.SqlConnector;
 import project.modules.item.Item;
 import project.modules.transaction.AutoReplenishment;
 import project.modules.transaction.PurchaseOrder;
 import project.modules.transaction.SalesOrder;
+import project.modules.transaction.Transaction;
 
 public class App {
+    
     public static void main(String[] args) {
-        testSalesOrder();
+        testTransactionRead();
+    }
+    //test TransactionRead Function
+    //Done
+    public static void testTransactionRead() {
+        //get item
+        SqlConnector connector = new SqlConnector();
+
+        connector.Connect();
+
+        String query = "SELECT * FROM TRANSACTION WHERE DOC_NO LIKE 'PO%';";
+        ArrayList<PurchaseOrder> transactions = connector.PrepareExecuteRead(query, PurchaseOrder.class);
+
+        
+
+        transactions.forEach(transaction -> {
+            DisplayTransaction(transaction);
+        });
+
+        connector.Disconnect();
+    }
+
+    //Display Transaction
+    //Done
+    public static void DisplayTransaction(Transaction transaction) {
+        //display Transaction details
+        System.out.println("Doc No: " + transaction.getDoc_No());
+        System.out.println("Source Doc No: " + transaction.getSource_Doc_No());
+        System.out.println("Transaction Date: " + transaction.getTransaction_Date());
+        System.out.println("Quantity: " + transaction.getQuantity());
+        System.out.println("Transaction Mode: " + transaction.getTransaction_Mode());
+        System.out.println("Transaction Recipient: " + transaction.getTransaction_Recipient());
+        System.out.println("Transaction Created By: " + transaction.getTransaction_Created_By());
+        System.out.println("Transaction Modified By: " + transaction.getTransaction_Modified_By());
+    }
+
+
+    //test PurchaseOrder function
+    //Done
+    public static void testAddPurchaseOrder() {
+        //get item
+        ArrayList<Item> items = Item.GetAll();
+
+        //Add PurchaseOrder
+        PurchaseOrder purchaseOrder = new PurchaseOrder("PO003");
+        purchaseOrder.setItem(items.get(0));
+        purchaseOrder.setDoc_No(purchaseOrder.GenerateDocNo());
+        purchaseOrder.setSource_Doc_No(purchaseOrder.GenerateDocNo());
+        purchaseOrder.setTransaction_Date(new Date(System.currentTimeMillis()));
+        purchaseOrder.setQuantity(5);
+        purchaseOrder.setTransaction_Mode(1);
+        purchaseOrder.setTransaction_Recipient("R001");
+        purchaseOrder.setTransaction_Created_By("A001");
+        purchaseOrder.setTransaction_Modified_By("A001");
+        purchaseOrder.Add();
+        System.out.println("Add Purchase Order");
+    }
+
+    //Done
+    public static void testUpdatePurchaseOrder() {
+        //get item
+        ArrayList<Item> items = Item.GetAll();
+
+        //Update PurchaseOrder
+        PurchaseOrder purchaseOrder = new PurchaseOrder();
+        purchaseOrder.setItem(items.get(0));
+        purchaseOrder.setDoc_No(purchaseOrder.GenerateDocNo());
+        purchaseOrder.setSource_Doc_No(purchaseOrder.GenerateDocNo());
+        purchaseOrder.setTransaction_Date(new Date(System.currentTimeMillis()));
+        purchaseOrder.setQuantity(5);
+        purchaseOrder.setTransaction_Mode(1);
+        purchaseOrder.setTransaction_Recipient("R001");
+        purchaseOrder.setTransaction_Created_By("A001");
+        purchaseOrder.setTransaction_Modified_By("A001");
+        purchaseOrder.Update();
+        System.out.println("Update Purchase Order");
+    }
+
+    //Done
+    public static void testRemovePurchaseOrder() {
+        //Remove PurchaseOrder
+        PurchaseOrder purchaseOrder = new PurchaseOrder("PO003");
+        purchaseOrder.Remove();
+        System.out.println("Remove Purchase Order");
+    }
+
+    //Done
+    public static void testGetPurchaseOrder() {
+        //get PurchaseOrder
+        PurchaseOrder purchaseOrder = new PurchaseOrder("PO001");
+        purchaseOrder.Get();
+        //display PurchaseOrder details
+        DisplayPurchaseOrder(purchaseOrder);
+    }
+
+    //Done
+    public static void testGetAllPurchaseOrder() {
+        //get all PurchaseOrder
+        PurchaseOrder.GetAll().forEach(purchaseOrder -> {
+            DisplayPurchaseOrder(purchaseOrder);
+        });
+    }
+
+    //Done
+    public static void DisplayPurchaseOrder(Transaction purchaseOrder) {
+        //display PurchaseOrder details
+        System.out.println("Doc No: " + purchaseOrder.getDoc_No());
+        System.out.println("Source Doc No: " + purchaseOrder.getSource_Doc_No());
+        System.out.println("Transaction Date: " + purchaseOrder.getTransaction_Date());
+        System.out.println("Quantity: " + purchaseOrder.getQuantity());
+        System.out.println("Transaction Mode: " + purchaseOrder.getTransaction_Mode());
+        System.out.println("Transaction Recipient: " + purchaseOrder.getTransaction_Recipient());
+        System.out.println("Transaction Created By: " + purchaseOrder.getTransaction_Created_By());
+        System.out.println("Transaction Modified By: " + purchaseOrder.getTransaction_Modified_By());
     }
 
     //test Pdf Converter function

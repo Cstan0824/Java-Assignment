@@ -4,7 +4,7 @@ INSERT INTO Sys_RunNo (Sys_Prefix, Sys_Next, Sys_Desc) VALUES
 ('SO', 2, 'Sales Order'),
 ('DO', 2, 'Delivery Order'),
 ('A',3,'Admin'),
-('R',4,'Retailer')
+('R',4,'Retailer'),
 ('V',4,'Vendor');
 
 INSERT INTO Item_Category (Item_Type) VALUES
@@ -22,12 +22,6 @@ INSERT INTO Vendor_ItemCategory (Item_Category_ID, Vendor_ID) VALUES
 (2, 'V002'),
 (3, 'V003');
 
-
-INSERT INTO AutoReplenishment (Item_ID, Item_Threshold) VALUES
-(2, 200),
-(3, 150);
-
-
 INSERT INTO Admin (Admin_ID, Admin_Name, Admin_Password, Admin_Email, OTP_Code, Admin_Reg_Date) VALUES
 ('A001', 'John Doe', 'password123', 'john.doe@example.com', '123456', CURRENT_DATE),
 ('A002', 'Jane Smith', 'password456', 'jane.smith@example.com', '654321', CURRENT_DATE);
@@ -37,10 +31,10 @@ INSERT INTO Item (Item_Category_ID, Vendor_ID, Item_Name, Item_Desc, Item_Quanti
 (2, 'V002', 'Sofa', 'Comfortable leather sofa', 50, 499.99, 'Aisle 2', 'Admin', 'Admin'),
 (3, 'V003', 'T-Shirt', 'Cotton t-shirt', 200, 19.99, 'Aisle 3', 'Admin', 'Admin');
 
-INSERT INTO Vehicle (Vehicle_Plate, Vehicle_Type) VALUES
-('ABC123', 'Truck'),
-('XYZ789', 'Van'),
-('LMN456', 'SUV');
+INSERT INTO Vehicle (Vehicle_Plate, Vehicle_Type,Driver) VALUES
+('ABC123', 'Truck','Tan AKau'),
+('XYZ789', 'Van','Liau Orang Utan'),
+('LMN456', 'SUV','Cstantan');
 
 INSERT INTO Schedule (Doc_No, Vehicle_Plate, Time_Slot, Schedule_Date) VALUES
 ('DO001','ABC123', '08:00:00', '2024-08-15');
@@ -49,9 +43,14 @@ INSERT INTO Retailer (Retailer_ID, Retailer_Name, Retailer_Password, Retailer_Em
 ('R001', 'Retailer One', 'retail123', 'retailer1@example.com', '123456', CURRENT_DATE, '123 Retail St, Cityville', 'Admin'),
 ('R002', 'Retailer Two', 'retail456', 'retailer2@example.com', '654321', CURRENT_DATE, '456 Retail Ave, Townsville', 'Admin');
 
-INSERT INTO Transaction (Item_ID, Doc_No, Transaction_Date, VirtualStock, OnHandStock, Transaction_Mode, Transaction_Recipient, Transaction_Created_By, Transaction_Modified_By) VALUES
-(1, 'PO001', '2024-08-15', 20, 20, 0, 'John Doe', 'Admin', 'Admin'),
-(1, 'GRN001', '2024-08-16', 0, 10, 0, 'Jane Smith', 'Admin', 'Admin'),
-(1, 'GRN002', '2024-08-16', 0, 10, 0, 'Jane Smith', 'Admin', 'Admin'),
-(2, 'SO001', '2024-08-17', 0, 10, 1, 'Retailer One', 'Admin', 'Admin'),
-(2,'DO001','2024-08-18',0, 10,1,'Retailer One','Admin','Admin');
+
+INSERT INTO Transaction (Item_ID, Doc_No, Source_Doc_No, Transaction_Date, Quantity, Transaction_Mode, Transaction_Recipient, Transaction_Created_By, Transaction_Modified_By) VALUES
+(1, 'PO001', 'PO001', '2024-08-15', 20, 0, 'John Doe', 'Admin', 'Admin'),
+(1, 'GRN001', 'PO001', '2024-08-16', 10, 0, 'Jane Smith', 'Admin', 'Admin'),
+(1, 'GRN002', 'PO001', '2024-08-16', 10, 0, 'Jane Smith', 'Admin', 'Admin'),
+(2, 'SO001', 'SO001', '2024-08-17', 10, 1, 'Retailer One', 'Admin', 'Admin'),
+(2,'DO001', 'SO001', '2024-08-18', 10,1,'Retailer One','Admin','Admin');
+
+INSERT INTO AutoReplenishment (Item_ID, Item_Threshold) VALUES
+(2, 200),
+(3, 150);

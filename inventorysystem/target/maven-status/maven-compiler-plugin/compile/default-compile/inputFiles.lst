@@ -1,23 +1,23 @@
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\modules\user\Menu.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\view\ViewTransaction.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\global\SqlConnector.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\global\SystemRunNo.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\IO\Output.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\modules\transaction\PurchaseOrder.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\modules\user\Retailer.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\global\HashAlgorithm.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\modules\transaction\AutoReplenishment.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\modules\transaction\GoodReceivedNotes.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\start\App.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\modules\transaction\SaleOrder.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\global\MailSender.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\modules\item\Item.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\modules\transaction\DeliveryOrder.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\global\PdfConverter.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\modules\user\Admin.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\global\MailTemplate.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\global\PdfTemplate.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\modules\transaction\Transaction.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\modules\user\User.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\global\CrudOperation.java
-C:\C's TARUMT\Object-Oriented Programming Technique\Practical Question\Java-Assignment\inventorysystem\src\main\java\project\modules\user\Main.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\global\SqlConnector.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\global\SystemRunNo.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\modules\transaction\SalesOrder.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\view\ViewTransaction.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\global\CrudOperation.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\modules\transaction\Transaction.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\modules\user\Menu.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\global\PdfTemplate.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\modules\transaction\DeliveryOrder.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\start\App.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\modules\user\User.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\global\HashAlgorithm.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\modules\transaction\AutoReplenishment.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\modules\transaction\GoodReceivedNotes.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\modules\user\Retailer.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\global\MailTemplate.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\IO\Output.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\modules\user\Main.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\global\PdfConverter.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\modules\item\Item.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\modules\transaction\PurchaseOrder.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\modules\user\Admin.java
+C:\Cstan\TARUMT Course\DIPLOMA IN INFORMATION TECHNOLOGY\YEAR2\Y2S1\Object Oriented Programming\Java-Assignment\inventorysystem\src\main\java\project\global\MailSender.java

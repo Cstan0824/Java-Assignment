@@ -161,7 +161,7 @@ public class AutoReplenishment implements CrudOperation {
     }
 
     public static void ExecuteAutomation() {
-
+        //Create an extra thread to run the automation at the background while the system is running
         ArrayList<AutoReplenishment> autoReplenishments = GetAll();
 
         autoReplenishments.forEach((AutoReplenishment replenishment) -> {
@@ -196,7 +196,9 @@ public class AutoReplenishment implements CrudOperation {
         purchaseOrder.Add();
 
         //Generate PDF
-        File file = new File("");
+        File file = new File(
+                "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
+                PO_NO + ".pdf");
 
         PdfConverter pdf = new PdfConverter(file,
                 new PdfTemplate(purchaseOrder, PdfTemplate.TemplateType.PURCHASE_ORDER));

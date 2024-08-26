@@ -57,8 +57,6 @@ public abstract class Transaction implements CrudOperation {
         this.Quantity = _Quantity;
     }
 
-    
-
     public int getTransaction_Mode() {
         return this.Transaction_Mode;
     }

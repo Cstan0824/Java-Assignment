@@ -1,30 +1,14 @@
--- Drop existing tables if they exist
-DROP TABLE IF EXISTS Item_StockFlow;
-DROP TABLE IF EXISTS Item;
-DROP TABLE IF EXISTS StockFlow;
 DROP TABLE IF EXISTS Vendor_ItemCategory;
-DROP TABLE IF EXISTS Vendor;
-DROP TABLE IF EXISTS Item_Category;
 DROP TABLE IF EXISTS Retailer;
-DROP TABLE IF EXISTS User;
-DROP TABLE IF EXISTS Entity;
-DROP TABLE IF EXISTS AutoStockIn;
-
-
-DROP TABLE IF EXISTS T_Item_StockFlow;
-DROP TABLE IF EXISTS T_Item;
-DROP TABLE IF EXISTS T_StockFlow;
-DROP TABLE IF EXISTS T_Vendor_ItemCategory;
-DROP TABLE IF EXISTS M_Vendor;
-DROP TABLE IF EXISTS T_Item_Category;
-DROP TABLE IF EXISTS M_Retailer;
-DROP TABLE IF EXISTS M_User;
-DROP TABLE IF EXISTS M_Entity;
-
 DROP TABLE IF EXISTS Sys_RunNo;
 DROP TABLE IF EXISTS Admin;
 DROP TABLE IF EXISTS Transaction;
 DROP TABLE IF EXISTS AutoReplenishment;
+DROP TABLE IF EXISTS ITEM;
+DROP TABLE IF EXISTS SCHEDULE;
+DROP TABLE IF EXISTS VEHICLE;
+DROP TABLE IF EXISTS VENDOR;
+DROP TABLE IF EXISTS Item_Category;
 
 CREATE TABLE Sys_RunNo (
   Sys_Prefix VARCHAR(10) NOT NULL,
@@ -96,6 +80,7 @@ CREATE TABLE AutoReplenishment (
 CREATE TABLE Vehicle (
   Vehicle_Plate VARCHAR(15) NOT NULL,
   Vehicle_Type VARCHAR(50) NOT NULL,
+  Driver VARCHAR(50) NOT NULL,
   PRIMARY KEY (Vehicle_Plate)
 );
 
@@ -125,7 +110,7 @@ CREATE TABLE Retailer (
 CREATE TABLE Transaction (
   Item_ID INT NOT NULL,
   Doc_No VARCHAR(20) NOT NULL,
-  Source_Doc_No VARCHAR(20) NOT NULL,
+  Source_Doc_No VARCHAR(20),
   Transaction_Date DATE NOT NULL,
   Quantity INT NOT NULL,
   Transaction_Mode INT NOT NULL,
@@ -133,6 +118,5 @@ CREATE TABLE Transaction (
   Transaction_Created_By VARCHAR(100),
   Transaction_Modified_By VARCHAR(100),
   PRIMARY KEY (Item_ID, Doc_No),
-  FOREIGN KEY (Item_ID) REFERENCES Item(Item_ID),
-  FOREIGN KEY (Source_Doc_No) REFERENCES Transaction(Doc_No)
+  FOREIGN KEY (Item_ID) REFERENCES Item(Item_ID)
 );

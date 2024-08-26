@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class SqlConnector {
     //Data field
@@ -223,30 +224,38 @@ public class SqlConnector {
             while (_result.next()) {
                 //Create a new instance of the object
                 T instance = _typeClass.newInstance();
-                for (Field field : _typeClass.getDeclaredFields()) {
-                    field.setAccessible(true); //set the data field accessible temp
-                    Object value = (!field.getType().equals(String.class) && Object.class.isAssignableFrom(field.getType())) ?
-                            _result.getObject(field.getName() + "_ID") :
-                            _result.getObject(field.getName())
-                            ;                    
+
+                Field[] fields = _typeClass.getDeclaredFields(); // Get declared fields from the current class
+
+                if (fields.length == 0 && _typeClass.getSuperclass() != null) {
+                    fields = _typeClass.getSuperclass().getDeclaredFields(); // Fallback to superclass fields if none found in the current class
+                }
+
+                for (Field field : fields) {
+                    field.setAccessible(true); //set the data field accessible temp   
+                    Object value = (!(field.getType().equals(Date.class) || field.getType().equals(String.class))
+                            && Object.class.isAssignableFrom(field.getType()))
+                                    ? _result.getObject(field.getName() + "_ID")
+                                    : _result.getObject(field.getName());
 
                     if (field.getType() == double.class) {
                         value = ((BigDecimal) value).doubleValue();
                     } else if (field.getType() == int.class) {
                         value = ((Integer) value);
-                    } else if (!field.getType().equals(String.class) && Object.class.isAssignableFrom(field.getType())) {
+                    } else if (!(field.getType().equals(Date.class) || field.getType().equals(String.class))
+                            && Object.class.isAssignableFrom(field.getType())) {
                         String tempID = field.getName() + "_ID";
                         tempID = tempID.substring(0, 1).toUpperCase() + tempID.substring(1);
 
                         Class<?> tempClass = field.getType();
                         Object tempInstance = tempClass.newInstance();
-                       
+
                         Field tempField = tempClass.getDeclaredField(tempID);
                         tempField.setAccessible(true);
                         tempField.set(tempInstance, value);
                         value = tempInstance;
                     }
-                    //System.out.println(i + ". " + field.getName() + " : " + value); //--print out the data, for debug use
+                    //System.out.println(". " + field.getName() + " : " + value); //--print out the data, for debug use
                     field.set(instance, value);
                 }
                 list.add(instance);

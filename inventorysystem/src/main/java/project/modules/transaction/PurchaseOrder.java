@@ -94,7 +94,9 @@ public class PurchaseOrder extends Transaction {
         } else if (this.getItem().getItem_ID() != OldPurchaseOrder.getItem().getItem_ID()) {
             //Send Reordering to vendor
             //generate pdf
-            File file = new File("");
+            File file = new File(
+                "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
+                this.getDoc_No() + ".pdf");
             PdfConverter pdf = new PdfConverter(file, new PdfTemplate(this, PdfTemplate.TemplateType.PURCHASE_ORDER));
             pdf.Save();
 
@@ -220,29 +222,6 @@ public class PurchaseOrder extends Transaction {
         return "PO" + String.format("%05d", SystemRunNo.Get("PO"));
     }
 
-    public static Transaction Get(String _DocNo) {
-        SqlConnector connector = new SqlConnector();
-        connector.Connect();
-
-        if (!connector.isConnected()) {
-            return null;
-        }
-        String query = "SELECT * FROM Transaction WHERE Doc_No = ?";
-
-        ArrayList<Transaction> purchaseOrders = connector.PrepareExecuteRead(query, Transaction.class,
-                _DocNo);
-
-        connector.Disconnect();
-
-        if (purchaseOrders == null || purchaseOrders.isEmpty()) {
-            return null;
-        }
-
-        //Save the value to instances
-        return purchaseOrders.get(0);
-
-    }
-
     //Ask user whether they want to proceed with the stock
     private boolean ProceedWithStock() {
 
@@ -259,6 +238,29 @@ public class PurchaseOrder extends Transaction {
             }
         }
         return false;
+    }
+
+    public static ArrayList<Transaction> GetAll() {
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return null;
+        }
+
+        String query = "SELECT * FROM Transaction WHERE DOC_NO LIKE 'PO%'";
+        ArrayList<Transaction> purchaseOrders = connector.ExecuteRead(query, Transaction.class);
+
+        if(purchaseOrders == null || purchaseOrders.isEmpty()){
+            return null;
+        }
+
+
+        purchaseOrders.forEach(purchaseOrder -> {
+            purchaseOrder.getItem().Get();
+        });
+
+        connector.Disconnect();
+        return purchaseOrders;
     }
 
     //Constructor

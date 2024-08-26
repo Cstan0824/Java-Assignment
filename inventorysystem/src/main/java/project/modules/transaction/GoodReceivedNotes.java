@@ -12,7 +12,8 @@ import project.modules.item.Item;
 
 public class GoodReceivedNotes extends Transaction {
     
-    public enum DocumentType {
+    public enum DocumentType 
+    {
         GOOD_RECEIVED_NOTES,
         PURCHASE_ORDER
     }
