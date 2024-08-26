@@ -3,6 +3,7 @@ package project.modules.transaction;
 import java.util.Date;
 
 import project.global.CrudOperation;
+import project.global.SqlConnector;
 import project.modules.item.Item;
 
 public abstract class Transaction implements CrudOperation {
@@ -90,6 +91,24 @@ public abstract class Transaction implements CrudOperation {
         this.Transaction_Created_By = _Transaction_Created_By;
     }
 
+    public static Transaction Get(String _DocNo) {
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return null;
+        }
+
+        String query = "SELECT * FROM Transaction WHERE Doc_No = ?";
+        Transaction salesOrder = connector.PrepareExecuteRead(query, Transaction.class, _DocNo).get(0);
+
+        connector.Disconnect();
+
+        if (salesOrder == null) {
+            return null;
+        }
+
+        return salesOrder;
+    }
     public static class TransactionMode {
         public static final int STOCK_IN = 0;
         public static final int STOCK_OUT = 1;

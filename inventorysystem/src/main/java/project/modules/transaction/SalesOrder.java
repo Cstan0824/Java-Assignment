@@ -1,6 +1,7 @@
 package project.modules.transaction;
 
 import java.sql.Date;
+import java.util.ArrayList;
 
 import project.global.SqlConnector;
 import project.global.SystemRunNo;
@@ -82,10 +83,42 @@ public class SalesOrder extends Transaction {
     @Override
     public boolean Get() {
 
-        
+        Transaction salesOrder = Transaction.Get(this.getDoc_No());
+
+        if (salesOrder == null) {
+            return false;
+        }
+
+        this.setItem(salesOrder.getItem());
+        this.setDoc_No(salesOrder.getDoc_No());
+        this.setSource_Doc_No(salesOrder.getSource_Doc_No());
+        this.setTransaction_Date(salesOrder.getTransaction_Date());
+        this.setQuantity(salesOrder.getQuantity());
+        this.setTransaction_Mode(salesOrder.getTransaction_Mode());
+        this.setTransaction_Recipient(salesOrder.getTransaction_Recipient());
+        this.setTransaction_Created_By(salesOrder.getTransaction_Created_By());
+        this.setTransaction_Modified_By(salesOrder.getTransaction_Modified_By());
+
         
 
+
         return true;
+    }
+
+    
+
+    public static ArrayList<Transaction> GetAll() {
+        SqlConnector getAllSOConnector = new SqlConnector();
+        getAllSOConnector.Connect();
+        if (!getAllSOConnector.isConnected()) {
+            return null;
+        }
+
+        String query = "SELECT * FROM Transaction WHERE Doc_No LIKE SO%";
+        ArrayList<Transaction> salesOrders = getAllSOConnector.ExecuteRead(query, Transaction.class);
+        getAllSOConnector.Disconnect();
+
+        return salesOrders;
     }
 
 
