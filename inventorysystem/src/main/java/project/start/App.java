@@ -1,6 +1,8 @@
 package project.start;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
 
 import project.global.MailSender;
 import project.global.MailTemplate;
@@ -9,10 +11,11 @@ import project.global.PdfTemplate;
 import project.modules.item.Item;
 import project.modules.transaction.AutoReplenishment;
 import project.modules.transaction.PurchaseOrder;
+import project.modules.transaction.SalesOrder;
 
 public class App {
     public static void main(String[] args) {
-        test_PdfConverter_Mail();
+        testSalesOrder();
     }
 
     //test Pdf Converter function
@@ -182,4 +185,36 @@ public class App {
         System.out.println("Item Treshold: " + autoReplenishment.getItem_Threshold());
     }
 
+
+    //test SalesOrder function
+
+    public static void testSalesOrder() {
+        //get item
+        ArrayList<Item> items = Item.GetAll();
+
+        //Add SalesOrder
+        SalesOrder salesOrder = new SalesOrder();
+        salesOrder.setItem(items.get(0));
+        salesOrder.setDoc_No(salesOrder.GenerateDocNo());
+        salesOrder.setSource_Doc_No(salesOrder.GenerateDocNo());
+        salesOrder.setTransaction_Date(new Date(System.currentTimeMillis()));
+        salesOrder.setQuantity(5);
+        salesOrder.setTransaction_Mode(1);
+        salesOrder.setTransaction_Recipient("R001");
+        salesOrder.setTransaction_Created_By("A001");
+        salesOrder.setTransaction_Modified_By("A001");
+        if(salesOrder.Add()){
+            System.out.println("Sales Order Added.");
+        }else{
+            System.out.println("error");
+        }
+
+
+
+
+        
+        //Update SalesOrder
+        //Remove SalesOrder
+        //Get SalesOrder
+    }
 }

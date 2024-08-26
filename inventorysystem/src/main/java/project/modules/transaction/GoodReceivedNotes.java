@@ -54,12 +54,12 @@ public class GoodReceivedNotes extends Transaction {
             return false;
         }
 
-        String query = "INSERT INTO Transaction (Item_ID, Doc_No, Source_Doc_No, Transaction_Date, Quantity, Transaction_Mode, Transaction_Receipient, Transaction_Created_By, Transaction_Modified_By) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        String query = "INSERT INTO Transaction (Item_ID, Doc_No, Source_Doc_No, Transaction_Date, Quantity, Transaction_Mode, Transaction_Recipient, Transaction_Created_By, Transaction_Modified_By) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         boolean QueryExecuted = connector.PrepareExecuteDML(query,
                 this.getItem().getItem_ID(), this.getDoc_No(), this.getSource_Doc_No(),
                 this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(),
-                this.getTransaction_Receipient(),
+                this.getTransaction_Recipient(),
                 this.getTransaction_Created_By(), this.getTransaction_Modified_By());
         connector.Disconnect();
 
@@ -121,12 +121,12 @@ public class GoodReceivedNotes extends Transaction {
         if (!connector.isConnected()) {
             return false;
         }
-        String query = "UPDATE Transaction SET Item_ID = ?, Transaction_Date = ?, Quantity = ?, Transaction_Mode = ?, Transaction_Receipient = ?, Transaction_Created_By = ?, Transaction_Modified_By = ? WHERE Doc_No = ?;";
+        String query = "UPDATE Transaction SET Item_ID = ?, Transaction_Date = ?, Quantity = ?, Transaction_Mode = ?, Transaction_Recipient = ?, Transaction_Created_By = ?, Transaction_Modified_By = ? WHERE Doc_No = ?;";
 
         boolean QueryExecuted = connector.PrepareExecuteDML(query,
                 this.getItem().getItem_ID(),
                 this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(),
-                this.getTransaction_Receipient(),
+                this.getTransaction_Recipient(),
                 this.getTransaction_Created_By(), this.getTransaction_Modified_By(),
                 this.getDoc_No());
 
@@ -203,7 +203,7 @@ public class GoodReceivedNotes extends Transaction {
         this.setTransaction_Date(transaction.getTransaction_Date());
         this.setQuantity(transaction.getQuantity());
         this.setTransaction_Mode(transaction.getTransaction_Mode());
-        this.setTransaction_Receipient(transaction.getTransaction_Receipient());
+        this.setTransaction_Recipient(transaction.getTransaction_Recipient());
         this.setTransaction_Created_By(transaction.getTransaction_Created_By());
         this.setTransaction_Modified_By(transaction.getTransaction_Modified_By());
 
@@ -286,9 +286,9 @@ public class GoodReceivedNotes extends Transaction {
     }
 
     public GoodReceivedNotes(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity,
-            String _Transaction_Receipient, String _Transaction_Created_By, String _Transaction_Modified_By) {
+            String _Transaction_Recipient, String _Transaction_Created_By, String _Transaction_Modified_By) {
         super(_item, _Doc_No, _Transaction_Date, _Quantity, TransactionMode.STOCK_IN,
-                _Transaction_Receipient,
+                _Transaction_Recipient,
                 _Transaction_Created_By, _Transaction_Modified_By);
     }
 

@@ -189,7 +189,7 @@ public class AutoReplenishment implements CrudOperation {
         purchaseOrder.setDoc_No(PO_NO);
         purchaseOrder.setQuantity(_RestockQuantity);
         purchaseOrder.setItem(_replenishment.getItem());
-        purchaseOrder.setTransaction_Receipient("Vendor Name");
+        purchaseOrder.setTransaction_Recipient("Vendor Name");
         purchaseOrder.setTransaction_Created_By("System");
         purchaseOrder.setTransaction_Modified_By("System");
 
@@ -217,7 +217,7 @@ public class AutoReplenishment implements CrudOperation {
         goodReceivedNotes.setDoc_No(GRN_NO);
         goodReceivedNotes.setQuantity(_RestockQuantity);
         goodReceivedNotes.setItem(_replenishment.getItem());
-        goodReceivedNotes.setTransaction_Receipient("Warehouse");
+        goodReceivedNotes.setTransaction_Recipient("Warehouse");
         goodReceivedNotes.setTransaction_Created_By("System");
         goodReceivedNotes.setTransaction_Modified_By("System");
 

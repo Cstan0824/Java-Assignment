@@ -12,7 +12,7 @@ public abstract class Transaction implements CrudOperation {
     private Date Transaction_Date;
     private int Quantity;
     private int Transaction_Mode;
-    private String Transaction_Receipient;
+    private String Transaction_Recipient;
     private String Transaction_Created_By;
     private String Transaction_Modified_By;
 
@@ -66,12 +66,12 @@ public abstract class Transaction implements CrudOperation {
         this.Transaction_Mode = _Transaction_Mode;
     }
 
-    public String getTransaction_Receipient() {
-        return this.Transaction_Receipient;
+    public String getTransaction_Recipient() {
+        return this.Transaction_Recipient;
     }
 
-    public void setTransaction_Receipient(String _Transaction_Receipient) {
-        this.Transaction_Receipient = _Transaction_Receipient;
+    public void setTransaction_Recipient(String _Transaction_Recipient) {
+        this.Transaction_Recipient = _Transaction_Recipient;
     }
 
     public String getTransaction_Created_By() {
@@ -116,13 +116,13 @@ public abstract class Transaction implements CrudOperation {
     
     //initialize all the value
     public Transaction(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity, int _Transaction_Mode,
-            String _Transaction_Receipient, String _Transaction_Created_By, String _Transaction_Modified_By) {
+            String _Transaction_Recipient, String _Transaction_Created_By, String _Transaction_Modified_By) {
         this.item = _item;
         this.Doc_No = _Doc_No;
         this.Transaction_Date = _Transaction_Date;
         this.Quantity = _Quantity;
         this.Transaction_Mode = _Transaction_Mode;
-        this.Transaction_Receipient = _Transaction_Receipient;
+        this.Transaction_Recipient = _Transaction_Recipient;
         this.Transaction_Created_By = _Transaction_Created_By;
         this.Transaction_Modified_By = _Transaction_Modified_By;
     }
