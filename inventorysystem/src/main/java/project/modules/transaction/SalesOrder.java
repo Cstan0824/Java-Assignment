@@ -48,17 +48,18 @@ public class SalesOrder extends Transaction {
         return queryExecuted;
     }
 
-    public void addMultipleItemSO(ArrayList<Transaction> _salesOrders) {
+    public boolean addMultipleItemSO(ArrayList<SalesOrder> _salesOrders) {
+
+        if (_salesOrders != null && !_salesOrders.isEmpty()){
+            _salesOrders.forEach(_salesOrder -> {
+                _salesOrder.Add();
+            });
+            return true;
+        }
+        return false;
         
-
-        _salesOrders.forEach(_salesOrder -> {
-            _salesOrder.Add();    
-
-        });
-
-        
-
     }
+        
 
     @Override
     public boolean Update() {

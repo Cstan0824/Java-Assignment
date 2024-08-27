@@ -10,6 +10,7 @@ import project.global.PdfConverter;
 import project.global.PdfTemplate;
 import project.global.SqlConnector;
 import project.modules.item.Item;
+import project.modules.schedule.Vehicle;
 import project.modules.transaction.AutoReplenishment;
 import project.modules.transaction.PurchaseOrder;
 import project.modules.transaction.SalesOrder;
@@ -18,7 +19,7 @@ import project.modules.transaction.Transaction;
 public class App {
     
     public static void main(String[] args) {
-        testGetPurchaseOrder();
+        System.out.println("cstantan is noob");
         }
     //test TransactionRead Function
     //Done
@@ -302,8 +303,8 @@ public class App {
     }
 
 
+    //done
     //test SalesOrder function
-
     public static void testSalesOrder() {
         //get item
         ArrayList<Item> items = Item.GetAll();
@@ -311,26 +312,24 @@ public class App {
         //Add SalesOrder
         SalesOrder salesOrder = new SalesOrder();
         salesOrder.setItem(items.get(0));
-        //salesOrder.setDoc_No(salesOrder.GenerateDocNo());
-        //salesOrder.setSource_Doc_No(salesOrder.getDoc_No());
+        salesOrder.setDoc_No(salesOrder.GenerateDocNo());
+        salesOrder.setSource_Doc_No(salesOrder.getDoc_No());
         salesOrder.setTransaction_Date(new Date(System.currentTimeMillis()));
         salesOrder.setQuantity(5);
         salesOrder.setTransaction_Mode(1);
         salesOrder.setTransaction_Recipient("R001");
         salesOrder.setTransaction_Created_By("A001");
         salesOrder.setTransaction_Modified_By("A001");
-        // if(salesOrder.Add()){
-        //     System.out.println("Sales Order Added.");
-        // }else{
-        //     System.out.println("error");
-        // }
-
-
+        if(salesOrder.Add()){
+            System.out.println("Sales Order Added.");
+        }else{
+            System.out.println("error");
+        }
 
         //Get All SalesOrder
-        // System.out.println("");
-        // ArrayList<SalesOrder> salesOrders = SalesOrder.GetAll();
-        // salesOrders.forEach(salesOrder1 -> DisplayTransaction(salesOrder1));
+        System.out.println("");
+        ArrayList<SalesOrder> salesOrders = SalesOrder.GetAll();
+        salesOrders.forEach(salesOrder1 -> DisplayTransaction(salesOrder1));
 
         //Get SalesOrder
         SalesOrder salesOrder1 = new SalesOrder("SO00004");
@@ -338,23 +337,71 @@ public class App {
         DisplayTransaction(salesOrder1);
 
         //Update SalesOrder
-        // salesOrder.setItem(items.get(1));
-        // salesOrder.setQuantity(10);
-        // if(salesOrder.Update()){
-        //     System.out.println("Sales Order Updated.");
-        // }else{
-        //     System.out.println("error");
-        // }
+        salesOrder.setItem(items.get(1));
+        salesOrder.setQuantity(10);
+        if(salesOrder.Update()){
+            System.out.println("Sales Order Updated.");
+        }else{
+            System.out.println("error");
+        }
 
         //Remove SalesOrder
-       
-        
-        // if(salesOrder.Remove()){
-        //     System.out.println("Sales Order Removed.");
-        // }else{
-        //     System.out.println("error");
-        // }
+        if(salesOrder.Remove()){
+            System.out.println("Sales Order Removed.");
+        }else{
+            System.out.println("error");
+        }
 
 
     }
+
+    //done
+    //test Vehicle function
+    public static void TestVehicle(){
+
+        //add
+        Vehicle vehicle = new Vehicle("WYS3378", "Sedan", "Gan Chin Chung");
+        if(vehicle.Add()){
+            System.out.println("Vehicle Added.");
+        } else {
+            System.out.println("Vehicle not Added.");
+        }
+
+        //Get All
+        ArrayList<Vehicle> vehicles = Vehicle.GetAll();
+        if (vehicles != null && !vehicles.isEmpty()) {
+            vehicles.forEach(vehicle1 ->{
+                System.out.println("Vehicle Plate: " + vehicle1.getVehicle_Plate());
+                System.out.println("Vehicle Type: " + vehicle1.getVehicle_Type());
+                System.out.println("Driver: " + vehicle1.getDriver());
+            });
+        }
+
+        //Get
+        Vehicle vehicle1 = Vehicle.Get("WYS3378");
+        if(vehicle1 != null){
+            System.out.println("Vehicle Plate: " + vehicle1.getVehicle_Plate());
+            System.out.println("Vehicle Type: " + vehicle1.getVehicle_Type());
+            System.out.println("Driver: " + vehicle1.getDriver());
+        }
+
+        //Update
+        vehicle.setVehicle_Type("SUV");
+        vehicle.setDriver("Tan Choon Shen");
+        if(vehicle.Update()){
+            System.out.println("Vehicle Updated.");
+        } else {
+            System.out.println("Vehicle not Updated.");
+        }
+
+        //Remove
+        if(vehicle1.Remove()){
+            System.out.println("Vehicle Removed.");
+        } else {
+            System.out.println("Vehicle not Removed.");
+        }
+
+    }
+
+
 }
