@@ -19,7 +19,7 @@ import project.modules.transaction.Transaction;
 public class App {
     
     public static void main(String[] args) {
-        testAddPurchaseOrder();
+        ExecuteAutoReplenishment();
     }
 
     //test GoodReceivedNotes function

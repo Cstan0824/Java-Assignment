@@ -168,10 +168,13 @@ public class AutoReplenishment implements CrudOperation {
             if (replenishment.getItem().getItem_Quantity() <= replenishment.getItem_Threshold()) {
                 int RestockQuantity = replenishment.getItem_Threshold() * 2;
                 //Send Purchase Order
-                SendPurchaseOrder(replenishment, RestockQuantity);
+                PurchaseOrder purchaseOrder = new PurchaseOrder();
+                String PO_NO = purchaseOrder.GenerateDocNo();
+
+                SendPurchaseOrder(replenishment, PO_NO, RestockQuantity);
 
                 //Assume the stock is all Received - Will do future Modification Maybe :)
-                GenerateGoodReceivedNotes(replenishment, RestockQuantity);
+                GenerateGoodReceivedNotes(replenishment, PO_NO, RestockQuantity);
 
                 //Update Item Quantity
                 replenishment.getItem()
@@ -182,11 +185,10 @@ public class AutoReplenishment implements CrudOperation {
         });
     }
     
-    private static void SendPurchaseOrder(AutoReplenishment _replenishment, int _RestockQuantity) {
+    private static void SendPurchaseOrder(AutoReplenishment _replenishment, String _PoNo, int _RestockQuantity) {
         //Purchase Order
         Transaction purchaseOrder = new PurchaseOrder();
-        String PO_NO = purchaseOrder.GenerateDocNo();
-        purchaseOrder.setDoc_No(PO_NO);
+        purchaseOrder.setDoc_No(_PoNo);
         purchaseOrder.setQuantity(_RestockQuantity);
         purchaseOrder.setItem(_replenishment.getItem());
         purchaseOrder.setTransaction_Recipient("Vendor Name");
@@ -198,7 +200,7 @@ public class AutoReplenishment implements CrudOperation {
         //Generate PDF
         File file = new File(
                 "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
-                PO_NO + ".pdf");
+                _PoNo + ".pdf");
 
         PdfConverter pdf = new PdfConverter(file,
                 new PdfTemplate(purchaseOrder, PdfTemplate.TemplateType.PURCHASE_ORDER));
@@ -212,11 +214,12 @@ public class AutoReplenishment implements CrudOperation {
         purchaseOrderMail.Send();
     }
     
-    private static void GenerateGoodReceivedNotes(AutoReplenishment _replenishment, int _RestockQuantity) {
+    private static void GenerateGoodReceivedNotes(AutoReplenishment _replenishment,String _PoNo, int _RestockQuantity) {
         //Good Received Notes
         Transaction goodReceivedNotes = new GoodReceivedNotes();
         String GRN_NO = goodReceivedNotes.GenerateDocNo();
         goodReceivedNotes.setDoc_No(GRN_NO);
+        goodReceivedNotes.setSource_Doc_No(_PoNo);
         goodReceivedNotes.setQuantity(_RestockQuantity);
         goodReceivedNotes.setItem(_replenishment.getItem());
         goodReceivedNotes.setTransaction_Recipient("Warehouse");

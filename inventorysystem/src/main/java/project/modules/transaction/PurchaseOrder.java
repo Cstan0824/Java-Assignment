@@ -233,8 +233,7 @@ public class PurchaseOrder extends Transaction {
             String userResponse;
             do {
                 System.out.println("Do you want to follow up the status of the stock? [Y/N]");
-                userResponse = scanner.next();
-                scanner.nextLine();
+                userResponse = scanner.nextLine();
             } while (!(userResponse.equalsIgnoreCase("Y") || userResponse.equalsIgnoreCase("N")));
 
             if (userResponse.equalsIgnoreCase("Y")) {
@@ -254,15 +253,12 @@ public class PurchaseOrder extends Transaction {
         String query = "SELECT * FROM Transaction WHERE Doc_No = ?";
         ArrayList<PurchaseOrder> purchaseOrders = connector.PrepareExecuteRead(query, PurchaseOrder.class, _DocNo);
         connector.Disconnect();
-        System.out.println(purchaseOrders);
-
 
         if (purchaseOrders == null || purchaseOrders.isEmpty()) {
             return null;
         }
         Transaction purchaseOrder = purchaseOrders.get(0);
         purchaseOrder.getItem().Get();
-        System.out.println(purchaseOrder);
         return purchaseOrder;
 
     }

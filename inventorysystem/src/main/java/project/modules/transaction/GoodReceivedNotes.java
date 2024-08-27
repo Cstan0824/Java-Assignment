@@ -24,26 +24,32 @@ public class GoodReceivedNotes extends Transaction {
     //GRN NO
     //Done
     public boolean Add() {
-        ArrayList<GoodReceivedNotes> goodReceivedNotes = GoodReceivedNotes.Get(this.getDoc_No(), DocumentType.PURCHASE_ORDER);
-
-        Transaction purchaseOrder = PurchaseOrder.Get(goodReceivedNotes.get(0).getSource_Doc_No());
-        purchaseOrder.Get();
-
+        ArrayList<GoodReceivedNotes> goodReceivedNotes = GoodReceivedNotes.Get(this.getDoc_No(),
+                GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
+        
+        Transaction purchaseOrder 
+                = PurchaseOrder.Get(
+                        ((goodReceivedNotes == null || goodReceivedNotes.isEmpty())
+                            ?
+                                this
+                            :
+                                goodReceivedNotes.get(0))
+                        .getSource_Doc_No());
         
         int VirtualStock = purchaseOrder.getQuantity();
         int OnHandStock = 0;
 
-
-        for (Transaction goodReceivedNote : goodReceivedNotes) {
-            OnHandStock += goodReceivedNote.getQuantity();
+        if(goodReceivedNotes != null && !goodReceivedNotes.isEmpty()){
+            for (Transaction goodReceivedNote : goodReceivedNotes) {
+                OnHandStock += goodReceivedNote.getQuantity();
+            }
         }
         
         if (OnHandStock == VirtualStock) {
-            //The Stock already on hand
-            
+            System.out.println("The Stock already on hand");            
             return false;
         } else if (VirtualStock < (OnHandStock + this.getQuantity())) {
-            //The Stock amount exceed the actual amount
+            System.out.println("The Stock amount is exceed the actual amount");
             return false;
         } 
 
@@ -52,10 +58,11 @@ public class GoodReceivedNotes extends Transaction {
         connector.Connect();
 
         if (!connector.isConnected()) {
+            System.out.println("Cannot connect to database");
             return false;
         }
 
-        String query = "INSERT INTO Transaction (Item_ID, Doc_No, Source_Doc_No, Transaction_Date, Quantity, Transaction_Mode, Transaction_Recipient, Transaction_Created_By, Transaction_Modified_By) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        String query = "INSERT INTO Transaction (Item_ID, Doc_No, Source_Doc_No, Transaction_Date, Quantity, Transaction_Mode, Transaction_Recipient, Transaction_Created_By, Transaction_Modified_By) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         boolean QueryExecuted = connector.PrepareExecuteDML(query,
                 this.getItem().getItem_ID(), this.getDoc_No(), this.getSource_Doc_No(),
@@ -65,6 +72,7 @@ public class GoodReceivedNotes extends Transaction {
         connector.Disconnect();
 
         if (QueryExecuted == false) {
+            System.out.println("Cannot insert the data");
             return false;
         }
 
