@@ -19,8 +19,12 @@ import project.modules.transaction.Transaction;
 public class App {
     
     public static void main(String[] args) {
-        System.out.println("cstantan is noob");
-        }
+        testAddPurchaseOrder();
+    }
+
+    //test GoodReceivedNotes function
+    //Done - by intuition :)
+
     //test TransactionRead Function
     //Done
     public static void testTransactionRead() {
@@ -32,8 +36,6 @@ public class App {
         String query = "SELECT * FROM TRANSACTION WHERE DOC_NO LIKE 'PO%';";
         ArrayList<PurchaseOrder> transactions = connector.PrepareExecuteRead(query, PurchaseOrder.class);
 
-        
-
         transactions.forEach(transaction -> {
             DisplayTransaction(transaction);
         });
@@ -41,7 +43,6 @@ public class App {
         connector.Disconnect();
     }
 
-    //Display Transaction
     //Done
     public static void DisplayTransaction(Transaction transaction) {
         //display Transaction details
@@ -55,7 +56,6 @@ public class App {
         System.out.println("Transaction Modified By: " + transaction.getTransaction_Modified_By());
     }
 
-
     //test PurchaseOrder function
     //Done
     public static void testAddPurchaseOrder() {
@@ -63,10 +63,10 @@ public class App {
         ArrayList<Item> items = Item.GetAll();
 
         //Add PurchaseOrder
-        PurchaseOrder purchaseOrder = new PurchaseOrder("PO003");
+        PurchaseOrder purchaseOrder = new PurchaseOrder();
         purchaseOrder.setItem(items.get(0));
         purchaseOrder.setDoc_No(purchaseOrder.GenerateDocNo());
-        purchaseOrder.setSource_Doc_No(purchaseOrder.GenerateDocNo());
+        purchaseOrder.setSource_Doc_No(purchaseOrder.getDoc_No());
         purchaseOrder.setTransaction_Date(new Date(System.currentTimeMillis()));
         purchaseOrder.setQuantity(5);
         purchaseOrder.setTransaction_Mode(1);
@@ -83,12 +83,11 @@ public class App {
         ArrayList<Item> items = Item.GetAll();
 
         //Update PurchaseOrder
-        PurchaseOrder purchaseOrder = new PurchaseOrder();
+        PurchaseOrder purchaseOrder = new PurchaseOrder("PO00004");
         purchaseOrder.setItem(items.get(0));
-        purchaseOrder.setDoc_No(purchaseOrder.GenerateDocNo());
-        purchaseOrder.setSource_Doc_No(purchaseOrder.GenerateDocNo());
+        
         purchaseOrder.setTransaction_Date(new Date(System.currentTimeMillis()));
-        purchaseOrder.setQuantity(5);
+        purchaseOrder.setQuantity(15);
         purchaseOrder.setTransaction_Mode(1);
         purchaseOrder.setTransaction_Recipient("R001");
         purchaseOrder.setTransaction_Created_By("A001");
@@ -100,16 +99,17 @@ public class App {
     //Done
     public static void testRemovePurchaseOrder() {
         //Remove PurchaseOrder
-        PurchaseOrder purchaseOrder = new PurchaseOrder("PO003");
-        purchaseOrder.Remove();
+        PurchaseOrder purchaseOrder = new PurchaseOrder("PO00004");
+        System.out.println(purchaseOrder.Remove());
         System.out.println("Remove Purchase Order");
     }
 
     //Done
     public static void testGetPurchaseOrder() {
         //get PurchaseOrder
-        PurchaseOrder purchaseOrder = new PurchaseOrder("PO001");
+        PurchaseOrder purchaseOrder = new PurchaseOrder("PO00004");
         purchaseOrder.Get();
+        System.out.println("Get Purchase Order");
         //display PurchaseOrder details
         DisplayPurchaseOrder(purchaseOrder);
     }
@@ -351,7 +351,6 @@ public class App {
         }else{
             System.out.println("error");
         }
-
 
     }
 

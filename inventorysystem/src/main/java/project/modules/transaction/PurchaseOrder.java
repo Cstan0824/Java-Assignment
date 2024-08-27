@@ -29,10 +29,9 @@ public class PurchaseOrder extends Transaction {
             return false;
         }
 
-        String query = "INSERT INTO Transaction(Item_ID, Doc_No, Source_Doc_No, Transaction_Date, Quantity, Transaction_Mode, Transaction_Recipient, Transaction_Created_By, Transaction_Modified_By) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Transaction(Item_ID, Doc_No, Transaction_Date, Quantity, Transaction_Mode, Transaction_Recipient, Transaction_Created_By, Transaction_Modified_By) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
         boolean QueryExecuted = connector.PrepareExecuteDML(query,
                 this.getItem().getItem_ID(), this.getDoc_No(),
-                this.getSource_Doc_No(),
                 this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(),
                 this.getTransaction_Recipient(),
                 this.getTransaction_Created_By(), this.getTransaction_Modified_By());
@@ -68,7 +67,7 @@ public class PurchaseOrder extends Transaction {
     @Override
     public boolean Update() {
 
-        ArrayList<Transaction> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
+        ArrayList<GoodReceivedNotes> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
                 GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
 
         //Check whether the good receive note is exist or not
@@ -130,7 +129,7 @@ public class PurchaseOrder extends Transaction {
     //Done
     //need to check if already received the stock or not
     public boolean Remove() {
-        ArrayList<Transaction> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
+        ArrayList<GoodReceivedNotes> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
                 GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
 
         //Check whether the good receive note is exist or not
@@ -164,8 +163,9 @@ public class PurchaseOrder extends Transaction {
         File file = new File(
                 "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
                 this.getDoc_No() + ".pdf");
+        file.delete();
 
-        return file.delete();
+        return true;
     }
 
     @Override
@@ -193,10 +193,12 @@ public class PurchaseOrder extends Transaction {
         int OnHandStock = 0;
 
         //Check the stock status
-        ArrayList<Transaction> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
+        ArrayList<GoodReceivedNotes> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
                 GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
 
-        if (goodReceiveNotes != null && !goodReceiveNotes.isEmpty()) {
+        if (goodReceiveNotes == null || goodReceiveNotes.isEmpty()) {
+            OnHandStock = 0;
+        } else {
             for (Transaction goodReceiveNote : goodReceiveNotes) {
                 OnHandStock += goodReceiveNote.getQuantity();
             }
@@ -233,7 +235,7 @@ public class PurchaseOrder extends Transaction {
                 System.out.println("Do you want to follow up the status of the stock? [Y/N]");
                 userResponse = scanner.next();
                 scanner.nextLine();
-            } while (userResponse.equalsIgnoreCase("Y") || userResponse.equalsIgnoreCase("N"));
+            } while (!(userResponse.equalsIgnoreCase("Y") || userResponse.equalsIgnoreCase("N")));
 
             if (userResponse.equalsIgnoreCase("Y")) {
                 return true;
@@ -242,7 +244,7 @@ public class PurchaseOrder extends Transaction {
         return false;
     }
 
-    public static PurchaseOrder Get(String _DocNo) {
+    public static Transaction Get(String _DocNo) {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
         if (!connector.isConnected()) {
@@ -251,15 +253,17 @@ public class PurchaseOrder extends Transaction {
 
         String query = "SELECT * FROM Transaction WHERE Doc_No = ?";
         ArrayList<PurchaseOrder> purchaseOrders = connector.PrepareExecuteRead(query, PurchaseOrder.class, _DocNo);
+        connector.Disconnect();
+        System.out.println(purchaseOrders);
 
-        if (purchaseOrders != null && !purchaseOrders.isEmpty()) {
-            PurchaseOrder purchaseOrder = purchaseOrders.get(0);
-            connector.Disconnect();
-            return purchaseOrder;
-        }else {
-            connector.Disconnect();
+
+        if (purchaseOrders == null || purchaseOrders.isEmpty()) {
             return null;
         }
+        Transaction purchaseOrder = purchaseOrders.get(0);
+        purchaseOrder.getItem().Get();
+        System.out.println(purchaseOrder);
+        return purchaseOrder;
 
     }
 

@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 public class SqlConnector {
@@ -220,18 +221,20 @@ public class SqlConnector {
         }
 
         ArrayList<T> list = new ArrayList<>();
+        ArrayList<Field> fields = new ArrayList<>(Arrays.asList(_typeClass.getDeclaredFields())); // Get declared fields from the current class
+                fields.addAll(Arrays.asList(_typeClass.getSuperclass().getDeclaredFields()));
         try {
             while (_result.next()) {
                 //Create a new instance of the object
                 T instance = _typeClass.newInstance();
 
-                Field[] fields = _typeClass.getDeclaredFields(); // Get declared fields from the current class
-
-                if (fields.length == 0 && _typeClass.getSuperclass() != null) {
-                    fields = _typeClass.getSuperclass().getDeclaredFields(); // Fallback to superclass fields if none found in the current class
-                }
+                
 
                 for (Field field : fields) {
+                    if (field.getType().isArray()) {
+                        continue;
+                    }
+
                     field.setAccessible(true); //set the data field accessible temp   
                     Object value = (!(field.getType().equals(Date.class) || field.getType().equals(String.class))
                             && Object.class.isAssignableFrom(field.getType()))

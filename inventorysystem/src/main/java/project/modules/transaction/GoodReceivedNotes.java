@@ -24,7 +24,7 @@ public class GoodReceivedNotes extends Transaction {
     //GRN NO
     //Done
     public boolean Add() {
-        ArrayList<Transaction> goodReceivedNotes = GoodReceivedNotes.Get(this.getDoc_No(), DocumentType.PURCHASE_ORDER);
+        ArrayList<GoodReceivedNotes> goodReceivedNotes = GoodReceivedNotes.Get(this.getDoc_No(), DocumentType.PURCHASE_ORDER);
 
         Transaction purchaseOrder = PurchaseOrder.Get(goodReceivedNotes.get(0).getSource_Doc_No());
         purchaseOrder.Get();
@@ -96,7 +96,7 @@ public class GoodReceivedNotes extends Transaction {
         //Purchase Order
         Transaction purchaseOrder = PurchaseOrder.Get(this.getSource_Doc_No());
 
-        ArrayList<Transaction> goodReceivedNotes = GoodReceivedNotes.Get(this.getSource_Doc_No(),
+        ArrayList<GoodReceivedNotes> goodReceivedNotes = GoodReceivedNotes.Get(this.getSource_Doc_No(),
                 DocumentType.PURCHASE_ORDER);
 
         int VirtualStock = purchaseOrder.getQuantity();
@@ -192,7 +192,7 @@ public class GoodReceivedNotes extends Transaction {
         //PO NO
         String query = "SELECT * FROM Transaction WHERE Source_Doc_No = ?;";
 
-        ArrayList<Transaction> purchaseOrder = connector.PrepareExecuteRead(query, Transaction.class,
+        ArrayList<GoodReceivedNotes> purchaseOrder = connector.PrepareExecuteRead(query, GoodReceivedNotes.class,
                 this.getSource_Doc_No());
 
         if (purchaseOrder == null || purchaseOrder.isEmpty()) {
@@ -211,7 +211,7 @@ public class GoodReceivedNotes extends Transaction {
         return true;
     }
 
-    public static ArrayList<Transaction> Get(String _DocNo, DocumentType _DocumentType) {
+    public static ArrayList<GoodReceivedNotes> Get(String _DocNo, DocumentType _DocumentType) {
         String query = null;
         switch (_DocumentType) {
             case GOOD_RECEIVED_NOTES:
@@ -230,9 +230,9 @@ public class GoodReceivedNotes extends Transaction {
         if (!connector.isConnected()) {
             return null;
         }
-
-        ArrayList<Transaction> GoodReceivedNotes = connector.PrepareExecuteRead(query, Transaction.class,
+        ArrayList<GoodReceivedNotes> GoodReceivedNotes = connector.PrepareExecuteRead(query, GoodReceivedNotes.class,
                 _DocNo);
+
 
         connector.Disconnect();
 
