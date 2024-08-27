@@ -180,6 +180,8 @@ public class PurchaseOrder extends Transaction {
 
         //initialize the value
         this.setItem(purchaseOrder.getItem());
+        this.setDoc_No(purchaseOrder.getDoc_No());
+        this.setSource_Doc_No(purchaseOrder.getSource_Doc_No());
         this.setTransaction_Date(purchaseOrder.getTransaction_Date());
         this.setQuantity(purchaseOrder.getQuantity());
         this.setTransaction_Mode(purchaseOrder.getTransaction_Mode());
@@ -240,7 +242,28 @@ public class PurchaseOrder extends Transaction {
         return false;
     }
 
-    public static ArrayList<Transaction> GetAll() {
+    public static PurchaseOrder Get(String _DocNo) {
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return null;
+        }
+
+        String query = "SELECT * FROM Transaction WHERE Doc_No = ?";
+        ArrayList<PurchaseOrder> purchaseOrders = connector.PrepareExecuteRead(query, PurchaseOrder.class, _DocNo);
+
+        if (purchaseOrders != null && !purchaseOrders.isEmpty()) {
+            PurchaseOrder purchaseOrder = purchaseOrders.get(0);
+            connector.Disconnect();
+            return purchaseOrder;
+        }else {
+            connector.Disconnect();
+            return null;
+        }
+
+    }
+
+    public static ArrayList<PurchaseOrder> GetAll() {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
         if (!connector.isConnected()) {
@@ -248,7 +271,7 @@ public class PurchaseOrder extends Transaction {
         }
 
         String query = "SELECT * FROM Transaction WHERE DOC_NO LIKE 'PO%'";
-        ArrayList<Transaction> purchaseOrders = connector.ExecuteRead(query, Transaction.class);
+        ArrayList<PurchaseOrder> purchaseOrders = connector.ExecuteRead(query, PurchaseOrder.class);
 
         if(purchaseOrders == null || purchaseOrders.isEmpty()){
             return null;

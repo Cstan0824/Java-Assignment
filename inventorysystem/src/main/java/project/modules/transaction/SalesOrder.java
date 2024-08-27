@@ -48,6 +48,18 @@ public class SalesOrder extends Transaction {
         return queryExecuted;
     }
 
+    public void addMultipleItemSO(ArrayList<Transaction> _salesOrders) {
+        
+
+        _salesOrders.forEach(_salesOrder -> {
+            _salesOrder.Add();    
+
+        });
+
+        
+
+    }
+
     @Override
     public boolean Update() {
 
@@ -59,7 +71,7 @@ public class SalesOrder extends Transaction {
 
         String query = "UPDATE Transaction SET Item_ID = ?, Source_Doc_No = ?, Transaction_Date = ?, Quantity = ?, Transaction_Mode = ?, Transaction_Recipient = ?, Transaction_Created_By = ?, Transaction_Modified_By = ? WHERE Doc_No = ?";
 
-        boolean queryExecuted = updateSOConnector.PrepareExecuteDML(query, this.getItem(), this.getSource_Doc_No(), this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(), this.getTransaction_Recipient(), this.getTransaction_Created_By(), this.getTransaction_Modified_By(), this.getDoc_No());
+        boolean queryExecuted = updateSOConnector.PrepareExecuteDML(query, this.getItem().getItem_ID(), this.getSource_Doc_No(), this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(), this.getTransaction_Recipient(), this.getTransaction_Created_By(), this.getTransaction_Modified_By(), this.getDoc_No());
 
         return queryExecuted;
     }
@@ -80,10 +92,11 @@ public class SalesOrder extends Transaction {
         return queryExecuted;
     }
 
+    //search SO
     @Override
     public boolean Get() {
 
-        Transaction salesOrder = Transaction.Get(this.getDoc_No());
+        Transaction salesOrder = SalesOrder.Get(this.getDoc_No());
 
         if (salesOrder == null) {
             return false;
@@ -99,26 +112,51 @@ public class SalesOrder extends Transaction {
         this.setTransaction_Created_By(salesOrder.getTransaction_Created_By());
         this.setTransaction_Modified_By(salesOrder.getTransaction_Modified_By());
 
-        
-
 
         return true;
     }
 
-    
-
-    public static ArrayList<Transaction> GetAll() {
-        SqlConnector getAllSOConnector = new SqlConnector();
-        getAllSOConnector.Connect();
-        if (!getAllSOConnector.isConnected()) {
+    public static SalesOrder Get(String _DocNo) {
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
             return null;
         }
 
-        String query = "SELECT * FROM Transaction WHERE Doc_No LIKE SO%";
-        ArrayList<Transaction> salesOrders = getAllSOConnector.ExecuteRead(query, Transaction.class);
-        getAllSOConnector.Disconnect();
+        String query = "SELECT * FROM Transaction WHERE Doc_No = ?";
+        ArrayList<SalesOrder> salesOrders = connector.PrepareExecuteRead(query, SalesOrder.class, _DocNo);
 
-        return salesOrders;
+        if (salesOrders != null && !salesOrders.isEmpty()) {
+            SalesOrder salesOrder = salesOrders.get(0);
+            connector.Disconnect();
+            return salesOrder;
+        }else {
+            connector.Disconnect();
+            return null;
+        }
+
+    }
+
+    
+    //Get all SO (for display)
+    public static ArrayList<SalesOrder> GetAll() {
+        SqlConnector getAllSOConnector = new SqlConnector();
+        try {
+            getAllSOConnector.Connect();
+            if (!getAllSOConnector.isConnected()) {
+                return null;
+            }
+            
+            String query = "SELECT * FROM TRANSACTION WHERE DOC_NO LIKE 'SO%';";
+            ArrayList<SalesOrder> salesOrders = getAllSOConnector.PrepareExecuteRead(query, SalesOrder.class);
+            if (salesOrders == null) {
+                return new ArrayList<>();
+            }
+            return salesOrders;
+        } finally {
+            getAllSOConnector.Disconnect();
+        }
+        
     }
 
 

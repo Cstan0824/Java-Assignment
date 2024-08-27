@@ -18,8 +18,8 @@ import project.modules.transaction.Transaction;
 public class App {
     
     public static void main(String[] args) {
-        testTransactionRead();
-    }
+        testGetPurchaseOrder();
+        }
     //test TransactionRead Function
     //Done
     public static void testTransactionRead() {
@@ -311,26 +311,50 @@ public class App {
         //Add SalesOrder
         SalesOrder salesOrder = new SalesOrder();
         salesOrder.setItem(items.get(0));
-        salesOrder.setDoc_No(salesOrder.GenerateDocNo());
-        salesOrder.setSource_Doc_No(salesOrder.GenerateDocNo());
+        //salesOrder.setDoc_No(salesOrder.GenerateDocNo());
+        //salesOrder.setSource_Doc_No(salesOrder.getDoc_No());
         salesOrder.setTransaction_Date(new Date(System.currentTimeMillis()));
         salesOrder.setQuantity(5);
         salesOrder.setTransaction_Mode(1);
         salesOrder.setTransaction_Recipient("R001");
         salesOrder.setTransaction_Created_By("A001");
         salesOrder.setTransaction_Modified_By("A001");
-        if(salesOrder.Add()){
-            System.out.println("Sales Order Added.");
-        }else{
-            System.out.println("error");
-        }
+        // if(salesOrder.Add()){
+        //     System.out.println("Sales Order Added.");
+        // }else{
+        //     System.out.println("error");
+        // }
 
 
 
+        //Get All SalesOrder
+        // System.out.println("");
+        // ArrayList<SalesOrder> salesOrders = SalesOrder.GetAll();
+        // salesOrders.forEach(salesOrder1 -> DisplayTransaction(salesOrder1));
 
-        
-        //Update SalesOrder
-        //Remove SalesOrder
         //Get SalesOrder
+        SalesOrder salesOrder1 = new SalesOrder("SO00004");
+        salesOrder1.Get();
+        DisplayTransaction(salesOrder1);
+
+        //Update SalesOrder
+        // salesOrder.setItem(items.get(1));
+        // salesOrder.setQuantity(10);
+        // if(salesOrder.Update()){
+        //     System.out.println("Sales Order Updated.");
+        // }else{
+        //     System.out.println("error");
+        // }
+
+        //Remove SalesOrder
+       
+        
+        // if(salesOrder.Remove()){
+        //     System.out.println("Sales Order Removed.");
+        // }else{
+        //     System.out.println("error");
+        // }
+
+
     }
 }
