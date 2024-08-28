@@ -26,6 +26,13 @@ public class Item implements CrudOperation{
         return this.Item_ID;
     }
 
+    public void setItem_ID(int _ItemID) {
+        if (_ItemID < 0) {
+            throw new IllegalArgumentException("Item_ID cannot be negative");
+        }
+        this.Item_ID = _ItemID;
+    }
+
     //Item_Category_ID
     public void setItem_Category_ID(int _ItemCategoryID) {
         if (_ItemCategoryID < 0) {

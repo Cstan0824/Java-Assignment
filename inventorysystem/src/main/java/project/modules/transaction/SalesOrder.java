@@ -47,20 +47,7 @@ public class SalesOrder extends Transaction {
 
         return queryExecuted;
     }
-
-    public boolean addMultipleItemSO(ArrayList<SalesOrder> _salesOrders) {
-
-        if (_salesOrders != null && !_salesOrders.isEmpty()){
-            _salesOrders.forEach(_salesOrder -> {
-                _salesOrder.Add();
-            });
-            return true;
-        }
-        return false;
         
-    }
-        
-
     @Override
     public boolean Update() {
 
@@ -163,7 +150,7 @@ public class SalesOrder extends Transaction {
 
     //Generate Document Number
     @Override
-    public String GenerateDocNo() {
+    public  String GenerateDocNo() {
         return "SO" + String.format("%05d", SystemRunNo.Get("SO"));
     }
 

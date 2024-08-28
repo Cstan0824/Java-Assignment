@@ -3,6 +3,7 @@ package project.start;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 
 import project.global.MailSender;
 import project.global.MailTemplate;
@@ -12,6 +13,7 @@ import project.global.SqlConnector;
 import project.modules.item.Item;
 import project.modules.schedule.Vehicle;
 import project.modules.transaction.AutoReplenishment;
+import project.modules.transaction.DeliveryOrder;
 import project.modules.transaction.PurchaseOrder;
 import project.modules.transaction.SalesOrder;
 import project.modules.transaction.Transaction;
@@ -19,8 +21,8 @@ import project.modules.transaction.Transaction;
 public class App {
     
     public static void main(String[] args) {
-        ExecuteAutoReplenishment();
-    }
+        testCreateDO();
+        }
 
     //test GoodReceivedNotes function
     //Done - by intuition :)
@@ -394,13 +396,125 @@ public class App {
         }
 
         //Remove
-        if(vehicle1.Remove()){
-            System.out.println("Vehicle Removed.");
-        } else {
-            System.out.println("Vehicle not Removed.");
+        if(vehicle1 != null){
+            if(vehicle1.Remove()){
+                System.out.println("Vehicle Removed.");
+            } else {
+                System.out.println("Vehicle not Removed.");
+            }
         }
 
     }
 
-
+    //done
+    public static void testMultipleItem() {
+        SalesOrder SODocNo = new SalesOrder();
+        String SODN = SODocNo.GenerateDocNo();
+    
+        boolean continueAddItem;
+        try (Scanner sc = new Scanner(System.in)) {
+            do {
+                SalesOrder salesOrder = new SalesOrder();
+                Item item = new Item();
+    
+                System.out.println("Enter Item Id: ");
+                int itemId = sc.nextInt();
+    
+                SqlConnector connector = new SqlConnector();
+                connector.Connect();
+                String query = "SELECT * FROM item WHERE Item_ID = ?";
+    
+                ArrayList<Item> items = connector.PrepareExecuteRead(query, Item.class, itemId);
+                if (items != null && !items.isEmpty()) {
+                    Item checkItem = items.get(0);
+                    item.setItem_ID(checkItem.getItem_ID());
+                    item.setItem_name(checkItem.getItem_Name());
+                    item.setItem_Category_ID(checkItem.getItem_Category_ID());
+                    item.setVendor_ID(checkItem.getVendor_ID());
+                    item.setItem_Desc(checkItem.getItem_Desc());
+                    item.setItem_Quantity(checkItem.getItem_Quantity());
+                    item.setItem_Price(checkItem.getItem_Price());
+                    item.setItem_Created_By(checkItem.getItem_Created_By());
+                    item.setItem_Modified_By(checkItem.getItem_Modified_By());
+                    salesOrder.setItem(item);
+                    salesOrder.setDoc_No(SODN);
+                    salesOrder.setSource_Doc_No(SODN);
+                    salesOrder.setTransaction_Date(new Date(System.currentTimeMillis()));
+    
+                    System.out.println("Enter Quantity: ");
+                    salesOrder.setQuantity(sc.nextInt());
+                    salesOrder.setTransaction_Mode(1);
+                    salesOrder.setTransaction_Recipient("R001");
+                    salesOrder.setTransaction_Created_By("A001");
+                    salesOrder.setTransaction_Modified_By("A001");
+    
+                    if (salesOrder.Add()) {
+                        System.out.println("Sales Order Added.");
+                    } else {
+                        System.out.println("Error adding Sales Order.");
+                    }
+                } else {
+                    System.out.println("Item not found.");
+                }
+    
+                System.out.println("Do you want to add more items? (Y/N): ");
+                String choice = sc.next();
+                continueAddItem = choice.equalsIgnoreCase("Y");
+    
+            } while (continueAddItem);
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        }
+    }
+    
+    //done
+    public static void testCreateDO() {
+        try (Scanner sc = new Scanner(System.in)) {
+            System.out.println("Enter Sales Order Doc No: ");
+            String salesOrderDocNo = sc.nextLine();
+    
+            SqlConnector connector = new SqlConnector();
+            connector.Connect();
+    
+            if (!connector.isConnected()) {
+                System.out.println("Database connection failed.");
+                return;
+            }
+    
+            String query = "SELECT * FROM Transaction WHERE Doc_No = ?";
+            ArrayList<SalesOrder> salesOrders = connector.PrepareExecuteRead(query, SalesOrder.class, salesOrderDocNo);
+    
+            if (salesOrders != null && !salesOrders.isEmpty()) {
+                DeliveryOrder DODocNo = new DeliveryOrder();
+                String DODN = DODocNo.GenerateDocNo();
+    
+                for (SalesOrder salesOrder : salesOrders) {
+                    DeliveryOrder deliveryOrder = new DeliveryOrder();
+                    deliveryOrder.setItem(salesOrder.getItem());
+                    deliveryOrder.setDoc_No(DODN);
+                    deliveryOrder.setSource_Doc_No(salesOrder.getDoc_No());
+                    deliveryOrder.setTransaction_Date(new Date(System.currentTimeMillis()));
+                    deliveryOrder.setQuantity(salesOrder.getQuantity());
+                    deliveryOrder.setTransaction_Mode(1);  // Customize as needed
+                    deliveryOrder.setTransaction_Recipient("R001");  // Customize as needed
+                    deliveryOrder.setTransaction_Created_By("A001");  // Customize as needed
+                    deliveryOrder.setTransaction_Modified_By("A001");  // Customize as needed
+    
+                    if (deliveryOrder.Add()) {
+                        System.out.println("Delivery Order Added.");
+                    } else {
+                        System.out.println("Error adding Delivery Order.");
+                    }
+                }
+            } else {
+                System.out.println("No sales orders found for the given Doc No.");
+            }
+    
+            connector.Disconnect();  // Make sure to close the connection
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        }
+    }
+    
+    
 }
