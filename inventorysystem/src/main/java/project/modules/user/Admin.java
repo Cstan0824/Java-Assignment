@@ -1,182 +1,96 @@
 package project.modules.user;
 
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Scanner;
-
 import project.global.SqlConnector;
 
 
-public class Admin extends User  {
+public class Admin extends User {
 
-    @Override 
-    public void UserMenu(){
-        
-    }
-    public Admin(String userId, String userName, String userPassword, String userEmail) {
-        super(userId, userName, userPassword, userEmail );
+    public Admin(String userId, String userName, String userPassword, String userEmail, String usertype) {
+        super(userId, userName, userPassword, userEmail, usertype);
     }
 
     public Admin() {
-        // Default constructor
+        super(null ,"Admin"); // Default constructor
     }
 
-    @Override 
-    public void login()
+    public void createAdmin()  // can work
     {
-        //User Input
-        Scanner scanner =  new Scanner (System.in);
+        Scanner scanner = new Scanner(System.in);
+        boolean idExists ;   
 
-        System.out.println("Enter Admin ID: ");
-        String adminId = scanner.nextLine();
+        do {
+            System.out.println("Enter Admin ID: ");
+            this.setUserId(scanner.nextLine()); 
+            idExists = this.Get();    
+    
+            if (idExists) {
+                System.out.println("Admin ID already exists. Please enter a different ID.");
+            }
+        } while (idExists); 
+
+        System.out.println("Enter Admin Name: ");
+        this.setUserName(scanner.nextLine());
 
         System.out.println("Enter Admin Password: ");
-        String adminPassword = scanner.nextLine();
+        this.setUserPassword(scanner.nextLine());
 
-        scanner.close();    
+        System.out.println("Enter Admin Email: ");
+        this.setUserEmail(scanner.nextLine());
 
-        //Sql Connection
-        SqlConnector Connector = new SqlConnector();
-        Connector.Connect();
-
-        if(!Connector.isConnected()){
-            return;
-        }
-
-        String query = "SELECT * FROM admin WHERE Admin_ID = ? AND Admin_Password = ?";
-        ArrayList<Admin> admins = Connector.PrepareExecuteRead(query, Admin.class , adminId, adminPassword); 
-
-        if (admins.isEmpty() ) {
-            System.out.println("Login failed.");
-            // forgot password and sleep for 3 seconds
-        }
-        else{
-            Admin admin = admins.get(0); //get : arraylist function ,  call out the first value 
-
-              //initialise the value
-              this.setUserId(admin.getUserId());
-              this.setUserName(admin.getUserName());
-              this.setUserPassword(admin.getUserPassword());
-              this.setUserEmail(admin.getUserEmail());
-
-              
-
-            if(admin.getUserId().equals(adminId) && admin.getUserPassword().equals(adminPassword) ) // get the value from the database
-            {
-                System.out.println("Login successful.");
-
-            // menu
-            }
+        scanner.close();
 
 
-        }
-        Connector.Disconnect();
-
-    }
-
-
-
-    @Override
-    public void Add(){
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter Admin ID: ");
-        String adminId = scanner.nextLine();
-
-        while (Get(adminId)) {
-            System.out.println("Admin ID already exists.");
-            System.out.println("Please enter a different Admin ID.");
-            System.out.print("Enter Admin ID: ");
-            adminId = scanner.nextLine();
-        }
-            
-        System.out.print("Enter Admin Name: ");
-        String adminName = scanner.nextLine();
-            
-        System.out.print("Enter Admin Password: ");
-        String adminPassword = scanner.nextLine();
-            
-        System.out.print("Enter Admin Email: ");
-        String adminEmail = scanner.nextLine();
-
-        LocalDateTime adminRegDate = LocalDateTime.now();
-        scanner.close();    
-
-        SqlConnector Connector = new SqlConnector();
-        Connector.Connect();
-
-        if (!Connector.isConnected()) {
-            return;
-        }
- 
-        // OTP Code implementation  
-        String query = "INSERT INTO admin (Admin_ID, Admin_Name, Admin_Password, Admin_Email, OTP_Code, Admin_Reg_Date) VALUES (?, ?, ?, ?, ?, ?)";
-        Connector.PrepareExecuteDML(query , adminId, adminName, adminPassword, adminEmail, 1 ,adminRegDate);
+        this.Add();
 
        
-
-        if(Get(adminId)){
-            System.out.println("Admin added successfully.");
+    }
+    
+    public void searchAdmin() //can work 
+    {
+        try (Scanner sc = new Scanner(System.in)) {
+            System.out.println("Enter Admin ID: ");
+            this.setUserId(sc.nextLine()); 
         }
-        else{
-            System.out.println("Admin not added.");
+
+
+        if (this.Get()) {  
+
+            this.displayUserDetails(); 
+
+        } else {
+
+            System.out.println("Admin ID does not exist.");  
         }
-
-
-        Connector.Disconnect();   
     }
 
-    @Override
-    public boolean Get(String adminID){
-        SqlConnector Connector = new SqlConnector();    
-        Connector.Connect();
-
-        if (!Connector.isConnected()) {
-            return false;
-        }   
-
-        String query = "SELECT * FROM admin WHERE Admin_ID = ?";    
-
-        ArrayList<User> admins = Connector.PrepareExecuteRead(query, User.class, adminID);
-
-        if (admins == null || admins.isEmpty()) {
-            return false;
+    public void deleteAdmin() // can work
+    {
+        try (Scanner sc = new Scanner(System.in)) {
+            System.out.println("Enter Admin ID: ");
+            this.setUserId(sc.nextLine()); // Set the userId in the current object
         }
 
-
-        
-
-        User admin = admins.get(0);
-
-       
-
-        this.setUserId(admin.getUserId());      
-        this.setUserName(admin.getUserName());
-        this.setUserPassword(admin.getUserPassword());
-        this.setUserEmail(admin.getUserEmail());  
-
-        Connector.Disconnect();
-
-        return true;
+        this.Remove();
     }
 
-    @Override
-    public void Update()
+    public void UpdateAdmin() // can work
     {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter Admin ID to update: ");
-        String adminId = scanner.nextLine();
+        System.out.println("Enter Admin ID: ");
+        this.setUserId(scanner.nextLine());
 
-        if (!Get(adminId)) {
+        if (!Get()){
             System.out.println("Admin ID does not exist.");
             return;
+            
         }
         else{
             super.displayUserDetails();
         }
-        
+
         System.out.println("Which field would you like to update?");
         System.out.println("1. Admin Name");
         System.out.println("2. Admin Password");
@@ -207,86 +121,110 @@ public class Admin extends User  {
                 break;
             default:
                 System.out.println("Invalid choice.");
-                return;
+                break;
         }
+
+
+        super.Update(field, value);
+
         scanner.close();
 
-        String query = "UPDATE admin SET " + field + " = ? WHERE Admin_ID = ?";
+      
 
-        SqlConnector Connector = new SqlConnector();
-        Connector.Connect();    
+        
 
-        if (!Connector.isConnected()) {
+        
+    }
+
+    public void createRetailer() {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter Retailer ID: ");
+        String retailerId = sc.nextLine();
+
+        System.out.println("Enter Retailer Name: ");
+        String retailerName = sc.nextLine();
+
+        System.out.println("Enter Retailer Password: ");
+        String retailerPassword = sc.nextLine();
+
+        System.out.println("Enter Retailer Email: ");
+        String retailerEmail = sc.nextLine();
+
+        System.out.println("Enter Retailer Address: ");
+        String retailerAddress = sc.nextLine();
+
+        sc.close();
+
+        // Call the AddRetailer method to add the retailer to the database
+        this.AddRetailer(retailerId, retailerName, retailerPassword, retailerEmail, retailerAddress);
+    }
+   
+    @Override
+    public void Add()
+    {
+       String sql = "INSERT INTO Admin (Admin_Id, Admin_Name, Admin_Password, Admin_Email, Admin_Reg_Date) VALUES (?, ?, ?, ?, ?)";
+
+        SqlConnector Connector = new SqlConnector(); 
+        Connector.Connect();   
+        
+        if(!Connector.isConnected()) {
+            System.out.println("Connection failed");
             return;
         }
 
-        Boolean checking = Connector.PrepareExecuteDML(query, value, adminId);
+        Connector.PrepareExecuteDML(sql, this.getUserId(), this.getUserName(), this.getUserPassword(), this.getUserEmail(), LocalDateTime.now());
 
-        if (checking) {
-            System.out.println("Admin updated successfully.");
-        }
-        else{
-            System.out.println("Admin not updated.");
-        }
+    }
 
-
+    public void AddRetailer(String retailerId, String retailerName, String retailerPassword, String retailerEmail, String retailerAddress) {
+        Retailer retailer = new Retailer(retailerId, retailerName, retailerPassword, retailerEmail, retailerAddress, this.getUserId());
+        retailer.Add();
     }
 
     @Override
-    public void Remove()
-    {
+    public void UserMenu(){
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter Admin ID to remove: ");
-        String adminId = scanner.nextLine();
+        User user =  new Retailer();
+        Retailer retailer  =  (Retailer) user ;
+  
+          System.out.println("1. Create Admin");
+          System.out.println("2. View Admin");
+          System.out.println("3. Update Admin");
+          System.out.println("4. Delete Admin");
+          System.out.println("5. Create Retailer");
+          System.out.println("6. Delete Retailer");
+          System.out.println("7. Exit");
+          System.out.print("Enter choice: ");
+          int choice = scanner.nextInt();
+          scanner.nextLine();
 
-        if (!Get(adminId)) {
-            System.out.println("Admin ID does not exist.");
-            return;
+          scanner.close();
+
+  
+          switch (choice) {
+              case 1:
+                createAdmin();
+                break;
+              case 2:
+                searchAdmin();
+                break;
+              case 3:
+                UpdateAdmin();
+                break;
+              case 4: 
+                deleteAdmin();
+                  break;
+              case 5: 
+                createRetailer();      
+                  break;
+              case 6:
+                retailer.deleteRetailer();
+                break;
+              default:
+                System.out.println("Invalid choice.");
+                break;
         }
-        else{
-            super.displayUserDetails();
-        }
-
-        System.out.print("Are you sure you want to remove this admin? (Y/N): ");
-        String choice = scanner.nextLine();
-
-        if (choice.equalsIgnoreCase("Y")) {
-            String query = "DELETE FROM admin WHERE Admin_ID = ?";
-
-            SqlConnector Connector = new SqlConnector();
-            Connector.Connect();
-
-            if (!Connector.isConnected()) {
-                return;
-            }
-
-            Boolean checking = Connector.PrepareExecuteDML(query, adminId);
-
-            if (checking) {
-                System.out.println("Admin removed successfully.");
-            }
-            else{
-                System.out.println("Admin not removed.");
-            }
-        }
-        else{
-            System.out.println("Admin not removed.");
-        }
-        scanner.close();
     }
-
-    
-
-
-
-
-
-
-
 }
-
-
-
-
-

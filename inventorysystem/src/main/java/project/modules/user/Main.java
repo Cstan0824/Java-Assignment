@@ -1,14 +1,41 @@
 package project.modules.user;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        // Create a new user object
+        // Scanner scanner = new Scanner(System.in);
+        // System.out.println("Are you ...");
+        // System.out.println("1. Admin");
+        // System.out.println("2. Retailer");
+        // System.out.println("Enter choice (1-2): ");
+        // int choice = scanner.nextInt();
 
-        User user = new Admin();
+        // switch(choice){
+        //     case 1:
+        //         Admin admin = new Admin();
+        //         admin.handleLogin();
+        //         break;
+        //     case 2:
+        //         Retailer retailer = new Retailer();
+        //         retailer.handleLogin();
+        //         break;
+        //     default:
+        //         System.out.println("Invalid choice.");
+        //         break;
+        // }
+        // scanner.close();
 
-        user.Remove();
+        Admin admin = new Admin();
 
-    
+        admin.createRetailer();
+        
+       
+
+        
+
+
+        
+
+
     }
-    
 }
