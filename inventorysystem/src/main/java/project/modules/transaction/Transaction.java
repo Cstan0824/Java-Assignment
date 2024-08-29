@@ -108,6 +108,24 @@ public abstract class Transaction implements CrudOperation {
 
     public abstract String GenerateDocNo();
 
+    @Override
+    public String toString() {
+        // Define a format string with placeholders for the column values
+        String format = "| %-15s | %-15s | %-15s | %-10s | %-10s | %-20s | %-20s | %-20s | %-20s |%n";
+
+        //Format the fields according to the placeholders
+        return String.format(format,
+                item.getItem_Name(),
+                this.Doc_No,
+                this.Source_Doc_No,
+                this.Transaction_Date,
+                this.Quantity,
+                this.Transaction_Mode,
+                this.Transaction_Recipient,
+                this.Transaction_Created_By,
+                this.Transaction_Modified_By);
+    }
+
     //Item
     public Transaction() {
     }

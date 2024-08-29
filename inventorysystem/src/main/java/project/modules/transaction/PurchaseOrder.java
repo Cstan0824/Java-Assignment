@@ -243,6 +243,12 @@ public class PurchaseOrder extends Transaction {
         return false;
     }
 
+    public String ToString() {
+        //Display in column format
+        
+        return "";
+    }
+
     public static Transaction Get(String _DocNo) {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -273,10 +279,9 @@ public class PurchaseOrder extends Transaction {
         String query = "SELECT * FROM Transaction WHERE DOC_NO LIKE 'PO%'";
         ArrayList<PurchaseOrder> purchaseOrders = connector.ExecuteRead(query, PurchaseOrder.class);
 
-        if(purchaseOrders == null || purchaseOrders.isEmpty()){
+        if (purchaseOrders == null || purchaseOrders.isEmpty()) {
             return null;
         }
-
 
         purchaseOrders.forEach(purchaseOrder -> {
             purchaseOrder.getItem().Get();
@@ -285,17 +290,45 @@ public class PurchaseOrder extends Transaction {
         connector.Disconnect();
         return purchaseOrders;
     }
+    
+    @Override
+    public String toString() {
+        //I want to print the status whether the stock is received or not
+        ArrayList<GoodReceivedNotes> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
+                GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
+        int VirtualStock = this.getQuantity();
+        int OnHandStock = 0;
+
+        if (goodReceiveNotes != null && !goodReceiveNotes.isEmpty()) {
+            for (Transaction goodReceiveNote : goodReceiveNotes) {
+                OnHandStock += goodReceiveNote.getQuantity();
+            }
+        }
+
+        String status = (OnHandStock == VirtualStock) ? "Received" : "Pending";
+
+        // Define a format string with placeholders for the important column values
+        String format = "| %-15s | %-15s | %-10s | %-10s | %-10s |%n";
+
+        // Format the fields according to the placeholders
+        return String.format(format,
+                super.getItem().getItem_Name(),
+                super.getDoc_No(),
+                super.getTransaction_Date(),
+                super.getQuantity(),
+                status);
+    }
 
     //Constructor
     public PurchaseOrder() {
-        this.setTransaction_Mode(TransactionMode.STOCK_IN);
+        super.setTransaction_Mode(TransactionMode.STOCK_IN);
         //Get current date
-        this.setTransaction_Date(new Date(System.currentTimeMillis()));
+        super.setTransaction_Date(new Date(System.currentTimeMillis()));
     }
 
     public PurchaseOrder(String _DocNo) {
-        this.setTransaction_Mode(TransactionMode.STOCK_IN);
-        this.setDoc_No(_DocNo);
+        super.setTransaction_Mode(TransactionMode.STOCK_IN);
+        super.setDoc_No(_DocNo);
     }
 
     public PurchaseOrder(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity,
