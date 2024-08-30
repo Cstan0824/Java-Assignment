@@ -29,12 +29,13 @@ public class GoodReceivedNotes extends Transaction {
         
         Transaction purchaseOrder 
                 = PurchaseOrder.Get(
+                    this.getItem(),
                         ((goodReceivedNotes == null || goodReceivedNotes.isEmpty())
                             ?
                                 this
                             :
-                                goodReceivedNotes.get(0))
-                        .getSource_Doc_No());
+                                goodReceivedNotes.get(0)
+                        ).getSource_Doc_No());
         
         int VirtualStock = purchaseOrder.getQuantity();
         int OnHandStock = 0;
@@ -98,11 +99,12 @@ public class GoodReceivedNotes extends Transaction {
     //Pending
     public boolean Update() {
         //Old GRN
-        Transaction OldGoodReceivedNote = new GoodReceivedNotes(this.getDoc_No(), DocumentType.GOOD_RECEIVED_NOTES);
+        Transaction OldGoodReceivedNote = new GoodReceivedNotes(this.getItem(), this.getDoc_No(),
+                this.getSource_Doc_No());
         OldGoodReceivedNote.Get();
 
         //Purchase Order
-        Transaction purchaseOrder = PurchaseOrder.Get(this.getSource_Doc_No());
+        Transaction purchaseOrder = PurchaseOrder.Get(this.getItem(), this.getSource_Doc_No());
 
         ArrayList<GoodReceivedNotes> goodReceivedNotes = GoodReceivedNotes.Get(this.getSource_Doc_No(),
                 DocumentType.PURCHASE_ORDER);
@@ -198,10 +200,10 @@ public class GoodReceivedNotes extends Transaction {
             return false;
         }
         //PO NO
-        String query = "SELECT * FROM Transaction WHERE Source_Doc_No = ?;";
+        String query = "SELECT * FROM Transaction WHERE Source_Doc_No = ? AND Doc_No = ? AND Item_Id = ?;";
 
         ArrayList<GoodReceivedNotes> purchaseOrder = connector.PrepareExecuteRead(query, GoodReceivedNotes.class,
-                this.getSource_Doc_No());
+                this.getSource_Doc_No(), this.getDoc_No(), this.getItem().getItem_ID());
 
         if (purchaseOrder == null || purchaseOrder.isEmpty()) {
             return false;
@@ -280,18 +282,11 @@ public class GoodReceivedNotes extends Transaction {
         this.setTransaction_Date(new Date(System.currentTimeMillis()));
     }
 
-    public GoodReceivedNotes(String _DocNo, DocumentType _DocumentType) {
-        switch (_DocumentType) {
-            case GOOD_RECEIVED_NOTES:
-                this.setDoc_No(_DocNo);
-                break;
-            case PURCHASE_ORDER:
-                this.setSource_Doc_No(_DocNo);
-                break;
-            default:
-                break;
-        }
+    public GoodReceivedNotes(Item _item, String _DocNo, String _SourceDocNo) {
         this.setTransaction_Mode(TransactionMode.STOCK_IN);
+        this.setItem(_item);
+        this.setDoc_No(_DocNo);
+        this.setSource_Doc_No(_SourceDocNo);
     }
 
     public GoodReceivedNotes(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity,

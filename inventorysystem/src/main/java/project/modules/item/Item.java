@@ -254,13 +254,13 @@ public class Item implements CrudOperation{
         return QueryExecuted;
     }
 
-    public boolean AddStock(int _ItemQuantity) {
-        if (_ItemQuantity < 0) {
-            return false;
-        }
-        this.Item_Quantity += _ItemQuantity;
-        this.Update();
-        return true;
+
+    @Override
+    public String toString() {
+        //display data in columns
+        return String.format("| %-5d | %-5s | %-20s | %-20s | %-5d | %-5.2f |",
+                this.Item_Category_ID, this.Vendor_ID,
+                this.Item_name, this.Item_Desc, this.Item_Quantity, this.Item_Price);
     }
 
     //Constructor

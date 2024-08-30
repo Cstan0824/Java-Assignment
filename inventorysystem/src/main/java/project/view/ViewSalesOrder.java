@@ -10,39 +10,32 @@ import project.modules.transaction.SalesOrder;
 public class ViewSalesOrder {
     private static final Scanner sc = new Scanner(System.in);
     //action menu
-    public static void ActionMenu(String selectedSO){
+    public static void ActionMenu(String selectedSO) {
 
-       String action;
-            
-        do{    
-        System.out.println("Choose an action:");
-        System.out.println("1. Edit Sales Order");
-        System.out.println("2. Delete Sales Order");
-        System.out.println("3. Return to Main Menu");
-        
-        action = sc.nextLine();
-                
-        switch (action) {
-            case "1":
-                EditSalesOrder(selectedSO);
-                break;
-            case "2":
-                //DeleteSalesOrder(selectedSO);
-                break;
-            case "3":
-                break;
-            default:
-                System.out.println("Invalid action. Please try again.");
-                break;
-        }
-        }while(!action.equals("3"));       
-           
-            
+        String action;
 
-        
-       
+        do {
+            System.out.println("Choose an action:");
+            System.out.println("1. Edit Sales Order");
+            System.out.println("2. Delete Sales Order");
+            System.out.println("3. Return to Main Menu");
 
+            action = sc.nextLine();
 
+            switch (action) {
+                case "1":
+                    EditSalesOrder(selectedSO);
+                    break;
+                case "2":
+                    //DeleteSalesOrder(selectedSO);
+                    break;
+                case "3":
+                    break;
+                default:
+                    System.out.println("Invalid action. Please try again.");
+                    break;
+            }
+        } while (!action.equals("3"));
 
     }
     

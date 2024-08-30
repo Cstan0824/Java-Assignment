@@ -174,7 +174,7 @@ public class AutoReplenishment implements CrudOperation {
                 SendPurchaseOrder(replenishment, PO_NO, RestockQuantity);
 
                 //Assume the stock is all Received - Will do future Modification Maybe :)
-                GenerateGoodReceivedNotes(replenishment, PO_NO, RestockQuantity);
+                //GenerateGoodReceivedNotes(replenishment, PO_NO, RestockQuantity);
 
                 //Update Item Quantity
                 replenishment.getItem()

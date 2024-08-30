@@ -3,7 +3,6 @@ package project.modules.transaction;
 import java.io.File;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import project.global.MailSender;
 import project.global.MailTemplate;
@@ -75,11 +74,15 @@ public class PurchaseOrder extends Transaction {
             //The stock is already reiceived
             return false;
         }
-        Transaction OldPurchaseOrder = PurchaseOrder.Get(this.getDoc_No());
+        Transaction oldPurchaseOrder = PurchaseOrder.Get(this.getItem(), this.getDoc_No());
+
+        if (oldPurchaseOrder == null) {
+            return false;
+        }
 
         //Scenario 1: Change vendor
         //Scenario 2: Only change item but still same vendor
-        if (!this.getTransaction_Recipient().equals(OldPurchaseOrder.getTransaction_Recipient())) {
+        if (!this.getTransaction_Recipient().equals(oldPurchaseOrder.getTransaction_Recipient())) {
             //Send the order cancellation to old vendor
             MailSender OrderCancellationMail = new MailSender("tancs8803@gmail.com", "Order Cancelled",
                     new MailTemplate(this.getDoc_No(), MailTemplate.TemplateType.ORDER_CANCELLATION));
@@ -90,7 +93,7 @@ public class PurchaseOrder extends Transaction {
                     new MailTemplate(this.getDoc_No(), MailTemplate.TemplateType.PURCHASE_ORDER));
             PurchaseOrderMail.Send();
 
-        } else if (this.getItem().getItem_ID() != OldPurchaseOrder.getItem().getItem_ID()) {
+        } else if (this.getItem().getItem_ID() != oldPurchaseOrder.getItem().getItem_ID()) {
             //Send Reordering to vendor
             //generate pdf
             File file = new File(
@@ -172,7 +175,7 @@ public class PurchaseOrder extends Transaction {
     //Check the stock status and ask user whether they want to proceed with the stock[send mail to the vendor for follow up status]
     //Done
     public boolean Get() {
-        Transaction purchaseOrder = PurchaseOrder.Get(this.getDoc_No());
+        Transaction purchaseOrder = PurchaseOrder.Get(this.getItem(), this.getDoc_No());
 
         if (purchaseOrder == null) {
             return false;
@@ -209,14 +212,8 @@ public class PurchaseOrder extends Transaction {
             return true;
         }
 
-        //Ask user whether they want to proceed with the stock
-        if (!ProceedWithStock()) {
-            return true;
-        }
 
-        MailSender mail = new MailSender("tancs8803@gmail.com", "Follow Up Order Status",
-                new MailTemplate(diff.toString(), MailTemplate.TemplateType.FOLLOW_ORDER_STATUS));
-        mail.Send();
+        
 
         return true;
     }
@@ -227,46 +224,31 @@ public class PurchaseOrder extends Transaction {
     }
 
     //Ask user whether they want to proceed with the stock
-    private boolean ProceedWithStock() {
+    
 
-        try (Scanner scanner = new Scanner(System.in)) {
-            String userResponse;
-            do {
-                System.out.println("Do you want to follow up the status of the stock? [Y/N]");
-                userResponse = scanner.nextLine();
-            } while (!(userResponse.equalsIgnoreCase("Y") || userResponse.equalsIgnoreCase("N")));
-
-            if (userResponse.equalsIgnoreCase("Y")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public String ToString() {
+    public String toString(Integer StockStatus_) {
+        StockStatus_ = 0; //0: Pending, 1: In-Process, 2: Received
         //Display in column format
-        
         return "";
     }
 
-    public static Transaction Get(String _DocNo) {
+    public static Transaction Get(Item _item, String _DocNo) {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
         if (!connector.isConnected()) {
             return null;
         }
 
-        String query = "SELECT * FROM Transaction WHERE Doc_No = ?";
-        ArrayList<PurchaseOrder> purchaseOrders = connector.PrepareExecuteRead(query, PurchaseOrder.class, _DocNo);
+        String query = "SELECT * FROM Transaction WHERE Doc_No = ? AND Item_ID = ?";
+        ArrayList<PurchaseOrder> purchaseOrders = connector.PrepareExecuteRead(query, PurchaseOrder.class, _DocNo,
+                _item.getItem_ID());
         connector.Disconnect();
 
         if (purchaseOrders == null || purchaseOrders.isEmpty()) {
             return null;
         }
-        Transaction purchaseOrder = purchaseOrders.get(0);
-        purchaseOrder.getItem().Get();
-        return purchaseOrder;
 
+        return purchaseOrders.get(0);
     }
 
     public static ArrayList<PurchaseOrder> GetAll() {
@@ -326,9 +308,10 @@ public class PurchaseOrder extends Transaction {
         super.setTransaction_Date(new Date(System.currentTimeMillis()));
     }
 
-    public PurchaseOrder(String _DocNo) {
+    public PurchaseOrder(Item _item, String _DocNo) {
         super.setTransaction_Mode(TransactionMode.STOCK_IN);
         super.setDoc_No(_DocNo);
+        super.setItem(_item);
     }
 
     public PurchaseOrder(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity,
