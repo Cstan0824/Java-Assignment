@@ -3,6 +3,7 @@ package project.global;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+
 
 public class SqlConnector {
     //Data field
@@ -273,6 +275,60 @@ public class SqlConnector {
         }
 
         return list;
+    }
+
+    public String[] GetColumnNames(String _tableName){
+
+        if (!isConnected()) {
+            return null;
+        }
+
+        try {
+            DatabaseMetaData metaData = conn.getMetaData();
+            String tableName = _tableName;
+
+            ArrayList<String> columnNamesList = new ArrayList<>();
+            
+            try (ResultSet columns = metaData.getColumns(null, null, tableName, null)) {
+                while (columns.next()) {
+                    String columnName = columns.getString("COLUMN_NAME");
+                    columnNamesList.add(columnName);
+                }
+            }
+            
+            // Convert ArrayList to Array
+            String[] columnNamesArray = columnNamesList.toArray(new String[0]);
+            return columnNamesArray;
+
+        }catch (SQLException e) {
+            System.out.println("Get Column Names Error: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public String[] getDistinctDocNos(String prefix) {
+        String query = "SELECT DISTINCT Doc_No FROM `transaction` WHERE Doc_No LIKE '" + prefix + "%';";
+        ArrayList<String> docNoList = new ArrayList<>();
+
+        if (!isConnected()) {
+            return null;
+        }
+        try{
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String docNo = rs.getString("Doc_No");
+                docNoList.add(docNo);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Get Distinct Doc No Error: " + e.getMessage());
+            return null;
+        }
+
+        // Convert ArrayList to String Array
+        return docNoList.toArray(new String[0]);
     }
     
     @SuppressWarnings("unchecked")

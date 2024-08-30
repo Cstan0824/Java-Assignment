@@ -1,6 +1,9 @@
 package project.start;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
@@ -11,18 +14,47 @@ import project.global.PdfConverter;
 import project.global.PdfTemplate;
 import project.global.SqlConnector;
 import project.modules.item.Item;
+import project.modules.schedule.Schedule;
 import project.modules.schedule.Vehicle;
 import project.modules.transaction.AutoReplenishment;
 import project.modules.transaction.DeliveryOrder;
 import project.modules.transaction.PurchaseOrder;
 import project.modules.transaction.SalesOrder;
 import project.modules.transaction.Transaction;
+import project.view.ViewSalesOrder;
 
 public class App {
     
     public static void main(String[] args) {
-        testCreateDO();
+        ViewSalesOrder.DisplayDistinctSalesOrder();
+        String selectedSO = ViewSalesOrder.SelectSalesOrder();
+        if (selectedSO != null) {
+            ViewSalesOrder.DisplaySpecificSalesOrder(selectedSO);
+            ViewSalesOrder.ActionMenu(selectedSO);
+        } else {
+            System.out.println("No Sales Order selected.");
         }
+    }
+    
+
+    //test GetColName function
+    //done
+    public static void testGetColName() {
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return;
+        }
+
+        
+        String[] colNames = connector.GetColumnNames("transaction");
+
+        for (String colName : colNames) {
+            System.out.println(colName);
+        }
+
+        connector.Disconnect();
+    }
 
     //test GoodReceivedNotes function
     //Done - by intuition :)
@@ -516,5 +548,68 @@ public class App {
         }
     }
     
-    
+    //done
+   public static void testCreateSchedule() {
+    try (Scanner sc = new Scanner(System.in)) {
+        System.out.println("Please enter Delivery Order Doc No: ");
+        String DODocNo = sc.nextLine();
+
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+
+        if (!connector.isConnected()) {
+            System.out.println("Database connection failed.");
+            return;
+        }
+
+        String query = "SELECT * FROM Transaction WHERE Doc_No = ?";
+        ArrayList<DeliveryOrder> deliveryOrders = connector.PrepareExecuteRead(query, DeliveryOrder.class, DODocNo);
+
+        if (deliveryOrders != null && !deliveryOrders.isEmpty()) {
+            System.out.println("Please enter Vehicle Plate: ");
+            String _vehiclePlate = sc.nextLine();
+
+            Schedule schedule = new Schedule();
+            schedule.setDeliveryOrder(DeliveryOrder.Get(DODocNo));
+            schedule.setVehicle(Vehicle.Get(_vehiclePlate));
+
+            System.out.println("Please enter Schedule Date (yyyy-MM-dd): ");
+            String _scheduleDate = sc.nextLine();  // Use nextLine to ensure full input
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+            
+            try {
+                Date scheduleDate = sdf.parse(_scheduleDate); // Parse the date
+                schedule.setSchedule_Date(scheduleDate);  
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Please use yyyy-MM-dd.");
+                return;
+            }
+
+            System.out.println("Please enter Schedule Time (HH:mm:ss): ");
+            String timeInput = sc.nextLine();  // Read the full line for time input
+            try {
+                schedule.setTime_Slot(LocalTime.parse(timeInput));  // Parse the time
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid time format. Please use HH:mm:ss.");
+                return;
+            }
+
+            if (schedule.Add()) {
+                System.out.println("Schedule added for " + schedule.getDeliveryOrder().getDoc_No() + ".");
+            } else {
+                System.out.println("Error adding Schedule.");
+            }
+
+            connector.Disconnect();  // Disconnect the database
+        } else {
+            System.out.println("No delivery orders found for the given Doc No.");
+        }
+    } catch (Exception e) {
+        System.out.println("An error occurred: " + e.getMessage());
+        
+    }
+}
+
+   
 }

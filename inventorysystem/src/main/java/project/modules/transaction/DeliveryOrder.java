@@ -44,11 +44,13 @@ public class DeliveryOrder extends Transaction {
 
         boolean queryExecuted = connector.PrepareExecuteDML(query, this.getItem().getItem_ID(), this.getDoc_No(), this.getSource_Doc_No(), this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(), this.getTransaction_Recipient(), this.getTransaction_Created_By(), this.getTransaction_Modified_By());
 
+        if(!queryExecuted){
+            connector.Disconnect();
+            return false;
+        }
+
         connector.Disconnect();
-
         return queryExecuted;
-
-        
     }
 
 

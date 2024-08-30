@@ -57,9 +57,9 @@ public class SalesOrder extends Transaction {
             return false;
         }
 
-        String query = "UPDATE Transaction SET Item_ID = ?, Source_Doc_No = ?, Transaction_Date = ?, Quantity = ?, Transaction_Mode = ?, Transaction_Recipient = ?, Transaction_Created_By = ?, Transaction_Modified_By = ? WHERE Doc_No = ?";
+        String query = "UPDATE Transaction SET Quantity = ?, Transaction_Modified_By = ? WHERE Doc_No = ? AND Item_ID = ?";
 
-        boolean queryExecuted = updateSOConnector.PrepareExecuteDML(query, this.getItem().getItem_ID(), this.getSource_Doc_No(), this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(), this.getTransaction_Recipient(), this.getTransaction_Created_By(), this.getTransaction_Modified_By(), this.getDoc_No());
+        boolean queryExecuted = updateSOConnector.PrepareExecuteDML(query, this.getQuantity(), this.getTransaction_Modified_By(), this.getDoc_No(), this.getItem().getItem_ID());
 
         return queryExecuted;
     }
@@ -73,8 +73,8 @@ public class SalesOrder extends Transaction {
             return false;
         }
 
-        String query = "DELETE FROM Transaction WHERE Doc_No = ?";
-        boolean queryExecuted = removeSOConnector.PrepareExecuteDML(query, this.getDoc_No());
+        String query = "DELETE FROM Transaction WHERE Doc_No = ? AND Item_ID = ?";
+        boolean queryExecuted = removeSOConnector.PrepareExecuteDML(query, this.getDoc_No(), this.getItem().getItem_ID());
 
 
         return queryExecuted;
@@ -84,13 +84,12 @@ public class SalesOrder extends Transaction {
     @Override
     public boolean Get() {
 
-        Transaction salesOrder = SalesOrder.Get(this.getDoc_No());
+        Transaction salesOrder = SalesOrder.Get(this.getDoc_No(), this.getItem().getItem_ID());
 
         if (salesOrder == null) {
             return false;
         }
 
-        this.setItem(salesOrder.getItem());
         this.setDoc_No(salesOrder.getDoc_No());
         this.setSource_Doc_No(salesOrder.getSource_Doc_No());
         this.setTransaction_Date(salesOrder.getTransaction_Date());
@@ -125,7 +124,48 @@ public class SalesOrder extends Transaction {
 
     }
 
-    
+    public static SalesOrder Get(String _DocNo, int _Item_ID) {
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return null;
+        }
+
+        String query = "SELECT * FROM Transaction WHERE Doc_No = ? AND Item_ID = ?";
+        ArrayList<SalesOrder> salesOrders = connector.PrepareExecuteRead(query, SalesOrder.class, _DocNo, _Item_ID);
+
+        if (salesOrders != null && !salesOrders.isEmpty()) {
+            SalesOrder salesOrder = salesOrders.get(0);
+            connector.Disconnect();
+            return salesOrder;
+        }else {
+            connector.Disconnect();
+            return null;
+        }
+
+    }
+
+    public static ArrayList<SalesOrder> GetAll(String _DocNo){
+
+
+        SqlConnector getAllSOConnector = new SqlConnector();
+        try {
+            getAllSOConnector.Connect();
+            if (!getAllSOConnector.isConnected()) {
+                return null;
+            }
+            
+            String query = "SELECT * FROM TRANSACTION WHERE DOC_NO = ?";
+            ArrayList<SalesOrder> salesOrders = getAllSOConnector.PrepareExecuteRead(query, SalesOrder.class, _DocNo);
+            if (salesOrders == null) {
+                return new ArrayList<>();
+            }
+            return salesOrders;
+        } finally {
+            getAllSOConnector.Disconnect();
+        }
+
+    }
     //Get all SO (for display)
     public static ArrayList<SalesOrder> GetAll() {
         SqlConnector getAllSOConnector = new SqlConnector();
@@ -147,11 +187,82 @@ public class SalesOrder extends Transaction {
         
     }
 
+    public static ArrayList<SalesOrder> GetPendingSalesOrder(){
 
+        SqlConnector getPendingSOConnector = new SqlConnector();
+        try {
+            getPendingSOConnector.Connect();
+            if (!getPendingSOConnector.isConnected()) {
+                return null;
+            }
+            
+            String query = "SELECT * FROM TRANSACTION WHERE DOC_NO LIKE 'SO%' AND DOC_NO NOT IN (SELECT Source_Doc_No FROM Transaction WHERE DOC_NO LIKE 'DO%');";
+            ArrayList<SalesOrder> salesOrders = getPendingSOConnector.PrepareExecuteRead(query, SalesOrder.class);
+            if (salesOrders == null) {
+                return new ArrayList<>();
+            }
+            return salesOrders;
+        } finally {
+            getPendingSOConnector.Disconnect();
+        }
+
+    }
+    
+    public static ArrayList<SalesOrder> GetDistinctSalesOrder(){
+
+        SqlConnector connector = new SqlConnector();
+        ArrayList<SalesOrder> salesOrders = new ArrayList<>();
+        try {
+            connector.Connect();
+            if (!connector.isConnected()) {
+                return null;
+            }
+            String[] DocNos = connector.getDistinctDocNos("SO");
+        
+            for (String DocNo : DocNos) {
+                SalesOrder salesOrder = SalesOrder.Get(DocNo);
+                salesOrders.add(salesOrder);
+            }
+        } finally {
+            connector.Disconnect();
+        }
+        return salesOrders;
+    }
     //Generate Document Number
     @Override
-    public  String GenerateDocNo() {
+    public String GenerateDocNo() {
         return "SO" + String.format("%05d", SystemRunNo.Get("SO"));
     }
 
+
+    //Display SO (to String)
+    @Override
+    public String toString() {
+        String format = "| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |%n";
+        this.getItem().Get();
+        // Format the fields according to the placeholders
+        return String.format(format,
+                this.getDoc_No(),
+                this.getItem().getItem_ID(),
+                this.getItem().getItem_Name(),
+                this.getQuantity(),
+                this.getTransaction_Mode() + " (" + (this.getTransaction_Mode() == TransactionMode.STOCK_IN ? "IN" : "OUT") + ")",
+                this.getTransaction_Date(),
+                this.getTransaction_Recipient()
+                );
+    }
+
+    public String distinctToString(){
+
+        String format = "| %-15s | %-15s | %-15s | %-15s | %-15s |%n";
+        this.getItem().Get();
+        // Format the fields according to the placeholders
+        return String.format(format,
+                this.getDoc_No(),
+                this.getTransaction_Mode() + " (" + (this.getTransaction_Mode() == TransactionMode.STOCK_IN ? "IN" : "OUT") + ")",
+                this.getTransaction_Date(),
+                this.getTransaction_Recipient(),
+                this.getTransaction_Created_By()
+                );
+    }
 }
