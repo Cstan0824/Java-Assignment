@@ -171,19 +171,19 @@ public class ViewSalesOrder {
             do {
                 try {
                     System.out.println("Enter Item ID: ");
-                    ArrayList<Item> items = Item.Get("Item_ID", sc.nextLine());
-                    if (items != null && !items.isEmpty()) {
-                        Item item = items.get(0);
+                    int itemId = sc.nextInt();
+                    sc.nextLine(); // Consume the newline character
+                    Item item = new Item(itemId);
+                    
+                    if (item.Get()) {
+                        
                         System.out.println("Enter Quantity: ");
                         int quantity = sc.nextInt();
                         sc.nextLine(); 
     
-                        SalesOrder salesOrder = new SalesOrder();
-                        salesOrder.setItem(item);
-                        salesOrder.setDoc_No(docNo);
+                        SalesOrder salesOrder = new SalesOrder(docNo, item);
                         salesOrder.setSource_Doc_No(docNo);
                         salesOrder.setQuantity(quantity);
-                        salesOrder.setTransaction_Mode(1);
                         salesOrder.setTransaction_Recipient("Customer");
                         salesOrder.setTransaction_Created_By("Admin");
                         salesOrder.setTransaction_Modified_By("Admin");
@@ -208,7 +208,7 @@ public class ViewSalesOrder {
         
     }
     
-    public static void EditSalesOrder(String selectedSO) {
+    public static boolean EditSalesOrder(String selectedSO) {
 
        
             System.out.println("Edit Sales Order");
@@ -219,21 +219,27 @@ public class ViewSalesOrder {
                 boolean continueEditItem = false;
     
                 do {
-                    System.out.println("Enter Item ID: "); // Check if this prints
-                    int itemId = sc.nextInt(); // Add a breakpoint or print statement after this line
-                    sc.nextLine(); // Consume the newline character
-    
-                    SalesOrder salesOrder = SalesOrder.Get(selectedSO, itemId);
-    
-                    if (salesOrder != null) {
+                    System.out.println("Enter Item ID: "); 
+                    int itemId = sc.nextInt(); 
+                    sc.nextLine(); 
+
+                    Item item = new Item(itemId);
+                    item.Get();
+
+                    SalesOrder salesOrder = new SalesOrder(selectedSO, item);
+
+                    if(salesOrder.Get()){
+
                         System.out.println("Enter New Item Quantity: ");
                         int quantity = sc.nextInt();
                         sc.nextLine(); // Consume the newline character
                         salesOrder.setQuantity(quantity);
+
                         salesOrder.setTransaction_Modified_By("Admin");
-    
+
                         if (salesOrder.getQuantity() <= 0) {
                             System.out.println("Quantity is zero or negative. Do you want to delete this item from the Sales Order? (Y/N)");
+
                             if (sc.nextLine().equalsIgnoreCase("Y")) {
                                 if (salesOrder.Remove()) {
                                     System.out.println("Item removed from Sales Order successfully.");
@@ -241,10 +247,13 @@ public class ViewSalesOrder {
                                     System.out.println("Failed to remove item from Sales Order.");
                                 }
                             }
+
                         } else if (salesOrder.Update()) {
+
                             System.out.println("Sales Order " + selectedSO + " updated successfully.");
                             System.out.println("Do you want to edit another item in the Sales Order? (Y/N)");
                             continueEditItem = sc.nextLine().equalsIgnoreCase("Y");
+
                         } else {
                             System.out.println("Failed to update Sales Order " + selectedSO + ".");
                         }
@@ -256,7 +265,7 @@ public class ViewSalesOrder {
                 System.out.println("Sales Order " + selectedSO + " not found.");
             }
     
-       
+       return true;
     }
     
     

@@ -21,19 +21,30 @@ import project.modules.transaction.DeliveryOrder;
 import project.modules.transaction.PurchaseOrder;
 import project.modules.transaction.SalesOrder;
 import project.modules.transaction.Transaction;
-import project.view.ViewSalesOrder;
+import project.modules.view.ViewSalesOrder;
 
 public class App {
+
+    public static final Scanner sc = new Scanner(System.in);
     
     public static void main(String[] args) {
-        ViewSalesOrder.DisplayDistinctSalesOrder();
-        String selectedSO = ViewSalesOrder.SelectSalesOrder();
-        if (selectedSO != null) {
-            ViewSalesOrder.DisplaySpecificSalesOrder(selectedSO);
-            ViewSalesOrder.ActionMenu(selectedSO);
-        } else {
-            System.out.println("No Sales Order selected.");
+        
+        System.out.println("Retailer Side");
+        System.out.println("1. Create Purchase Order");
+        System.out.println("2. Back to main menu");
+        System.out.println("Choose your actions: ");
+        int choice = sc.nextInt();
+        switch (choice) {
+            case 1:
+            ViewSalesOrder.CreateSalesOrder();
+                break;
+            case 2:
+                break;
+            default:
+                break;
         }
+        
+
     }
     
 
@@ -366,7 +377,9 @@ public class App {
         salesOrders.forEach(salesOrder1 -> DisplayTransaction(salesOrder1));
 
         //Get SalesOrder
-        SalesOrder salesOrder1 = new SalesOrder("SO00004");
+        Item item = new Item(1);
+        item.Get();
+        SalesOrder salesOrder1 = new SalesOrder("SO00017", item);
         salesOrder1.Get();
         DisplayTransaction(salesOrder1);
 

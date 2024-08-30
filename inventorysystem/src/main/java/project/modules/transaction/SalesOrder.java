@@ -15,9 +15,10 @@ public class SalesOrder extends Transaction {
         this.setTransaction_Date(new Date(System.currentTimeMillis()));
     }
 
-    public SalesOrder(String _DocNo) {
+    public SalesOrder(String _DocNo, Item _item) {
         this.setTransaction_Mode(TransactionMode.STOCK_OUT);
         this.setDoc_No(_DocNo);
+        this.setItem(_item);
     }
     
     public SalesOrder(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity,
