@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
+import javax.swing.text.View;
+
 import project.global.MailSender;
 import project.global.MailTemplate;
 import project.global.PdfConverter;
@@ -21,7 +23,7 @@ import project.modules.transaction.DeliveryOrder;
 import project.modules.transaction.PurchaseOrder;
 import project.modules.transaction.SalesOrder;
 import project.modules.transaction.Transaction;
-import project.modules.view.ViewSalesOrder;
+import project.view.ViewSalesOrder;
 
 public class App {
 
@@ -29,14 +31,17 @@ public class App {
     
     public static void main(String[] args) {
         
-        System.out.println("Retailer Side");
-        System.out.println("1. Create Purchase Order");
+        System.out.println("Admin Side");
+        System.out.println("1. Edit Purchase Order");
         System.out.println("2. Back to main menu");
         System.out.println("Choose your actions: ");
         int choice = sc.nextInt();
         switch (choice) {
             case 1:
-            ViewSalesOrder.CreateSalesOrder();
+                ViewSalesOrder.DisplayDistinctSalesOrder();
+                String SODocNo = ViewSalesOrder.SelectSalesOrder();
+                ViewSalesOrder.DisplaySpecificSalesOrder(SODocNo);
+                //ViewSalesOrder.CreateSalesOrder();
                 break;
             case 2:
                 break;

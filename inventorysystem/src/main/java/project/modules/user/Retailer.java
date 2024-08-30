@@ -1,7 +1,8 @@
 package project.modules.user;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Scanner;
+
 import project.global.SqlConnector;
 
 public class Retailer extends User {
@@ -9,7 +10,7 @@ public class Retailer extends User {
     private String retailerCreatedBy;
     private String retailerAddress;
 
-
+    
 
     public Retailer(String userId, String userName, String userPassword, String userEmail) {
         super(userId, userName, userPassword, userEmail, "Retailer");
