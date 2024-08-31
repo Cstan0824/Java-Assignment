@@ -1,4 +1,4 @@
-package com.example;
+package project.modules.user;
 
 public class Validation {
     //validation for all data field 

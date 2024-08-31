@@ -1,8 +1,10 @@
-package com.example;
+package project.modules.user;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
+import project.global.*;
+
 
 
 public class Admin extends User {

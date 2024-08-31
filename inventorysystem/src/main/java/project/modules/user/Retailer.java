@@ -1,7 +1,8 @@
-package com.example;
+package project.modules.user;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import project.global.*;
 
 public class Retailer extends User {
 

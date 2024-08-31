@@ -1,11 +1,10 @@
-package com.example;
+package project.modules.user;
+import project.global.*;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Request {
     private  int Request_ID;

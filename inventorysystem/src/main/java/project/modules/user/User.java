@@ -1,4 +1,6 @@
-package com.example;
+package project.modules.user;
+import project.global.*;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
