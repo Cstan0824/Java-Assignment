@@ -24,7 +24,7 @@ public class GoodReceivedNotes extends Transaction {
     //GRN NO
     //Done
     public boolean Add() {
-        ArrayList<GoodReceivedNotes> goodReceivedNotes = GoodReceivedNotes.Get(this.getDoc_No(),
+        ArrayList<GoodReceivedNotes> goodReceivedNotes = GoodReceivedNotes.Get(this.getSource_Doc_No(),
                 GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
         
         Transaction purchaseOrder 
@@ -40,12 +40,14 @@ public class GoodReceivedNotes extends Transaction {
         int VirtualStock = purchaseOrder.getQuantity();
         int OnHandStock = 0;
 
-        if(goodReceivedNotes != null && !goodReceivedNotes.isEmpty()){
+        if (goodReceivedNotes != null && !goodReceivedNotes.isEmpty()) {
             for (Transaction goodReceivedNote : goodReceivedNotes) {
                 OnHandStock += goodReceivedNote.getQuantity();
             }
         }
         
+        //System.out.println("Virtual Stock: " + VirtualStock);
+        //System.out.println("On Hand Stock: " + OnHandStock);
         if (OnHandStock == VirtualStock) {
             System.out.println("The Stock already on hand");            
             return false;
@@ -105,9 +107,16 @@ public class GoodReceivedNotes extends Transaction {
 
         //Purchase Order
         Transaction purchaseOrder = PurchaseOrder.Get(this.getItem(), this.getSource_Doc_No());
+        if (purchaseOrder == null) {
+            return false;
+        }
 
         ArrayList<GoodReceivedNotes> goodReceivedNotes = GoodReceivedNotes.Get(this.getSource_Doc_No(),
                 DocumentType.PURCHASE_ORDER);
+
+        if (goodReceivedNotes == null || goodReceivedNotes.isEmpty()) {
+            return false;
+        }
 
         int VirtualStock = purchaseOrder.getQuantity();
         int OnHandStock = 0;
@@ -287,6 +296,8 @@ public class GoodReceivedNotes extends Transaction {
         this.setItem(_item);
         this.setDoc_No(_DocNo);
         this.setSource_Doc_No(_SourceDocNo);
+        this.setTransaction_Date(new Date(System.currentTimeMillis()));
+
     }
 
     public GoodReceivedNotes(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity,

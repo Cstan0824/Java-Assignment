@@ -3,6 +3,7 @@ package project.modules.transaction;
 import java.io.File;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import project.global.MailSender;
 import project.global.MailTemplate;
@@ -156,11 +157,7 @@ public class PurchaseOrder extends Transaction {
         if (QueryExecuted == false) {
             return false;
         }
-
-        //Generate Order Cancellation Mail - send to vendor
-        MailSender mail = new MailSender("tancs8803@gmail.com", "Order Cancelled",
-                new MailTemplate(this.getDoc_No(), MailTemplate.TemplateType.ORDER_CANCELLATION));
-        mail.Send();
+        
 
         //Delete the pdf file
         File file = new File(
@@ -222,15 +219,48 @@ public class PurchaseOrder extends Transaction {
     public String GenerateDocNo() {
         return "PO" + String.format("%05d", SystemRunNo.Get("PO"));
     }
-
-    //Ask user whether they want to proceed with the stock
     
 
-    public String toString(Integer StockStatus_) {
-        StockStatus_ = 0; //0: Pending, 1: In-Process, 2: Received
-        //Display in column format
-        return "";
+    public String toString(AtomicInteger StockStatus_) {
+        super.getItem().Get();
+
+        // Determine the stock status by checking GoodReceivedNotes
+        ArrayList<GoodReceivedNotes> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
+                GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
+        int VirtualStock = this.getQuantity();
+        int OnHandStock = 0;
+
+        if (goodReceiveNotes != null && !goodReceiveNotes.isEmpty()) {
+            for (Transaction goodReceiveNote : goodReceiveNotes) {
+                OnHandStock += goodReceiveNote.getQuantity();
+            }
+        }
+
+        // Update the StockStatus_ based on the comparison of VirtualStock and OnHandStock
+        if (OnHandStock >= VirtualStock) {
+            StockStatus_.set(2); // Received
+        } else if (OnHandStock > 0 && OnHandStock < VirtualStock) {
+            StockStatus_.set(1); // In-Process
+        } else {
+            StockStatus_.set(0); // Pending
+        }
+
+        // Use StockStatus_ to generate the status string
+        String status = (StockStatus_.get() == 2) ? "Received" : (StockStatus_.get() == 1) ? "In-Process" : "Pending";
+
+        // Define a format string with placeholders for the important column values
+        String format = "| %-15s | %-15s | %-10s | %-10s | %-10s |\n";
+        String value = String.format(format,
+                this.getItem().getItem_Name(),
+                this.getDoc_No(),
+                this.getTransaction_Date(),
+                this.getQuantity(),
+                status);
+
+        // Return the formatted string with all the necessary details
+        return value;
     }
+
 
     public static Transaction Get(Item _item, String _DocNo) {
         SqlConnector connector = new SqlConnector();
@@ -249,6 +279,20 @@ public class PurchaseOrder extends Transaction {
         }
 
         return purchaseOrders.get(0);
+    }
+
+    public static ArrayList<PurchaseOrder> Get(String _DocNo) {
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return null;
+        }
+
+        String query = "SELECT * FROM Transaction WHERE Doc_No = ?";
+        ArrayList<PurchaseOrder> purchaseOrders = connector.PrepareExecuteRead(query, PurchaseOrder.class, _DocNo);
+        connector.Disconnect();
+
+        return purchaseOrders;
     }
 
     public static ArrayList<PurchaseOrder> GetAll() {
@@ -275,6 +319,8 @@ public class PurchaseOrder extends Transaction {
     
     @Override
     public String toString() {
+        super.getItem().Get();
+
         //I want to print the status whether the stock is received or not
         ArrayList<GoodReceivedNotes> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
                 GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
@@ -290,15 +336,17 @@ public class PurchaseOrder extends Transaction {
         String status = (OnHandStock == VirtualStock) ? "Received" : "Pending";
 
         // Define a format string with placeholders for the important column values
-        String format = "| %-15s | %-15s | %-10s | %-10s | %-10s |%n";
-
-        // Format the fields according to the placeholders
-        return String.format(format,
-                super.getItem().getItem_Name(),
-                super.getDoc_No(),
-                super.getTransaction_Date(),
-                super.getQuantity(),
+        String format = "| %-15s | %-15s | %-10s | %-10s | %-10s |\n";
+        String value = String.format(format,
+                this.getItem().getItem_Name(),
+                this.getDoc_No(),
+                this.getTransaction_Date(),
+                this.getQuantity(),
                 status);
+        System.out.println(value);
+        System.out.println("Hellow");
+        // Format the fields according to the placeholders
+        return value;
     }
 
     //Constructor
@@ -306,12 +354,23 @@ public class PurchaseOrder extends Transaction {
         super.setTransaction_Mode(TransactionMode.STOCK_IN);
         //Get current date
         super.setTransaction_Date(new Date(System.currentTimeMillis()));
+
+    }
+
+    public PurchaseOrder(String _DocNo) {
+        super.setTransaction_Mode(TransactionMode.STOCK_IN);
+        super.setDoc_No(_DocNo);
+        super.setTransaction_Date(new Date(System.currentTimeMillis()));
+
     }
 
     public PurchaseOrder(Item _item, String _DocNo) {
         super.setTransaction_Mode(TransactionMode.STOCK_IN);
         super.setDoc_No(_DocNo);
         super.setItem(_item);
+        super.getItem().Get();
+        super.setTransaction_Date(new Date(System.currentTimeMillis()));
+
     }
 
     public PurchaseOrder(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity,

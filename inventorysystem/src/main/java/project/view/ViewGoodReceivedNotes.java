@@ -11,116 +11,143 @@ import project.modules.user.User;
 
 public class ViewGoodReceivedNotes {
     private static User user;
-
     private static final Scanner scanner = new Scanner(System.in);
 
     private ArrayList<GoodReceivedNotes> goodReceivedNotes = new ArrayList<>();
+    private final ViewItem viewItem;
 
-    private ViewItem viewItem = null;
+    // Constructor to initialize user and ViewItem
+    public ViewGoodReceivedNotes(User _user) {
+        user = _user;
+        viewItem = new ViewItem(_user);
+    }
 
-    
+    // Getter for User
     public User getUser() {
         return user;
     }
-    public void AddGoodsReceivedNotes(String _PoNo, String _GrnNo) {
+
+    // Method to add Goods Received Notes
+    public void addGoodsReceivedNotes(String poNo, String grnNo) {
+        goodReceivedNotes.clear();
+        
         String choice;
         do {
             GoodReceivedNotes goodReceivedNote = new GoodReceivedNotes();
-            Item item = viewItem.SelectItemFromList();
+            
+            Item item = viewItem.selectItemFromList(); //display item from PO
+            if(item == null) {
+                System.out.println("Item not selected.");
+                return;
+            }
 
+            // Get Quantity
             System.out.print("Enter Quantity: ");
             goodReceivedNote.setQuantity(scanner.nextInt());
             scanner.nextLine();
 
+            // Set the remaining properties
             goodReceivedNote.setItem(item);
-            goodReceivedNote.setDoc_No(_GrnNo);
-            goodReceivedNote.setSource_Doc_No(_PoNo);
+            goodReceivedNote.setDoc_No(grnNo);
+            goodReceivedNote.setSource_Doc_No(poNo);
             goodReceivedNote.setTransaction_Created_By(user.getUserId());
             goodReceivedNote.setTransaction_Modified_By(user.getUserId());
             goodReceivedNote.setTransaction_Date(new Date());
             goodReceivedNote.setTransaction_Recipient(item.getVendor_ID());
-            this.goodReceivedNotes.add(goodReceivedNote);
 
-            //Continue or stop scanner
-            System.out.println("Do you want to add more items? (Y/N)");
+            // Add to the list
+            this.goodReceivedNotes.add(goodReceivedNote);
+            
+
+            // Prompt user to add more items
+            System.out.print("Do you want to add more items? (Y/N): ");
+            viewItem.getItems().remove(item);
             choice = scanner.nextLine();
         } while (choice.equalsIgnoreCase("Y"));
 
-        //Save the GRN
-        this.goodReceivedNotes.forEach(_goodReceivedNote -> _goodReceivedNote.Add());
+        // Save the GRN to the database
+        this.goodReceivedNotes.forEach(grn -> {
+            if (grn != null) {
+                System.out.println(grn.Add());
+            } else {
+                System.out.println("GoodReceivedNotes object in the list is null.");
+            }
+        });
     }
 
-    @SuppressWarnings("deprecation")
-    public void EditGoodReceivedNotes(Transaction goodReceivedNotes) {
-
-        System.out.println(goodReceivedNotes.toString());
-        //allow user to select the GRN field to edit
+    // Method to edit Goods Received Notes
+    public void editGoodReceivedNotes(Transaction goodReceivedNote) {
         System.out.println("Edit Good Received Notes");
-
+        // Allow user to select the field to edit
         System.out.println("1. Quantity");
         System.out.println("2. Item");
-        System.out.println("3. Date");
-        System.out.println("4. Back");
-
+        System.out.println("3. Back");
         System.out.print("Enter choice: ");
         int choice = scanner.nextInt();
-        scanner.nextLine();
+        scanner.nextLine(); // Consume newline
 
         switch (choice) {
             case 1:
                 System.out.print("Enter Quantity: ");
-                goodReceivedNotes.setQuantity(scanner.nextInt());
-                scanner.nextLine();
+                goodReceivedNote.setQuantity(scanner.nextInt());
+                scanner.nextLine(); // Consume newline
+                goodReceivedNote.setTransaction_Modified_By(user.getUserId());
                 break;
             case 2:
-                Item item = viewItem.SelectItemFromList();
-                goodReceivedNotes.setItem(item);
+                Item item = viewItem.selectItemFromList();
+                goodReceivedNote.setItem(item);
+                goodReceivedNote.setTransaction_Recipient(item.getVendor_ID());
+                goodReceivedNote.setTransaction_Modified_By(user.getUserId());
                 break;
             case 3:
-                System.out.print("Enter Date: ");
-                goodReceivedNotes.setTransaction_Date(new Date(scanner.nextLine()));
-                break;
-            case 4:
-                break;
+                return;
             default:
                 System.out.println("Invalid choice");
                 break;
         }
-
+        if (goodReceivedNote.Update()) {
+            System.out.println("Good Received Notes updated successfully.");
+        } else {
+            System.out.println("Failed to update Good Received Notes.");
+        }
         
-
     }
-    
-    public void RemoveGoodReceivedNotes(Transaction goodReceivedNotes) {
-        //Remove confirmation
 
-        System.out.println("Are you sure you want to remove this Good Received Notes? (Y/N)");
+    // Method to remove Goods Received Notes
+    public void removeGoodsReceivedNotes(Transaction goodReceivedNote) {
+        // Confirmation for removal
+        System.out.print("Are you sure you want to remove this Good Received Notes? (Y/N): ");
         String choice = scanner.nextLine();
 
         if (choice.equalsIgnoreCase("Y")) {
-            goodReceivedNotes.Remove();
+            GoodReceivedNotes.Get(goodReceivedNote.getDoc_No(), GoodReceivedNotes.DocumentType.GOOD_RECEIVED_NOTES)
+                    .forEach(grn -> {
+                        if (grn != null) {
+                            grn.Remove();
+                        }
+                    });
         }
     }
 
-    public Transaction SelectGoodReceivedNotesFromList(String _PoNo) {
-        this.goodReceivedNotes = GoodReceivedNotes.Get( _PoNo,
-                GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
+    // Method to select a Goods Received Note from the list
+    public Transaction selectGoodReceivedNotesFromList(String poNo) {
+        this.goodReceivedNotes = GoodReceivedNotes.Get(poNo, GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
+
         System.out.println(String.format("| %-20s | %-20s | %-20s |", "Item Name", "Received Quantity", "Received Date"));
-        goodReceivedNotes.forEach(_goodReceivedNote -> {
-            System.out.println(_goodReceivedNote.toString());
-        });
+        for (int i = 0; i < goodReceivedNotes.size(); i++) {
+            System.out.println(i + ": " + goodReceivedNotes.get(i));
+        }
 
-        System.out.print("Select Good Received Notes: ");
-        int grnID = scanner.nextInt();
-        scanner.nextLine();
+        System.out.print("Select Good Received Notes (enter the number): ");
+        int grnIndex = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
 
-        return goodReceivedNotes.get(grnID);
-    }
-
-    
-
-    public ViewGoodReceivedNotes(User _user) {
-        user = _user;
-        viewItem = new ViewItem(_user);
+        // Ensure the selected index is valid
+        if (grnIndex >= 0 && grnIndex < goodReceivedNotes.size()) {
+            return goodReceivedNotes.get(grnIndex);
+        } else {
+            System.out.println("Invalid selection.");
+            return null;
+        }
     }
 }

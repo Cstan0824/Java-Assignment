@@ -3,19 +3,25 @@ package project.view;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import project.global.MailSender;
+import project.global.MailTemplate;
+import project.modules.item.Item;
 import project.modules.transaction.GoodReceivedNotes;
 import project.modules.transaction.PurchaseOrder;
 import project.modules.transaction.Transaction;
 import project.modules.user.User;
 
+
 public class ViewPurchaseManagement {
     private final Scanner scanner = new Scanner(System.in);
 
-    private static User user = null;
+    private static User user;
 
-    private ViewGoodReceivedNotes viewGoodReceivedNotes = null;
-    private ViewPurchaseOrder viewPurchaseOrder = null;
+    private final ViewGoodReceivedNotes viewGoodReceivedNotes;
+    private final ViewPurchaseOrder viewPurchaseOrder;
+    private final ViewItem viewItem;
 
+    // Enum for stock status
     public enum StockStatus {
         PENDING(0),
         IN_PROCESS(1),
@@ -32,17 +38,21 @@ public class ViewPurchaseManagement {
         }
     }
 
-    public ViewPurchaseManagement(User _user) {
-        user = _user;
-        this.viewGoodReceivedNotes = new ViewGoodReceivedNotes(_user);
-        this.viewPurchaseOrder = new ViewPurchaseOrder(_user);
+    // Constructor
+    public ViewPurchaseManagement(User user) {
+        ViewPurchaseManagement.user = user;
+        this.viewGoodReceivedNotes = new ViewGoodReceivedNotes(user);
+        this.viewPurchaseOrder = new ViewPurchaseOrder(user);
+        this.viewItem = new ViewItem(user);
     }
 
+    // Getter for User
     public User getUser() {
         return user;
     }
 
-    public void Menu() {
+    // Main menu for purchase management
+    public void menu() {
         System.out.println("Purchase Management");
         System.out.println("1. Order Restock");
         System.out.println("2. Order Modification");
@@ -51,18 +61,20 @@ public class ViewPurchaseManagement {
         System.out.println("5. Back to Main Menu");
         System.out.print("Enter choice: ");
         int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
         switch (choice) {
             case 1:
-                OrderRestock();
+                orderRestock();
                 break;
             case 2:
-                OrderModification();
+                orderModification();
                 break;
             case 3:
-                OrderCancellation();
+                orderCancellation();
                 break;
             case 4:
-                ViewOrderRecords();
+                viewOrderRecords();
                 break;
             case 5:
                 break;
@@ -72,130 +84,278 @@ public class ViewPurchaseManagement {
         }
     }
 
-    private void OrderRestock() {
+    // Method for restocking orders
+    private void orderRestock() {
+        ArrayList<PurchaseOrder> purchaseOrders = new ArrayList<>();
+        String poNo = new PurchaseOrder().GenerateDocNo();
 
+        String choice;
+        do {
+            Item item = viewItem.selectItemFromList();
+            PurchaseOrder purchaseOrder = new PurchaseOrder();
+            
+            // Get Quantity
+            System.out.print("Enter Quantity: ");
+            purchaseOrder.setQuantity(scanner.nextInt());
+            scanner.nextLine(); // Consume newline
+
+            purchaseOrder.setItem(item);
+            purchaseOrder.setDoc_No(poNo);
+            purchaseOrder.setTransaction_Recipient(item.getVendor_ID());
+            purchaseOrder.setTransaction_Modified_By(user.getUserId());
+            purchaseOrder.setTransaction_Created_By(user.getUserId());
+
+            purchaseOrders.add(purchaseOrder);
+
+            // Add Stock Confirmation
+            System.out.print("Do you want to continue adding stock? [Y/N]: ");
+            choice = scanner.nextLine();
+        } while (choice.equalsIgnoreCase("Y"));
+
+        // Add all purchase orders to the database
+        purchaseOrders.forEach(PurchaseOrder::Add);
+
+        // TODO: Add logic for PDF and MailSender
     }
-    
-    private void OrderModification() {
-        
-    }
 
-    private void OrderCancellation() {
-        ArrayList<PurchaseOrder> purchaseOrders = this.viewPurchaseOrder.SelectPurchaseOrderFromList(); //Display the selected Purchase Order Document
-        PurchaseOrder purchaseOrder = purchaseOrders.get(0);
-        //Display Purchase Order Details
-        System.out.println("Purchase Order Details");
-        System.out.println("Order ID: " + purchaseOrder.getDoc_No());
-        System.out.println("Order Date: " + purchaseOrder.getTransaction_Date());
-        System.out.println("Order Recipient: " + purchaseOrder.getTransaction_Recipient());
-
-        //Display Purchase Order's Item Details 
-        System.out.println(String.format("| %-20s | %-20s |", "Item Name",
-                "Order Quantity"));
-
-        for (PurchaseOrder _purchaseOrder : purchaseOrders) {
-            System.out.println(String.format("| %-20s | %-20s |",
-                    _purchaseOrder.getItem().getItem_Name(),
-                    _purchaseOrder.getQuantity()));
+    // Method for modifying orders
+    private void orderModification() {
+        // Only Pending status orders can be modified
+        ArrayList<PurchaseOrder> purchaseOrders = viewPurchaseOrder.selectPurchaseOrderFromList(StockStatus.PENDING);
+        if (purchaseOrders.isEmpty()) {
+            return;
         }
 
-        //Remove confirmation
-        System.out.println("Are you sure you want to remove this Purchase Order? (Y/N)");
+        //SELECT item to modify
+
+        Transaction purchaseOrder = new PurchaseOrder(purchaseOrders.get(0).getDoc_No());
+
+        ArrayList<Item> itemsInPurchaseOrders = new ArrayList<>();
+        ArrayList<Item> itemsNotInPurchaseOrders = Item.GetAll();
+
+        for (PurchaseOrder po : purchaseOrders) {
+            itemsInPurchaseOrders.add(po.getItem());
+        }
+
+        // ArrayList for Items that are not inside the purchase orders
+        
+        for (PurchaseOrder po : purchaseOrders) {
+            for(Item item : itemsNotInPurchaseOrders) {
+                if (po.getItem().getItem_ID() == item.getItem_ID()) {
+                    itemsNotInPurchaseOrders.remove(item);
+                    break;
+                }
+            }
+        }
+        
+
+        displayOrderDetails(purchaseOrders);
+
+        // Allow user to change item or order quantity
+        //remove item from PO
+        //add new item to PO
+        System.out.println("1. Add Item"); //select new item from list
+        System.out.println("2. Remove Item"); //select item from list
+        System.out.println("3. Change Order Quantity"); //select item from list and enter new quantity
+        System.out.println("4. Back to Purchase Management");
+        System.out.print("Enter choice: ");
+
+        int choice;
+        choice = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (choice) {
+            case 1:
+                Item item = viewItem.selectItemFromList(itemsNotInPurchaseOrders);
+                if (item == null) {
+                    return;
+                }
+
+                purchaseOrder.setItem(item);
+
+                System.out.print("Enter Quantity: ");
+                purchaseOrder.setQuantity(scanner.nextInt());
+                scanner.nextLine(); // Consume newline
+
+                //initialise the value
+                purchaseOrder.setTransaction_Recipient(item.getVendor_ID());
+                purchaseOrder.setTransaction_Modified_By(user.getUserId());
+                purchaseOrder.setTransaction_Created_By(user.getUserId());
+
+                purchaseOrder.Add();
+
+                break;
+            case 2:
+                Item itemToRemove = viewItem.selectItemFromList(itemsInPurchaseOrders);
+                if (itemToRemove == null) {
+                    System.out.println("Item not selected.");
+                    return;
+                }
+
+                purchaseOrder.setItem(itemToRemove);
+
+                //remove confirmation
+                System.out.print("Are you sure you want to remove this Purchase Order? [Y/N]: ");
+                String removeChoice = scanner.nextLine();
+
+                if (!removeChoice.equalsIgnoreCase("Y")) {
+                    return;
+                }
+                if (purchaseOrder.Remove()) {
+                    System.out.println("Item removed from Purchase Order successfully.");
+                    if (itemsInPurchaseOrders.size() == 1) {
+                        System.out.println("Purchase Order is empty. Removing Purchase Order.");
+                    }
+                } else {
+                    System.out.println("Failed to remove Purchase Order.");
+                }
+                break;
+            case 3:
+                Item itemToChange = viewItem.selectItemFromList(itemsInPurchaseOrders);
+                if (itemToChange == null) {
+                    System.out.println("Item not selected.");
+                    return;
+                }
+                purchaseOrder.setItem(itemToChange);
+                purchaseOrder.Get();
+
+                System.out.print("Enter Quantity: ");
+                purchaseOrder.setQuantity(scanner.nextInt());
+                scanner.nextLine();
+
+                purchaseOrder.setTransaction_Modified_By(user.getUserId());
+                purchaseOrder.Update();
+
+                break;
+            case 4:
+                return;
+            default:
+                System.out.println("Invalid choice");
+        }
+        
+        //TODO: Add logic for PDF and MailSender
+    }
+
+    // Method for canceling orders
+    private void orderCancellation() {
+        ArrayList<PurchaseOrder> purchaseOrders = viewPurchaseOrder.selectPurchaseOrderFromList(StockStatus.PENDING);
+        if (purchaseOrders == null || purchaseOrders.isEmpty()) {
+            return;
+        }
+
+        PurchaseOrder purchaseOrder = purchaseOrders.get(0);
+        displayOrderDetails(purchaseOrders);
+
+        // Remove confirmation
+        System.out.print("Are you sure you want to remove this Purchase Order? [Y/N]: ");
         String choice = scanner.nextLine();
 
         if (!choice.equalsIgnoreCase("Y")) {
             return;
         }
-        
-        for (PurchaseOrder _purchaseOrder : purchaseOrders) {
-            _purchaseOrder.Remove();
+
+        purchaseOrders.forEach(PurchaseOrder::Remove);
+
+        // Send cancellation email
+        MailSender mail = new MailSender(
+                "tancs8803@gmail.com", 
+                "Order Cancelled",
+                new MailTemplate(purchaseOrder.getDoc_No(), MailTemplate.TemplateType.ORDER_CANCELLATION)
+        );
+        mail.Send();
+    }
+
+    // Method for viewing order records
+    private void viewOrderRecords() {
+        ArrayList<PurchaseOrder> purchaseOrders = viewPurchaseOrder.selectPurchaseOrderFromList();
+        if (purchaseOrders.isEmpty()) {
+            return;
         }
 
-    }
-    
-    private void ViewOrderRecords() {
-        ArrayList<PurchaseOrder> purchaseOrders = this.viewPurchaseOrder.SelectPurchaseOrderFromList(); //Display the selected Purchase Order Document
         PurchaseOrder purchaseOrder = purchaseOrders.get(0);
-        //Display Purchase Order Details
+        displayOrderDetails(purchaseOrders);
+
+        // Display Goods Received Notes
+        ArrayList<GoodReceivedNotes> goodReceivedNotesList = GoodReceivedNotes.Get(purchaseOrder.getDoc_No(),
+                GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
+        if (!(goodReceivedNotesList == null || goodReceivedNotesList.isEmpty())) {
+            displayGoodReceivedNotes(goodReceivedNotesList);
+        } else {
+            System.out.println("No Goods Received Notes found for this order.");
+        }
+
+
+        // Allow user to follow up or manage stock status - only display if the order is PENDING status
+        if (viewPurchaseOrder.getOrderStatusList().get(0) != StockStatus.RECEIVED.getValue()) {
+            viewStockStatusMenu(purchaseOrder);
+        }
+    }
+
+    // Helper method to display order details
+    private void displayOrderDetails(ArrayList<PurchaseOrder> purchaseOrders) {
+        PurchaseOrder purchaseOrder = purchaseOrders.get(0);
         System.out.println("Purchase Order Details");
         System.out.println("Order ID: " + purchaseOrder.getDoc_No());
         System.out.println("Order Date: " + purchaseOrder.getTransaction_Date());
         System.out.println("Order Recipient: " + purchaseOrder.getTransaction_Recipient());
 
-        //Display Purchase Order's Item Details 
-        System.out.println("Item Details");
-        System.out.println(String.format("| %-20s | %-20s | %-20s | %-15s |", "Item Name", "Item Price",
-                "Order Quantity", "Order Price"));
+        // Display item details
+        System.out.println(String.format("| %-20s | %-20s |", "Item Name", "Order Quantity"));
+        double totalPrice = 0;
 
-        double TotalPrice = 0;
-
-        for (PurchaseOrder _purchaseOrder : purchaseOrders) {
-            double OrderPrice = _purchaseOrder.getItem().getItem_Price() * _purchaseOrder.getQuantity();
-            TotalPrice += OrderPrice;
-
-            System.out.println(String.format("| %-20s | %-20s | %-20s | %-15s |",
-                    _purchaseOrder.getItem().getItem_Name(),
-                    _purchaseOrder.getItem().getItem_Price(),
-                    _purchaseOrder.getQuantity(),
-                    String.valueOf(OrderPrice)));
+        for (PurchaseOrder order : purchaseOrders) {
+            double orderPrice = order.getItem().getItem_Price() * order.getQuantity();
+            totalPrice += orderPrice;
+            System.out.println(String.format("| %-20s | %-20s |", order.getItem().getItem_Name(), order.getQuantity()));
         }
-        //Display total price in format
-        System.out.println(String.format("| %60s | %-15s |", "Total Price: ", String.valueOf(TotalPrice)));
 
-        //Display GRN
-        System.out.println("Goods Received Notes");
-        ArrayList<GoodReceivedNotes> goodReceivedNotes = GoodReceivedNotes.Get(purchaseOrder.getDoc_No(),
-                GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
-        //Transaction goodReceivedNote = goodReceivedNotes.get(0);
-
-        //Display GRN Header
-        System.out.println(String.format("| %-20s | %-20s | %-20s |", "Item Name", "Item Price",
-                "Received Quantity"));
-
-        //Display GRN Details
-        for (GoodReceivedNotes _goodReceivedNote : goodReceivedNotes) {
-            System.out.println(String.format("| %-20s | %-20s | %-20s |",
-                    _goodReceivedNote.getItem().getItem_Name(),
-                    _goodReceivedNote.getItem().getItem_Price(),
-                    _goodReceivedNote.getQuantity()));
-        }
-        //Only for Pending, In-process status
-        ViewStockStatusMenu(purchaseOrder);
+        System.out.println(String.format("Total Price: %.2f", totalPrice));
     }
-    
 
-    private void ViewStockStatusMenu(PurchaseOrder _purchaseOrder) {
-        Transaction goodReceivedNotes = new GoodReceivedNotes();
+    // Helper method to display Goods Received Notes
+    private void displayGoodReceivedNotes(ArrayList<GoodReceivedNotes> goodReceivedNotesList) {
+        System.out.println("Goods Received Notes");
+        System.out.println(String.format("| %-20s | %-20s | %-20s |", "Item Name", "Item Price", "Received Quantity"));
 
-        //Sub Menu allow user to follow up status or add GRN
+        for (GoodReceivedNotes notes : goodReceivedNotesList) {
+            notes.getItem().Get();
+            System.out.println(String.format("| %-20s | %-20s | %-20s |",
+                    notes.getItem().getItem_Name(),
+                    notes.getItem().getItem_Price(),
+                    notes.getQuantity()));
+        }
+    }
+
+    // Submenu for managing stock status
+    private void viewStockStatusMenu(PurchaseOrder purchaseOrder) {
         System.out.println("1. Follow Up Status");
         System.out.println("2. Add Goods Received Notes");
         System.out.println("3. Edit Goods Received Notes");
-        System.out.println("4. Remove GoodReceived Notes");
+        System.out.println("4. Remove Goods Received Notes");
         System.out.println("5. Back to Purchase Management");
-
         System.out.print("Enter choice: ");
         int choice = scanner.nextInt();
 
+        scanner.nextLine();
+
+        Transaction goodReceivedNotes;
+
         switch (choice) {
             case 1:
-                this.viewPurchaseOrder.FollowUpStatus(_purchaseOrder);
+                viewPurchaseOrder.followUpStatus(purchaseOrder);
                 break;
             case 2:
-                String GrnNo = goodReceivedNotes.GenerateDocNo();
-                this.viewGoodReceivedNotes.AddGoodsReceivedNotes(_purchaseOrder.getDoc_No(), GrnNo);
+                goodReceivedNotes = new GoodReceivedNotes();
+                String grnNo = goodReceivedNotes.GenerateDocNo();
+                viewGoodReceivedNotes.addGoodsReceivedNotes(purchaseOrder.getDoc_No(), grnNo);
                 break;
             case 3:
-                //prompt user to select GRN
-                goodReceivedNotes = this.viewGoodReceivedNotes
-                        .SelectGoodReceivedNotesFromList(_purchaseOrder.getDoc_No());
-                this.viewGoodReceivedNotes.EditGoodReceivedNotes(goodReceivedNotes);
+                goodReceivedNotes = viewGoodReceivedNotes.selectGoodReceivedNotesFromList(purchaseOrder.getDoc_No());
+                viewGoodReceivedNotes.editGoodReceivedNotes(goodReceivedNotes);
                 break;
             case 4:
-                //prompt user to select GRN
-                goodReceivedNotes = this.viewGoodReceivedNotes
-                        .SelectGoodReceivedNotesFromList(_purchaseOrder.getDoc_No());
-                this.viewGoodReceivedNotes.RemoveGoodReceivedNotes(goodReceivedNotes);
+                goodReceivedNotes = viewGoodReceivedNotes.selectGoodReceivedNotesFromList(purchaseOrder.getDoc_No());
+                viewGoodReceivedNotes.removeGoodsReceivedNotes(goodReceivedNotes);
                 break;
             case 5:
                 break;
