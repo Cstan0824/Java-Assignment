@@ -1,4 +1,4 @@
-package project.modules.user;
+package com.example;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Scanner;
-import project.global.SqlConnector;
 
 public abstract class User {
     //private data field can be only access by the class itself

@@ -1,8 +1,8 @@
-package project.modules.user;
+package com.example;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Scanner;
-import project.global.SqlConnector;
 
 
 public class Admin extends User {
@@ -33,11 +33,29 @@ public class Admin extends User {
         System.out.println("Enter Admin Name: ");
         this.setUserName(scanner.nextLine());
 
+        while(!Validation.validateUserName(this.getUserName())) {
+            System.out.println("Format not allowed");
+            System.out.println("Enter Admin Name: ");
+            this.setUserName(scanner.nextLine());
+        }
+
         System.out.println("Enter Admin Password: ");
         this.setUserPassword(scanner.nextLine());
 
+        while(!Validation.validateUserPassword(this.getUserPassword())) {
+            System.out.println("Format not allowed");
+            System.out.println("Enter Admin Password: ");
+            this.setUserPassword(scanner.nextLine());
+        }
+
         System.out.println("Enter Admin Email: ");
         this.setUserEmail(scanner.nextLine());
+
+        while(!Validation.validateUserEmail(this.getUserEmail())) {
+            System.out.println("Format not allowed");
+            System.out.println("Enter Admin Email: ");
+            this.setUserEmail(scanner.nextLine());
+        }
 
         scanner.close();
 
@@ -47,11 +65,17 @@ public class Admin extends User {
        
     }
     
-    public void searchAdmin() //can work 
+    public void searchAdmin() //can work , validated 
     {
         try (Scanner sc = new Scanner(System.in)) {
-            System.out.println("Enter Admin ID: ");
-            this.setUserId(sc.nextLine()); 
+
+            do{
+
+                System.out.println("Enter Admin ID: ");
+                this.setUserId(sc.nextLine());
+
+            }while(!Validation.validateUserId(this.getUserId()));
+
         }
 
 
@@ -68,8 +92,12 @@ public class Admin extends User {
     public void deleteAdmin() // can work
     {
         try (Scanner sc = new Scanner(System.in)) {
-            System.out.println("Enter Admin ID: ");
-            this.setUserId(sc.nextLine()); // Set the userId in the current object
+            do{
+
+                System.out.println("Enter Admin ID: ");
+                this.setUserId(sc.nextLine());
+
+            }while(!Validation.validateUserId(this.getUserId()));
         }
 
         this.Remove();
@@ -79,10 +107,14 @@ public class Admin extends User {
     {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter Admin ID: ");
-        this.setUserId(scanner.nextLine());
+        do{
+                System.out.println("Enter Admin ID: ");
+                this.setUserId(scanner.nextLine());
+                
+        }while (!Validation.validateUserId(this.getUserId()));
 
         if (!Get()){
+
             System.out.println("Admin ID does not exist.");
             return;
             
@@ -157,9 +189,13 @@ public class Admin extends User {
         sc.close();
 
         // Call the AddRetailer method to add the retailer to the database
-        this.AddRetailer(retailerId, retailerName, retailerPassword, retailerEmail, retailerAddress);
+
+        Retailer retailer = new Retailer(retailerId, retailerName, retailerPassword, retailerEmail, retailerAddress, this.getUserId());
+        System.out.println("Retailer Created By (Admin ID): " + retailer.getRetailerCreatedBy());
+
+        retailer.Add();
+
     }
-   
     @Override
     public void Add()
     {
@@ -193,14 +229,13 @@ public class Admin extends User {
           System.out.println("2. View Admin");
           System.out.println("3. Update Admin");
           System.out.println("4. Delete Admin");
-          System.out.println("5. Create Retailer");
+          System.out.println("5. Add Retailer");
           System.out.println("6. Delete Retailer");
-          System.out.println("7. Exit");
+          System.out.println("7. Notification Retailer");
+          System.out.println("8. Exit");
           System.out.print("Enter choice: ");
           int choice = scanner.nextInt();
           scanner.nextLine();
-
-          scanner.close();
 
   
           switch (choice) {
@@ -222,9 +257,98 @@ public class Admin extends User {
               case 6:
                 retailer.deleteRetailer();
                 break;
+            case 7:
+                Notification();
+                break;
               default:
                 System.out.println("Invalid choice.");
                 break;
         }
     }
+
+    public void Notification() {
+        ArrayList<Request> pendingRequests = Request.viewRequest(); // Assuming viewRequest is static in Request
+
+        // Step 2: If there are pending requests, proceed with approval/rejection
+        if (pendingRequests != null && !pendingRequests.isEmpty()) {
+            Scanner scanner = new Scanner(System.in);
+
+            // Admin selects the request to act on
+            System.out.println("Enter Request ID to further proceed: ");
+            int requestId = scanner.nextInt();
+
+            // Find the request by ID
+            Request selectedRequest = null;
+            for (Request req : pendingRequests) {
+                if (req.getRequest_ID() == requestId) {
+                    selectedRequest = req;
+                    break;
+                }
+            }
+
+            // If the request is found, proceed with approval or rejection
+            if (selectedRequest != null) {
+                System.out.println("Do you want to approve or reject the request (A/R): ");
+                String choice = scanner.next();
+
+                if (choice.equalsIgnoreCase("A")) {
+                    selectedRequest.approveRequest(this.getUserId()); // Passing admin ID to approveRequest
+
+
+
+                } 
+                else if (choice.equalsIgnoreCase("R")) {
+                    selectedRequest.rejectRequest();
+
+
+                } 
+                else {
+                    System.out.println("Invalid choice.");
+                }
+
+                System.out.println("Do you want to handle more requests (Y/N): ");
+                String moreRequests = scanner.next();
+
+                if (moreRequests.equalsIgnoreCase("Y")) {
+                    Notification(); // Recursively call the method to handle more requests
+                }
+                else if (moreRequests.equalsIgnoreCase("N")) {
+                    // return back to menu
+                }
+                else {
+                    System.out.println("Invalid choice.");
+                    // return back to menu
+                }
+
+
+
+
+
+
+
+            } else {
+                System.out.println("Request ID not found.");
+                // return back to menu 
+            }
+
+            scanner.close();
+        } else {
+            System.out.println("No pending requests found.");
+            // return back to menu
+        }
+
+
+        
+    }
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -1,16 +1,14 @@
-package project.modules.user;
+package com.example;
 
 import java.time.LocalDateTime;
-import java.util.Scanner;
-
-import project.global.SqlConnector;
+import java.util.*;
 
 public class Retailer extends User {
 
     private String retailerCreatedBy;
     private String retailerAddress;
 
-    
+
 
     public Retailer(String userId, String userName, String userPassword, String userEmail) {
         super(userId, userName, userPassword, userEmail, "Retailer");
@@ -180,5 +178,39 @@ public class Retailer extends User {
 
 
 
-    }}
+    }
+
     
+
+    public void Register() // can work
+    {
+        Scanner sc = new Scanner(System.in);
+
+        Request request  = new Request();
+
+        System.out.println("Enter Retailer ID: ");
+        request.setRetailer_ID(sc.nextLine());
+
+        System.out.println("Enter Retailer Name: ");
+        request.setRetailer_Name(sc.nextLine());
+
+        System.out.println("Enter Retailer Password: ");
+        request.setRetailer_Password(sc.nextLine());
+
+        System.out.println("Enter Retailer Email: ");
+        request.setRetailer_Email(sc.nextLine());
+
+        System.out.println("Enter Retailer Address: ");
+        request.setRetailer_Address(sc.nextLine());
+
+
+
+    
+
+        sc.close();
+        request.saveRequest();
+
+        
+
+    }
+}
