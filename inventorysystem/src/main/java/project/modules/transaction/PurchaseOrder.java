@@ -98,8 +98,8 @@ public class PurchaseOrder extends Transaction {
             //Send Reordering to vendor
             //generate pdf
             File file = new File(
-                "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
-                this.getDoc_No() + ".pdf");
+                    "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
+                    this.getDoc_No() + ".pdf");
             PdfConverter pdf = new PdfConverter(file, new PdfTemplate(this, PdfTemplate.TemplateType.PURCHASE_ORDER));
             pdf.Save();
 
@@ -116,15 +116,25 @@ public class PurchaseOrder extends Transaction {
         if (!connector.isConnected()) {
             return false;
         }
-        String query = "UPDATE Transaction SET Item_ID = ?, Transaction_Date = ?, Quantity = ?, Transaction_Recipient = ?, Transaction_Modified_By = ? WHERE Doc_No = ?";
-
-        boolean QueryExecuted = connector.PrepareExecuteDML(query,
-                this.getItem().getItem_ID(), this.getTransaction_Date(),
-                this.getQuantity(),
-                this.getTransaction_Recipient(),
-                this.getTransaction_Modified_By(),
-                this.getDoc_No());
-
+        String query;
+        boolean QueryExecuted;
+        if (this.getItem().getItem_ID() == oldPurchaseOrder.getItem().getItem_ID()) {
+            query = "UPDATE Transaction SET  Transaction_Date = ?, Quantity = ?, Transaction_Recipient = ?, Transaction_Modified_By = ? WHERE Doc_No = ?";
+            QueryExecuted = connector.PrepareExecuteDML(query,
+                    this.getTransaction_Date(),
+                    this.getQuantity(),
+                    this.getTransaction_Recipient(),
+                    this.getTransaction_Modified_By(),
+                    this.getDoc_No());
+        } else {
+            query = "UPDATE Transaction SET Item_ID = ?, Transaction_Date = ?, Quantity = ?, Transaction_Recipient = ?, Transaction_Modified_By = ? WHERE Doc_No = ?";
+            QueryExecuted = connector.PrepareExecuteDML(query,
+                    this.getItem().getItem_ID(), this.getTransaction_Date(),
+                    this.getQuantity(),
+                    this.getTransaction_Recipient(),
+                    this.getTransaction_Modified_By(),
+                    this.getDoc_No());
+        }
         connector.Disconnect();
         return QueryExecuted;
     }
@@ -148,9 +158,9 @@ public class PurchaseOrder extends Transaction {
         if (!connector.isConnected()) {
             return false;
         }
-        String query = "DELETE FROM Transaction WHERE Doc_No = ?";
+        String query = "DELETE FROM Transaction WHERE Doc_No = ? and Item_ID = ?";
 
-        boolean QueryExecuted = connector.PrepareExecuteDML(query, this.getDoc_No());
+        boolean QueryExecuted = connector.PrepareExecuteDML(query, this.getDoc_No(), this.getItem().getItem_ID());
 
         connector.Disconnect();
 
@@ -219,9 +229,9 @@ public class PurchaseOrder extends Transaction {
     public String GenerateDocNo() {
         return "PO" + String.format("%05d", SystemRunNo.Get("PO"));
     }
-    
 
     public String toString(AtomicInteger StockStatus_) {
+        //000AH: Use AtomicInteger to store order status
         super.getItem().Get();
 
         // Determine the stock status by checking GoodReceivedNotes
@@ -232,11 +242,14 @@ public class PurchaseOrder extends Transaction {
 
         if (goodReceiveNotes != null && !goodReceiveNotes.isEmpty()) {
             for (Transaction goodReceiveNote : goodReceiveNotes) {
+                goodReceiveNote.getItem().Get();
+                if(goodReceiveNote.getItem().getItem_ID() != this.getItem().getItem_ID()){
+                    continue;
+                }
                 OnHandStock += goodReceiveNote.getQuantity();
             }
         }
 
-        // Update the StockStatus_ based on the comparison of VirtualStock and OnHandStock
         if (OnHandStock >= VirtualStock) {
             StockStatus_.set(2); // Received
         } else if (OnHandStock > 0 && OnHandStock < VirtualStock) {
@@ -248,18 +261,20 @@ public class PurchaseOrder extends Transaction {
         // Use StockStatus_ to generate the status string
         String status = (StockStatus_.get() == 2) ? "Received" : (StockStatus_.get() == 1) ? "In-Process" : "Pending";
 
+
         // Define a format string with placeholders for the important column values
-        String format = "| %-15s | %-15s | %-10s | %-10s | %-10s |\n";
+        String format = "| %-20s | %-20s | %-15s | %-15s | %-15s | %-15s |\n";
         String value = String.format(format,
-                this.getItem().getItem_Name(),
                 this.getDoc_No(),
                 this.getTransaction_Date(),
+                this.getItem().getItem_Name(),
                 this.getQuantity(),
+                this.getTransaction_Recipient(),
                 status);
-
-        // Return the formatted string with all the necessary details
         return value;
     }
+
+    
 
 
     public static Transaction Get(Item _item, String _DocNo) {
@@ -269,7 +284,7 @@ public class PurchaseOrder extends Transaction {
             return null;
         }
 
-        String query = "SELECT * FROM Transaction WHERE Doc_No = ? AND Item_ID = ?";
+        String query = "SELECT * FROM Transaction WHERE Doc_No = ? AND Item_ID = ? ORDER BY Doc_No";
         ArrayList<PurchaseOrder> purchaseOrders = connector.PrepareExecuteRead(query, PurchaseOrder.class, _DocNo,
                 _item.getItem_ID());
         connector.Disconnect();
@@ -277,7 +292,7 @@ public class PurchaseOrder extends Transaction {
         if (purchaseOrders == null || purchaseOrders.isEmpty()) {
             return null;
         }
-
+        purchaseOrders.get(0).setItem(_item);
         return purchaseOrders.get(0);
     }
 
@@ -288,7 +303,7 @@ public class PurchaseOrder extends Transaction {
             return null;
         }
 
-        String query = "SELECT * FROM Transaction WHERE Doc_No = ?";
+        String query = "SELECT * FROM Transaction WHERE Doc_No = ? ORDER BY Doc_No";
         ArrayList<PurchaseOrder> purchaseOrders = connector.PrepareExecuteRead(query, PurchaseOrder.class, _DocNo);
         connector.Disconnect();
 
@@ -302,7 +317,7 @@ public class PurchaseOrder extends Transaction {
             return null;
         }
 
-        String query = "SELECT * FROM Transaction WHERE DOC_NO LIKE 'PO%'";
+        String query = "SELECT * FROM Transaction WHERE DOC_NO LIKE 'PO%' ORDER BY Doc_No";
         ArrayList<PurchaseOrder> purchaseOrders = connector.ExecuteRead(query, PurchaseOrder.class);
 
         if (purchaseOrders == null || purchaseOrders.isEmpty()) {
@@ -333,7 +348,7 @@ public class PurchaseOrder extends Transaction {
             }
         }
 
-        String status = (OnHandStock == VirtualStock) ? "Received" : "Pending";
+        String status = (OnHandStock == VirtualStock) ? "Received" : (OnHandStock > 0) ? "In-Process" : "Pending";
 
         // Define a format string with placeholders for the important column values
         String format = "| %-15s | %-15s | %-10s | %-10s | %-10s |\n";
@@ -343,8 +358,6 @@ public class PurchaseOrder extends Transaction {
                 this.getTransaction_Date(),
                 this.getQuantity(),
                 status);
-        System.out.println(value);
-        System.out.println("Hellow");
         // Format the fields according to the placeholders
         return value;
     }

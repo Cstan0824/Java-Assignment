@@ -2,12 +2,12 @@ package project.modules.transaction;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import project.global.MailSender;
 import project.global.MailTemplate;
 import project.global.SqlConnector;
 import project.global.SystemRunNo;
+import project.global.UserInputHandler;
 import project.modules.item.Item;
 
 public class GoodReceivedNotes extends Transaction {
@@ -42,19 +42,21 @@ public class GoodReceivedNotes extends Transaction {
 
         if (goodReceivedNotes != null && !goodReceivedNotes.isEmpty()) {
             for (Transaction goodReceivedNote : goodReceivedNotes) {
-                OnHandStock += goodReceivedNote.getQuantity();
+                goodReceivedNote.getItem().Get();
+                if (goodReceivedNote.getItem().getItem_ID() == purchaseOrder.getItem().getItem_ID()) {
+                    OnHandStock += goodReceivedNote.getQuantity();
+
+                }
             }
         }
         
         //System.out.println("Virtual Stock: " + VirtualStock);
         //System.out.println("On Hand Stock: " + OnHandStock);
         if (OnHandStock == VirtualStock) {
-            System.out.println("The Stock already on hand");            
             return false;
         } else if (VirtualStock < (OnHandStock + this.getQuantity())) {
-            System.out.println("The Stock amount is exceed the actual amount");
             return false;
-        } 
+        }
 
         //Connect to Sql - check the amount after the query inserted successfully
         SqlConnector connector = new SqlConnector();
@@ -141,14 +143,27 @@ public class GoodReceivedNotes extends Transaction {
         if (!connector.isConnected()) {
             return false;
         }
-        String query = "UPDATE Transaction SET Item_ID = ?, Transaction_Date = ?, Quantity = ?, Transaction_Mode = ?, Transaction_Recipient = ?, Transaction_Created_By = ?, Transaction_Modified_By = ? WHERE Doc_No = ?;";
+        boolean QueryExecuted;
+        if (OldGoodReceivedNote.getItem().getItem_ID() == this.getItem().getItem_ID()) {
+            //The Item is the same
+            String query = "UPDATE Transaction SET  Transaction_Date = ?, Quantity = ?, Transaction_Mode = ?, Transaction_Recipient = ?, Transaction_Created_By = ?, Transaction_Modified_By = ? WHERE Doc_No = ?;";
 
-        boolean QueryExecuted = connector.PrepareExecuteDML(query,
-                this.getItem().getItem_ID(),
-                this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(),
-                this.getTransaction_Recipient(),
-                this.getTransaction_Created_By(), this.getTransaction_Modified_By(),
-                this.getDoc_No());
+            QueryExecuted = connector.PrepareExecuteDML(query,
+                    this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(),
+                    this.getTransaction_Recipient(),
+                    this.getTransaction_Created_By(), this.getTransaction_Modified_By(),
+                    this.getDoc_No());
+
+        } else {
+            String query = "UPDATE Transaction SET Item_ID = ?, Transaction_Date = ?, Quantity = ?, Transaction_Mode = ?, Transaction_Recipient = ?, Transaction_Created_By = ?, Transaction_Modified_By = ? WHERE Doc_No = ?;";
+
+            QueryExecuted = connector.PrepareExecuteDML(query,
+                    this.getItem().getItem_ID(),
+                    this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(),
+                    this.getTransaction_Recipient(),
+                    this.getTransaction_Created_By(), this.getTransaction_Modified_By(),
+                    this.getDoc_No());
+        }
 
         connector.Disconnect();
 
@@ -159,7 +174,8 @@ public class GoodReceivedNotes extends Transaction {
         MailSender mail;
         if (VirtualStock > (OnHandStock + differenceStockQuantity)) {
             //The Amount is still not enough, ask user whether need to follow the status with vendor
-            if (!ProceedWithStock()) {
+            if (!UserInputHandler.getConfirmation("Do you want to follow up the status of the stock?")
+                    .equalsIgnoreCase("Y")) {
                 return true;
             }
             mail = new MailSender("tancs8803@gmail.com", "Follow Up Order Status",
@@ -234,10 +250,10 @@ public class GoodReceivedNotes extends Transaction {
         String query = null;
         switch (_DocumentType) {
             case GOOD_RECEIVED_NOTES:
-                query = "SELECT * FROM Transaction WHERE Doc_No = ?;";
+                query = "SELECT * FROM Transaction WHERE Doc_No = ? ORDER BY Source_Doc_No, Doc_No;";
                 break;
             case PURCHASE_ORDER:
-                query = "SELECT * FROM Transaction WHERE Source_Doc_No = ?;";
+                query = "SELECT * FROM Transaction WHERE Source_Doc_No = ? ORDER BY Source_Doc_No, Doc_No;";
                 break;
             default:
                 break;
@@ -252,6 +268,26 @@ public class GoodReceivedNotes extends Transaction {
         ArrayList<GoodReceivedNotes> GoodReceivedNotes = connector.PrepareExecuteRead(query, GoodReceivedNotes.class,
                 _DocNo);
 
+        connector.Disconnect();
+
+        if (GoodReceivedNotes == null || GoodReceivedNotes.isEmpty()) {
+            return null;
+        }
+
+        return GoodReceivedNotes;
+    }
+    
+    public static ArrayList<GoodReceivedNotes> Get(Item _item, String _SourceDocNo) {
+        String query = "SELECT * FROM Transaction WHERE Item_ID = ? AND Source_Doc_No = ? ORDER BY Source_Doc_No, Doc_No;";
+
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+
+        if (!connector.isConnected()) {
+            return null;
+        }
+        ArrayList<GoodReceivedNotes> GoodReceivedNotes = connector.PrepareExecuteRead(query, GoodReceivedNotes.class,
+                _item.getItem_ID(), _SourceDocNo);
 
         connector.Disconnect();
 
@@ -268,22 +304,7 @@ public class GoodReceivedNotes extends Transaction {
         return "GRN" + String.format("%05d", SystemRunNo.Get("GRN"));
     }
     
-    private boolean ProceedWithStock() {
-
-        try (Scanner scanner = new Scanner(System.in)) {
-            String userResponse;
-            do {
-                System.out.println("Do you want to follow up the status of the stock? [Y/N]");
-                userResponse = scanner.next();
-                scanner.nextLine();
-            } while (userResponse.equalsIgnoreCase("Y") || userResponse.equalsIgnoreCase("N"));
-
-            if (userResponse.equalsIgnoreCase("Y")) {
-                return true;
-            }
-        }
-        return false;
-    }
+    
 
     //Constructor
     public GoodReceivedNotes() {

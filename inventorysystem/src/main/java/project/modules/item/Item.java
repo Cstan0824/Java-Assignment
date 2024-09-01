@@ -258,9 +258,9 @@ public class Item implements CrudOperation{
     @Override
     public String toString() {
         //display data in columns
-        return String.format("| %-5d | %-5d | %-5s | %-20s | %-30s | %-5d | %-5.2f |",
-                this.Item_ID, this.Item_Category_ID, this.Vendor_ID,
-                this.Item_name, this.Item_Desc, this.Item_Quantity, this.Item_Price);
+        return String.format("| %-15s | %-15s | %-20s | %-50s |",
+                this.Item_Category_ID, this.Vendor_ID,
+                this.Item_name, this.Item_Desc);
     }
 
     //Constructor

@@ -173,9 +173,6 @@ public class AutoReplenishment implements CrudOperation {
 
                 SendPurchaseOrder(replenishment, PO_NO, RestockQuantity);
 
-                //Assume the stock is all Received - Will do future Modification Maybe :)
-                //GenerateGoodReceivedNotes(replenishment, PO_NO, RestockQuantity);
-
                 //Update Item Quantity
                 replenishment.getItem()
                         .setItem_Quantity(
@@ -212,27 +209,6 @@ public class AutoReplenishment implements CrudOperation {
                 new MailTemplate(purchaseOrder.getDoc_No(), MailTemplate.TemplateType.PURCHASE_ORDER));
         purchaseOrderMail.AttachFile(file);
         purchaseOrderMail.Send();
-    }
-    
-    private static void GenerateGoodReceivedNotes(AutoReplenishment _replenishment,String _PoNo, int _RestockQuantity) {
-        //Good Received Notes
-        Transaction goodReceivedNotes = new GoodReceivedNotes();
-        String GRN_NO = goodReceivedNotes.GenerateDocNo();
-        goodReceivedNotes.setDoc_No(GRN_NO);
-        goodReceivedNotes.setSource_Doc_No(_PoNo);
-        goodReceivedNotes.setQuantity(_RestockQuantity);
-        goodReceivedNotes.setItem(_replenishment.getItem());
-        goodReceivedNotes.setTransaction_Recipient("Warehouse");
-        goodReceivedNotes.setTransaction_Created_By("System");
-        goodReceivedNotes.setTransaction_Modified_By("System");
-
-        goodReceivedNotes.Add();
-
-        //Email
-        //Send Order Confirmation to Vendor
-        MailSender goodReceivedNotesMail = new MailSender("tancs8803@gmail.com", "Order Confirmation",
-                new MailTemplate(goodReceivedNotes.getDoc_No(), MailTemplate.TemplateType.ORDER_CONFIRMATION));
-        goodReceivedNotesMail.Send();
     }
 
     

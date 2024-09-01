@@ -1,20 +1,21 @@
 package project.view;
 
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import project.global.MailSender;
 import project.global.MailTemplate;
+import project.global.UserInputHandler;
 import project.modules.transaction.PurchaseOrder;
 import project.modules.user.User;
 import project.view.ViewPurchaseManagement.StockStatus;
 
 public class ViewPurchaseOrder {
     private static User user;
-    private static final Scanner scanner = new Scanner(System.in);
     private final ArrayList<Integer> orderStatusList = new ArrayList<>();
-    private final ArrayList<PurchaseOrder> purchaseOrderList;
+    private ArrayList<PurchaseOrder> purchaseOrderList;
 
 
     // Constructor
@@ -36,30 +37,50 @@ public class ViewPurchaseOrder {
         return this.purchaseOrderList;
     }
 
+    public void setPurchaseOrderList() {
+        this.purchaseOrderList = PurchaseOrder.GetAll();
+    }
+
+    public void setPurchaseOrderList(ArrayList<PurchaseOrder> purchaseOrderList) {
+        this.purchaseOrderList = purchaseOrderList;
+    }
+
     // Display and select purchase orders
     public ArrayList<PurchaseOrder> selectPurchaseOrderFromList() {
+        orderStatusList.clear();
         ArrayList<PurchaseOrder> selectedOrders = new ArrayList<>();
         ArrayList<Integer> selectedStatuses = new ArrayList<>();
-        AtomicInteger index = new AtomicInteger(1);
+        Set<String> displayedOrders = new HashSet<>();
 
         // Print header
-        System.out.println(String.format("| %-20s | %-20s | %-20s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |",
-                "Order ID", "Item Name", "Item Description", "Item Quantity", "Item Price", "Order Date",
-                "Order Mode", "Order Recipient", "Order Created By"));
+        System.out.println(" =============================================== Purchase Orders ===================================================== ");
+        System.out.println(String.format("| %-20s | %-20s | %-15s | %-15s | %-15s | %-15s |",
+                "Order ID","Order Date", "Item Name", "Order Quantity", "Order Recipient", "Order Status"));
+        System.out.println(" ===================================================================================================================== ");
 
         // Display purchase orders
         purchaseOrderList.forEach(order -> {
             order.getItem().Get();
-            System.out.print(index.getAndIncrement() + " ");
-            AtomicInteger orderStatus = new AtomicInteger(); // Placeholder for order status
-            System.out.print(order.toString(orderStatus));
-            System.out.println("Order Status: " + orderStatus);
+            AtomicInteger orderStatus = new AtomicInteger(); 
+            //display the order details and if the PO already displayed, skip and only display its item details 
+            String orderDetails = order.toString(orderStatus);
+            String status = (orderStatus.get() == 2) ? "Received" : (orderStatus.get() == 1) ? "In-Process" : "Pending";
+
+            if (displayedOrders.add(order.getDoc_No())) {
+                System.out.print(orderDetails);
+            } else {
+                System.out.println(String.format("| %-20s   %-20s | %-15s | %-15s | %-15s | %-15s |",
+                        "", "", order.getItem().getItem_Name(), order.getQuantity(), order.getTransaction_Recipient(),
+                        status));
+            }
             orderStatusList.add(orderStatus.get());
         });
+                System.out.println(" ===================================================================================================================== ");
+
 
         // Select a purchase order by ID
-        System.out.print("Select Purchase Order by Order ID: ");
-        String selectedOrderID = scanner.nextLine();
+        String selectedOrderID = UserInputHandler.getString("Select Purchase Order by Order ID"
+                , 7, "^PO[0-9]{5}$");
 
         // Filter selected order(s)
         AtomicInteger orderIndex = new AtomicInteger(0);
@@ -79,63 +100,61 @@ public class ViewPurchaseOrder {
     }
     
     public ArrayList<PurchaseOrder> selectPurchaseOrderFromList(StockStatus _OrderStatus) {
-        ArrayList<PurchaseOrder> selectedOrders = new ArrayList<>();
-        ArrayList<Integer> selectedStatuses = new ArrayList<>();
-        AtomicInteger index = new AtomicInteger(1);
+        ArrayList<PurchaseOrder> selectedOrders;
+        Set<String> displayedOrders = new HashSet<>();
 
         // Print header
-        System.out.println(String.format("| %-20s | %-20s | %-20s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |",
-                "Order ID", "Item Name", "Item Description", "Item Quantity", "Item Price", "Order Date", 
-                "Order Mode", "Order Recipient", "Order Created By"));
+        System.out.println(
+                " =============================================== Purchase Orders ===================================================== ");
+        System.out.println(String.format("| %-20s | %-20s | %-15s | %-15s | %-15s | %-15s |",
+                "Order ID", "Order Date", "Item Name", "Order Quantity", "Order Recipient", "Order Status"));
+        System.out.println(
+                " ===================================================================================================================== ");
 
         // Display purchase orders
         purchaseOrderList.forEach(order -> {
             order.getItem().Get();
-            
+            //000AH: Use AtomicInteger to store order status
             AtomicInteger orderStatus = new AtomicInteger(); // Placeholder for order status
             String orderDetails = order.toString(orderStatus);
-            if (orderStatus.get() == _OrderStatus.getValue()) {
-                System.out.print(index.getAndIncrement() + " ");
+            if (_OrderStatus.getValue() != orderStatus.get()) {
+                return;
+            }
+
+            String status = (orderStatus.get() == 2) ? "Received" : (orderStatus.get() == 1) ? "In-Process" : "Pending";
+            if (displayedOrders.add(order.getDoc_No())) {
                 System.out.print(orderDetails);
-                orderStatusList.add(orderStatus.get());
+            } else {
+                System.out.println(String.format("| %-20s   %-20s | %-15s | %-15s | %-15s | %-15s |",
+                        "", "", order.getItem().getItem_Name(), order.getQuantity(), order.getTransaction_Recipient(),
+                        status));
             }
         });
+        System.out.println(
+                " ===================================================================================================================== ");
 
         // Select a purchase order by ID
-        System.out.print("Select Purchase Order by Order ID: ");
-        String selectedOrderID = scanner.nextLine();
+        String selectedOrderID = UserInputHandler.getString("Select Purchase Order by Order ID", 7, "^PO[0-9]{5}$");
 
-        // Filter selected order(s)
-        AtomicInteger orderIndex = new AtomicInteger(0);
-        ArrayList<PurchaseOrder> purchaseOrders = PurchaseOrder.Get(selectedOrderID);
-        if (purchaseOrders == null || purchaseOrders.isEmpty()) {
+        selectedOrders = PurchaseOrder.Get(selectedOrderID);
+        if (selectedOrders == null || selectedOrders.isEmpty()) {
             System.out.println("No purchase order found with the specified ID.");
             return null;
         }
-
-        purchaseOrders.forEach(order -> {
-            order.getItem().Get();
-            if (order.getDoc_No().equals(selectedOrderID)) {
-                selectedOrders.add(order);
-                selectedStatuses.add(orderStatusList.get(orderIndex.get()));
-            }
-            orderIndex.getAndIncrement();
-        });
-
-        // Update order status list with selected statuses
-        orderStatusList.clear();
-        orderStatusList.addAll(selectedStatuses);
-
         return selectedOrders;
     }
 
     // Follow up on the status of a purchase order
     public void followUpStatus(PurchaseOrder order) {
+        System.out.println("Following up on the status of the purchase order...");
         MailSender mail = new MailSender(
                 "tancs8803@gmail.com",
                 "Follow Up Order Status",
-                new MailTemplate(order.getDoc_No(), MailTemplate.TemplateType.FOLLOW_ORDER_STATUS)
-        );
-        mail.Send();
+                new MailTemplate(order.getDoc_No(), MailTemplate.TemplateType.FOLLOW_ORDER_STATUS));
+        if (mail.Send()) {
+            System.out.println("Follow up email sent successfully.");
+        } else {
+            System.out.println("Failed to send follow up email.");
+        }
     }
 }

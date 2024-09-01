@@ -2,19 +2,22 @@ package project.view;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Scanner;
+import java.util.HashMap;
 
+import project.global.UserInputHandler;
 import project.modules.item.Item;
 import project.modules.transaction.GoodReceivedNotes;
+import project.modules.transaction.PurchaseOrder;
 import project.modules.transaction.Transaction;
 import project.modules.user.User;
 
 public class ViewGoodReceivedNotes {
     private static User user;
-    private static final Scanner scanner = new Scanner(System.in);
 
     private ArrayList<GoodReceivedNotes> goodReceivedNotes = new ArrayList<>();
+    private ArrayList<PurchaseOrder> purchaseOrders = new ArrayList<>();
     private final ViewItem viewItem;
+    private final ArrayList<Item> items = new ArrayList<>();
 
     // Constructor to initialize user and ViewItem
     public ViewGoodReceivedNotes(User _user) {
@@ -27,26 +30,71 @@ public class ViewGoodReceivedNotes {
         return user;
     }
 
+    public ArrayList<Item> getItems() {
+        return this.items;
+    }
+
     // Method to add Goods Received Notes
     public void addGoodsReceivedNotes(String poNo, String grnNo) {
-        goodReceivedNotes.clear();
-        
-        String choice;
-        do {
-            GoodReceivedNotes goodReceivedNote = new GoodReceivedNotes();
-            
-            Item item = viewItem.selectItemFromList(); //display item from PO
-            if(item == null) {
-                System.out.println("Item not selected.");
+
+        HashMap<Item, Integer> OnHandStocks = new HashMap<>();
+        this.items.clear();
+
+        this.purchaseOrders = PurchaseOrder.Get(poNo);
+
+        //get items and OnhandStock from purchaseOrders
+        purchaseOrders.forEach(purchaseOrder -> {
+            purchaseOrder.getItem().Get();
+
+            this.goodReceivedNotes = GoodReceivedNotes.Get(purchaseOrder.getItem(), poNo);
+            int OnHandStock = 0;
+            if (goodReceivedNotes == null || goodReceivedNotes.isEmpty()) {
+                this.items.add(purchaseOrder.getItem());
+                return;
+            }
+            for (GoodReceivedNotes grn : goodReceivedNotes) {
+                OnHandStock += grn.getQuantity();
+            }
+
+            if (OnHandStock == purchaseOrder.getQuantity()) {
                 return;
             }
 
-            // Get Quantity
-            System.out.print("Enter Quantity: ");
-            goodReceivedNote.setQuantity(scanner.nextInt());
-            scanner.nextLine();
+            OnHandStocks.put(purchaseOrder.getItem(), OnHandStock);
+            this.items.add(purchaseOrder.getItem());
+        });
 
-            // Set the remaining properties
+        if (this.purchaseOrders.isEmpty()) {
+            System.out.println("No Purchase Orders available.");
+            return;
+        }
+        if (this.goodReceivedNotes != null && !this.goodReceivedNotes.isEmpty()) {
+            this.goodReceivedNotes.clear();
+        } else {
+            this.goodReceivedNotes = new ArrayList<>();
+        }
+        do {
+            GoodReceivedNotes goodReceivedNote = new GoodReceivedNotes();
+            viewItem.setItems(items);
+            Item item = viewItem.selectItemFromList(); //display item from PO
+            if (item == null) {
+                System.out.println("Item not selected.");
+                return;
+            }
+            this.items.remove(item);
+            // Get Virtual Stock
+            Transaction purchaseOrder = new PurchaseOrder(item, poNo);
+            purchaseOrder.Get();
+
+            int maxQuantity = purchaseOrder.getQuantity() - OnHandStocks.getOrDefault(purchaseOrder.getItem(), purchaseOrder.getQuantity());
+            if (maxQuantity == 0) {
+                maxQuantity = purchaseOrder.getQuantity();
+            }
+
+            
+            goodReceivedNote.setQuantity(
+                    UserInputHandler.getInteger("Enter Quantity", 1,
+                            maxQuantity));
             goodReceivedNote.setItem(item);
             goodReceivedNote.setDoc_No(grnNo);
             goodReceivedNote.setSource_Doc_No(poNo);
@@ -57,69 +105,46 @@ public class ViewGoodReceivedNotes {
 
             // Add to the list
             this.goodReceivedNotes.add(goodReceivedNote);
-            
-
-            // Prompt user to add more items
-            System.out.print("Do you want to add more items? (Y/N): ");
-            viewItem.getItems().remove(item);
-            choice = scanner.nextLine();
-        } while (choice.equalsIgnoreCase("Y"));
+            if (this.items.isEmpty()) {
+                break;
+            }
+        } while (UserInputHandler.getConfirmation("Do you want to add more items?")
+                .equalsIgnoreCase("Y"));
 
         // Save the GRN to the database
-        this.goodReceivedNotes.forEach(grn -> {
-            if (grn != null) {
-                System.out.println(grn.Add());
-            } else {
-                System.out.println("GoodReceivedNotes object in the list is null.");
-            }
-        });
+        this.goodReceivedNotes.forEach(GoodReceivedNotes::Add);
     }
 
     // Method to edit Goods Received Notes
     public void editGoodReceivedNotes(Transaction goodReceivedNote) {
-        System.out.println("Edit Good Received Notes");
-        // Allow user to select the field to edit
-        System.out.println("1. Quantity");
-        System.out.println("2. Item");
-        System.out.println("3. Back");
-        System.out.print("Enter choice: ");
-        int choice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
-
-        switch (choice) {
-            case 1:
-                System.out.print("Enter Quantity: ");
-                goodReceivedNote.setQuantity(scanner.nextInt());
-                scanner.nextLine(); // Consume newline
-                goodReceivedNote.setTransaction_Modified_By(user.getUserId());
-                break;
-            case 2:
-                Item item = viewItem.selectItemFromList();
-                goodReceivedNote.setItem(item);
-                goodReceivedNote.setTransaction_Recipient(item.getVendor_ID());
-                goodReceivedNote.setTransaction_Modified_By(user.getUserId());
-                break;
-            case 3:
-                return;
-            default:
-                System.out.println("Invalid choice");
-                break;
+        Transaction purchaseOrder = new PurchaseOrder(goodReceivedNote.getItem(),
+                goodReceivedNote.getSource_Doc_No());
+        purchaseOrder.Get();
+        this.goodReceivedNotes = GoodReceivedNotes.Get(purchaseOrder.getItem(),
+                goodReceivedNote.getSource_Doc_No());
+        int OnHandStock = 0;
+        if (goodReceivedNotes == null || goodReceivedNotes.isEmpty()) {
+            return;
         }
+        for (GoodReceivedNotes grn : goodReceivedNotes) {
+            OnHandStock += grn.getQuantity();
+        }
+
+        goodReceivedNote.setQuantity(
+                UserInputHandler.getInteger("Enter Quantity", 1,
+                        purchaseOrder.getQuantity() - (OnHandStock - goodReceivedNote.getQuantity())));
+        goodReceivedNote.setTransaction_Modified_By(user.getUserId());
         if (goodReceivedNote.Update()) {
             System.out.println("Good Received Notes updated successfully.");
         } else {
             System.out.println("Failed to update Good Received Notes.");
         }
-        
     }
 
     // Method to remove Goods Received Notes
     public void removeGoodsReceivedNotes(Transaction goodReceivedNote) {
-        // Confirmation for removal
-        System.out.print("Are you sure you want to remove this Good Received Notes? (Y/N): ");
-        String choice = scanner.nextLine();
-
-        if (choice.equalsIgnoreCase("Y")) {
+        if (UserInputHandler.getConfirmation("Are you sure you want to remove this Good Received Notes?")
+                .equalsIgnoreCase("Y")) {
             GoodReceivedNotes.Get(goodReceivedNote.getDoc_No(), GoodReceivedNotes.DocumentType.GOOD_RECEIVED_NOTES)
                     .forEach(grn -> {
                         if (grn != null) {
@@ -132,22 +157,30 @@ public class ViewGoodReceivedNotes {
     // Method to select a Goods Received Note from the list
     public Transaction selectGoodReceivedNotesFromList(String poNo) {
         this.goodReceivedNotes = GoodReceivedNotes.Get(poNo, GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
-
-        System.out.println(String.format("| %-20s | %-20s | %-20s |", "Item Name", "Received Quantity", "Received Date"));
-        for (int i = 0; i < goodReceivedNotes.size(); i++) {
-            System.out.println(i + ": " + goodReceivedNotes.get(i));
-        }
-
-        System.out.print("Select Good Received Notes (enter the number): ");
-        int grnIndex = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
-
-        // Ensure the selected index is valid
-        if (grnIndex >= 0 && grnIndex < goodReceivedNotes.size()) {
-            return goodReceivedNotes.get(grnIndex);
-        } else {
-            System.out.println("Invalid selection.");
+        if(this.goodReceivedNotes == null || this.goodReceivedNotes.isEmpty()) {
             return null;
         }
+        System.out.println(
+                " =================================== Good Received Notes ============================================ ");
+
+        System.out.println(String.format("| %-5s | %-20s | %-20s | %-20s | %-20s |","No.","Received Notes", "Item Name",
+                "Item Price", "Received Quantity"));
+        System.out.println(
+                " ===================================================================================================== ");
+
+        for (int i = 0; i < goodReceivedNotes.size(); i++) {
+            goodReceivedNotes.get(i).getItem().Get();
+            System.out.println(String.format("| %-5s | %-20s | %-20s | %-20s | %-20s |",
+                    (i + 1) + ". ",
+                    goodReceivedNotes.get(i).getDoc_No(),
+                    goodReceivedNotes.get(i).getItem().getItem_Name(),
+                    goodReceivedNotes.get(i).getItem().getItem_Price(),
+                    goodReceivedNotes.get(i).getQuantity()));
+        }
+        System.out.println(
+                " ===================================================================================================== ");
+
+        return goodReceivedNotes.get(UserInputHandler.getInteger("Select Good Received Notes", 1,
+                goodReceivedNotes.size()) - 1);
     }
 }
