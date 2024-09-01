@@ -19,6 +19,7 @@ public class SalesOrder extends Transaction {
         this.setTransaction_Mode(TransactionMode.STOCK_OUT);
         this.setDoc_No(_DocNo);
         this.setItem(_item);
+        this.setSource_Doc_No(_DocNo);
     }
     
     public SalesOrder(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity,
@@ -188,24 +189,25 @@ public class SalesOrder extends Transaction {
         
     }
 
-    public static ArrayList<SalesOrder> GetPendingSalesOrder(){
+    public static ArrayList<SalesOrder> GetDistinctPendingSalesOrder(){
 
-        SqlConnector getPendingSOConnector = new SqlConnector();
+        SqlConnector connector = new SqlConnector();
+        ArrayList<SalesOrder> salesOrders = new ArrayList<>();
         try {
-            getPendingSOConnector.Connect();
-            if (!getPendingSOConnector.isConnected()) {
+            connector.Connect();
+            if (!connector.isConnected()) {
                 return null;
             }
-            
-            String query = "SELECT * FROM TRANSACTION WHERE DOC_NO LIKE 'SO%' AND DOC_NO NOT IN (SELECT Source_Doc_No FROM Transaction WHERE DOC_NO LIKE 'DO%');";
-            ArrayList<SalesOrder> salesOrders = getPendingSOConnector.PrepareExecuteRead(query, SalesOrder.class);
-            if (salesOrders == null) {
-                return new ArrayList<>();
+            String[] DocNos = connector.getDistinctPendingDocNos("SO", "DO");
+        
+            for (String DocNo : DocNos) {
+                SalesOrder salesOrder = SalesOrder.Get(DocNo);
+                salesOrders.add(salesOrder);
             }
-            return salesOrders;
         } finally {
-            getPendingSOConnector.Disconnect();
+            connector.Disconnect();
         }
+        return salesOrders;
 
     }
     
@@ -229,6 +231,29 @@ public class SalesOrder extends Transaction {
         }
         return salesOrders;
     }
+    
+    public static ArrayList<SalesOrder> GetDistinctSalesOrder(String _Transaction_Recipient){
+
+        SqlConnector connector = new SqlConnector();
+        ArrayList<SalesOrder> salesOrders = new ArrayList<>();
+        try {
+            connector.Connect();
+            if (!connector.isConnected()) {
+                return null;
+            }
+            String[] DocNos = connector.getDistinctDocNos("SO", _Transaction_Recipient);
+        
+            for (String DocNo : DocNos) {
+                SalesOrder salesOrder = SalesOrder.Get(DocNo);
+                salesOrders.add(salesOrder);
+            }
+        } finally {
+            connector.Disconnect();
+        }
+        return salesOrders;
+    }
+    
+
     //Generate Document Number
     @Override
     public String GenerateDocNo() {

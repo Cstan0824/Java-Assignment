@@ -15,10 +15,11 @@ public class DeliveryOrder extends Transaction {
         this.setTransaction_Date(new Date(System.currentTimeMillis()));
     }
 
-    public DeliveryOrder(String _DocNo) {
+    public DeliveryOrder(String _DocNo, Item item) {
         this.setTransaction_Mode(TransactionMode.STOCK_OUT);
         this.setTransaction_Date(new Date(System.currentTimeMillis()));
         this.setDoc_No(_DocNo);
+        this.setItem(item);
     }
 
     public DeliveryOrder(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity,
@@ -134,7 +135,50 @@ public class DeliveryOrder extends Transaction {
         
     }
 
-    
+    public static DeliveryOrder Get(String _DocNo, Item item) {
+
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return null;
+        }
+
+        String query = "SELECT * FROM Transaction WHERE Doc_No = ? AND Item_ID = ?";
+        ArrayList<DeliveryOrder> deliveryOrders = connector.PrepareExecuteRead(query, DeliveryOrder.class, _DocNo, item.getItem_ID());
+
+        if (deliveryOrders != null && !deliveryOrders.isEmpty()) {
+            DeliveryOrder deliveryOrder = deliveryOrders.get(0);
+            connector.Disconnect();
+            return deliveryOrder;
+        }else {
+            connector.Disconnect();
+            return null;
+        }
+
+        
+    }
+
+    public static ArrayList<DeliveryOrder> GetDistinctDeliveryOrder(){
+
+        SqlConnector connector = new SqlConnector();
+        ArrayList<DeliveryOrder> deliveryOrders = new ArrayList<>();
+        try {
+            connector.Connect();
+            if (!connector.isConnected()) {
+                return null;
+            }
+            String[] DocNos = connector.getDistinctDocNos("DO");
+        
+            for (String DocNo : DocNos) {
+                DeliveryOrder deliveryOrder = DeliveryOrder.Get(DocNo);
+                deliveryOrders.add(deliveryOrder);
+            }
+        } finally {
+            connector.Disconnect();
+        }
+        return deliveryOrders;
+    }
+
     public ArrayList<DeliveryOrder> GetAll() {
 
         SqlConnector connector = new SqlConnector();
@@ -155,6 +199,58 @@ public class DeliveryOrder extends Transaction {
         }
     }
 
+    public static ArrayList<DeliveryOrder> GetAll(String _DocNo){
+
+
+        SqlConnector connector = new SqlConnector();
+        try {
+            connector.Connect();
+            if (!connector.isConnected()) {
+                return null;
+            }
+            
+            String query = "SELECT * FROM TRANSACTION WHERE DOC_NO = ?";
+            ArrayList<DeliveryOrder> deliveryOrders = connector.PrepareExecuteRead(query, DeliveryOrder.class, _DocNo);
+            if (deliveryOrders == null) {
+                return new ArrayList<>();
+            }
+            return deliveryOrders;
+        } finally {
+            connector.Disconnect();
+        }
+
+    }
+
+     //Display DO (to String)
+     @Override
+     public String toString() {
+         String format = "| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |%n";
+         this.getItem().Get();
+         // Format the fields according to the placeholders
+         return String.format(format,
+                 this.getDoc_No(),
+                 this.getItem().getItem_ID(),
+                 this.getItem().getItem_Name(),
+                 this.getQuantity(),
+                 this.getTransaction_Mode() + " (" + (this.getTransaction_Mode() == TransactionMode.STOCK_IN ? "IN" : "OUT") + ")",
+                 this.getTransaction_Date(),
+                 this.getTransaction_Recipient()
+                 );
+     }
+
+    public String distinctToString(){
+
+        String format = "| %-15s | %-15s | %-15s | %-15s | %-15s |%n";
+        this.getItem().Get();
+        // Format the fields according to the placeholders
+        return String.format(format,
+                this.getDoc_No(),
+                this.getTransaction_Mode() + " (" + (this.getTransaction_Mode() == TransactionMode.STOCK_IN ? "IN" : "OUT") + ")",
+                this.getTransaction_Date(),
+                this.getTransaction_Recipient(),
+                this.getTransaction_Created_By()
+                );
+    }
 
     //Generate Doc No
     @Override

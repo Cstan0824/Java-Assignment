@@ -307,7 +307,7 @@ public class SqlConnector {
     }
 
     public String[] getDistinctDocNos(String prefix) {
-        String query = "SELECT DISTINCT Doc_No FROM `transaction` WHERE Doc_No LIKE '" + prefix + "%';";
+        String query = "SELECT DISTINCT Doc_No FROM `transaction` WHERE Doc_No LIKE '" + prefix + "%' ORDER BY Transaction_Date DESC;";
         ArrayList<String> docNoList = new ArrayList<>();
 
         if (!isConnected()) {
@@ -331,6 +331,56 @@ public class SqlConnector {
         return docNoList.toArray(new String[0]);
     }
     
+    public String[] getDistinctDocNos(String prefix, String recipient) {
+        String query = "SELECT DISTINCT Doc_No FROM `transaction` WHERE Doc_No LIKE '" + prefix + "%' AND Transaction_Recipient = '" + recipient + "' ORDER BY Transaction_Date DESC;";
+        ArrayList<String> docNoList = new ArrayList<>();
+
+        if (!isConnected()) {
+            return null;
+        }
+        try{
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String docNo = rs.getString("Doc_No");
+                docNoList.add(docNo);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Get Distinct Doc No Error: " + e.getMessage());
+            return null;
+        }
+
+        // Convert ArrayList to String Array
+        return docNoList.toArray(new String[0]);
+    }
+    
+    public String[] getDistinctPendingDocNos(String prefix1, String prefix2) {
+        String query = "SELECT DISTINCT Doc_No FROM TRANSACTION WHERE DOC_NO LIKE '"+ prefix1 + "%' AND DOC_NO NOT IN (SELECT Source_Doc_No FROM Transaction WHERE DOC_NO LIKE '" + prefix2 + "%');";
+        ArrayList<String> docNoList = new ArrayList<>();
+
+        if (!isConnected()) {
+            return null;
+        }
+        try{
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String docNo = rs.getString("Doc_No");
+                docNoList.add(docNo);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Get Distinct Doc No Error: " + e.getMessage());
+            return null;
+        }
+
+        // Convert ArrayList to String Array
+        return docNoList.toArray(new String[0]);
+    }
+
     @SuppressWarnings("unchecked")
     private <T> ArrayList<T> ToArrayList(ResultSet _result)
     {

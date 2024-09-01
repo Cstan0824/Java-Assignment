@@ -1,83 +1,51 @@
 package project.view;
 
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
-import project.modules.item.Item;
 import project.modules.transaction.SalesOrder;
+import project.modules.user.Admin;
+import project.modules.user.Retailer;
+import project.modules.user.User;
 
 public class ViewSalesOrder {
-    private static final Scanner sc = new Scanner(System.in);
-    //action menu
-    public static void ActionMenu(String selectedSO) {
-
-        String action;
-
-        do {
-            System.out.println("Choose an action:");
-            System.out.println("1. Edit Sales Order");
-            System.out.println("2. Delete Sales Order");
-            System.out.println("3. Return to Main Menu");
-
-            action = sc.nextLine();
-
-            switch (action) {
-                case "1":
-                    EditSalesOrder(selectedSO);
-                    break;
-                case "2":
-                    //DeleteSalesOrder(selectedSO);
-                    break;
-                case "3":
-                    break;
-                default:
-                    System.out.println("Invalid action. Please try again.");
-                    break;
-            }
-        } while (!action.equals("3"));
-
-    }
     
-    public static void DisplayAllSalesOrder(){
-        int totalSalesOrder = 0;
-        
-        ArrayList<SalesOrder> salesOrders = SalesOrder.GetAll();
+    private static final Scanner sc = new Scanner(System.in);  
+    private static User user;
+    private final ArrayList<SalesOrder> salesOrderList;
+    private final ArrayList<SalesOrder> pendingSalesOrderList;
 
-        String[] columnNames = {"SO_No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
-        if (salesOrders != null && !salesOrders.isEmpty()) {
-            System.out.println("Sales Order List");
-            normalTableLine();
-            System.out.printf("|");
-            for (String columnName : columnNames) {
-                System.out.printf(" %-15s ", columnName);
-                System.out.printf("|");
-            }
-            System.out.println("");
-            normalTableLine();
-            for (SalesOrder salesOrder : salesOrders) {
-                System.out.print(salesOrder.toString());
-                totalSalesOrder++;
-                normalTableLine();
-            }
-
-            System.out.println("Total Sales Order available in the database: " + totalSalesOrder);
-        }else{
-            System.out.println("No Sales Order Found");
+    public ViewSalesOrder(User user) {
+        ViewSalesOrder.user = user;
+        if (user instanceof Admin) {
+            salesOrderList = SalesOrder.GetDistinctSalesOrder();
+            pendingSalesOrderList = SalesOrder.GetDistinctPendingSalesOrder();
+        } else if (user instanceof Retailer) {
+            salesOrderList = SalesOrder.GetDistinctSalesOrder(user.getUserId());
+            pendingSalesOrderList = null;
+        } else {
+            salesOrderList = null;
+            pendingSalesOrderList = null;
         }
-
-        
     }
 
-    public static void DisplayDistinctSalesOrder(){
+    public User getUser() {
+        return user;
+    }
+
+    public ArrayList<SalesOrder> getSalesOrderList() {
+        return salesOrderList;
+    }
+
+    public ArrayList<SalesOrder> selectSalesOrderFromList() {
+
         int totalSalesOrder = 0;
-        
-        ArrayList<SalesOrder> salesOrders = SalesOrder.GetDistinctSalesOrder();
 
         String[] columnNames = {"SO_No", "Mode", "Date", "Recipient", "Creator"};
-        if (salesOrders != null && !salesOrders.isEmpty()) {
-            System.out.println("Distinct Sales Order List");
+
+        if (salesOrderList != null && !salesOrderList.isEmpty() ){
+
+            System.out.println("Sales Order List");
             distinctTableLine();
             System.out.printf("|");
             for (String columnName : columnNames) {
@@ -86,209 +54,125 @@ public class ViewSalesOrder {
             }
             System.out.println("");
             distinctTableLine();
-            for (SalesOrder salesOrder : salesOrders) {
+            for (SalesOrder salesOrder : salesOrderList) {
                 System.out.print(salesOrder.distinctToString());
                 totalSalesOrder++;
                 distinctTableLine();
             }
 
             System.out.println("Total Sales Order available in the database: " + totalSalesOrder);
-        }else{
-            System.out.println("No Sales Order Found");
-        }
-        
-    }
 
-    public static String SelectSalesOrder(){
-       
-        System.out.println("Enter Sales Order Doc No: ");
-        String docNo = sc.nextLine();
-        return docNo;
-        
-    }   
+            ArrayList<SalesOrder> selectedSalesOrderList;
 
-    public static void DisplaySpecificSalesOrder(String SODocNo){
+            do{
+                System.out.println("Enter Sales Order Doc No: ");
+                String docNo = sc.nextLine();
 
-        ArrayList<SalesOrder> salesOrders = SalesOrder.GetAll(SODocNo);
+                selectedSalesOrderList = SalesOrder.GetAll(docNo);
 
-        String[] columnNames = {"SO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
-        if (salesOrders != null && !salesOrders.isEmpty()) {
-            System.out.println("Sales Order List for Doc No: " + SODocNo);
-            normalTableLine();
-            System.out.printf("|");
-            for (String columnName : columnNames) {
-                System.out.printf(" %-15s ", columnName);
-                System.out.printf("|");
-            }
-            System.out.println("");
-            normalTableLine();
-            for (SalesOrder salesOrder : salesOrders) {
-                System.out.print(salesOrder.toString());
-                normalTableLine();
-            }
-        }else{
-            System.out.println("No Sales Order Found for Doc No: " + SODocNo);
+                if (selectedSalesOrderList != null && !selectedSalesOrderList.isEmpty()) {
+                    //display and save into array list
+                    String[] selectedColumnNames = {"SO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
+                    System.out.println("Sales Order List found for Doc No: " + docNo);
+                    normalTableLine();
+                    System.out.printf("|");
+                    for (String columnName : selectedColumnNames) {
+                        System.out.printf(" %-15s ", columnName);
+                        System.out.printf("|");
+                    }
+                    System.out.println("");
+                    normalTableLine();
+                    for (SalesOrder salesOrder : selectedSalesOrderList) {
+                        System.out.print(salesOrder.toString());
+                        normalTableLine();
+                    }
+
+                    return selectedSalesOrderList;
+                } else {
+                    System.out.println("No Sales Order found with the given Doc No. Please try again.");
+                }
+            } while (selectedSalesOrderList == null ||selectedSalesOrderList.isEmpty());
         }
 
+        return null;
     }
+    
+    public ArrayList<SalesOrder> selectPendingSalesOrder(String mode) {
 
-    //for creating DO use
-    public static void DisplayPendingSalesOrder(){
+        int totalSalesOrder = 0;
 
-        ArrayList<SalesOrder> salesOrders = SalesOrder.GetPendingSalesOrder();
+        String[] columnNames = {"SO_No", "Mode", "Date", "Recipient", "Creator"};
 
-        String[] columnNames = {"SO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
-        if (salesOrders != null && !salesOrders.isEmpty()) {
+        if (pendingSalesOrderList != null && !pendingSalesOrderList.isEmpty() ){
+
             System.out.println("Pending Sales Order List");
-            normalTableLine();
+            distinctTableLine();
             System.out.printf("|");
             for (String columnName : columnNames) {
                 System.out.printf(" %-15s ", columnName);
                 System.out.printf("|");
             }
             System.out.println("");
-            normalTableLine();
-            for (SalesOrder salesOrder : salesOrders) {
-                System.out.print(salesOrder.toString());
-                normalTableLine();
+            distinctTableLine();
+            for (SalesOrder salesOrder : pendingSalesOrderList) {
+                System.out.print(salesOrder.distinctToString());
+                totalSalesOrder++;
+                distinctTableLine();
             }
-        }else{
-            System.out.println("No Pending Sales Order Found");
-        }
 
+            System.out.println("Total Pending Sales Order available in the database: " + totalSalesOrder);
 
+            ArrayList<SalesOrder> selectedSalesOrderList;
 
-    }
-
-    //retailer add sales order
-    public static void CreateSalesOrder() {
-        
-        SalesOrder SODocNo = new SalesOrder();
-        String docNo = SODocNo.GenerateDocNo();
-        boolean continueAddItem;
-
-        do {
-            try {
-                ArrayList<Item> items = Item.GetAll();
-                System.out.println(String.format("| %-5s | %-5s | %-5s | %-20s | %-30s | %-5s | %-5s |%n", "ID", "Categ", "Vend.", "Item Name", "Item Desc", "Count", "Price"));
-                items.forEach(_item -> {
-                    System.out.println(_item.toString());
-                });
-                System.out.println("Create Sales Order");
-                System.out.println("Enter Item ID: ");
-                int itemId = sc.nextInt();
-                sc.nextLine(); // Consume the newline character
-                Item item = new Item(itemId);
+            do{
+                switch (mode) {
+                    case "createDO":
+                        System.out.println("Enter Pending Sales Order Doc_No to create Delivery Order: ");
+                        break;
+                    case "Modify":
+                        System.out.println("Enter Pending Sales Order Doc_No to Modify: ");
+                        break;
+                    case "Remove":
+                        System.out.println("Enter Pending Sales Order Doc_No to Cancel: ");
+                        break;
+                    default:
+                        break;
+                }
                 
-                if (item.Get()) {
-                    
-                    System.out.println("Enter Quantity: ");
-                    int quantity = sc.nextInt();
-                    sc.nextLine(); 
+                String docNo = sc.nextLine();
 
-                    SalesOrder salesOrder = new SalesOrder(docNo, item);
-                    salesOrder.setSource_Doc_No(docNo);
-                    salesOrder.setQuantity(quantity);
-                    salesOrder.setTransaction_Date(new Date());
-                    salesOrder.setTransaction_Recipient("Customer");
-                    salesOrder.setTransaction_Created_By("Admin");
-                    salesOrder.setTransaction_Modified_By("Admin");
+                selectedSalesOrderList = SalesOrder.GetAll(docNo);
 
-                    if (salesOrder.Add()) {
-                        System.out.println("Sales Order added successfully.");
-                    } else {
-                        System.out.println("Failed to add Sales Order.");
+                if (selectedSalesOrderList != null && !selectedSalesOrderList.isEmpty()) {
+                    //display and save into array list
+                    String[] selectedColumnNames = {"SO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
+                    System.out.println("Sales Order List found for Doc No: " + docNo);
+                    normalTableLine();
+                    System.out.printf("|");
+                    for (String columnName : selectedColumnNames) {
+                        System.out.printf(" %-15s ", columnName);
+                        System.out.printf("|");
                     }
-                } else {
-                    System.out.println("Item not found. Please try again.");
-                }
-            } catch (Exception e) {
-                System.out.println("An error occurred: " + e.getMessage());
-            }
-
-            System.out.println("Do you want to add another item to the order? (Y/N)");
-            continueAddItem = sc.nextLine().equalsIgnoreCase("Y");
-
-        } while (continueAddItem);
-    
-        
-        ViewSalesOrder.DisplaySpecificSalesOrder(docNo);
-        
-    }
-    
-    public static void DisplayCreatedSO(String _DocNo){
-
-
-
-    }
-
-    //admin edit sales order
-    public static boolean EditSalesOrder(String selectedSO) {
-
-
-        System.out.println("Edit Sales Order");
-        ArrayList<SalesOrder> salesOrders = SalesOrder.GetAll(selectedSO);
-
-        if (salesOrders != null && !salesOrders.isEmpty()) {
-
-            boolean continueEditItem = false;
-
-            do {
-                System.out.println("Enter Item ID: "); 
-                int itemId = sc.nextInt(); 
-                sc.nextLine(); 
-
-                Item item = new Item(itemId);
-                item.Get();
-
-                SalesOrder salesOrder = new SalesOrder(selectedSO, item);
-
-                if(salesOrder.Get()){
-
-                    System.out.println("Enter New Item Quantity: ");
-                    int quantity = sc.nextInt();
-                    sc.nextLine(); // Consume the newline character
-                    salesOrder.setQuantity(quantity);
-
-                    salesOrder.setTransaction_Modified_By("Admin");
-
-                    if (salesOrder.getQuantity() <= 0) {
-                        System.out.println("Quantity is zero or negative. Do you want to delete this item from the Sales Order? (Y/N)");
-
-                        if (sc.nextLine().equalsIgnoreCase("Y")) {
-                            if (salesOrder.Remove()) {
-                                System.out.println("Item removed from Sales Order successfully.");
-                            } else {
-                                System.out.println("Failed to remove item from Sales Order.");
-                            }
-                        }
-
-                    } else if (salesOrder.Update()) {
-
-                        System.out.println("Sales Order " + selectedSO + " updated successfully.");
-                        System.out.println("Do you want to edit another item in the Sales Order? (Y/N)");
-                        continueEditItem = sc.nextLine().equalsIgnoreCase("Y");
-
-                    } else {
-                        System.out.println("Failed to update Sales Order " + selectedSO + ".");
+                    System.out.println("");
+                    normalTableLine();
+                    for (SalesOrder salesOrder : selectedSalesOrderList) {
+                        System.out.print(salesOrder.toString());
+                        normalTableLine();
                     }
+
+                    return selectedSalesOrderList;
                 } else {
-                    System.out.println("Item with ID " + itemId + " not found in Sales Order " + selectedSO + ".");
+                    System.out.println("No Pending Sales Order found with the given Doc_No. Please try again.");
                 }
-            } while (continueEditItem);
-        } else {
-            System.out.println("Sales Order " + selectedSO + " not found.");
+            } while (selectedSalesOrderList == null ||selectedSalesOrderList.isEmpty());
         }
-    
-       return true;
+
+        return null;
+
+
+
     }
-    
-    
-    
-    
-    
-    
-    
+
     //display design methods
     private static void normalTableLine(){
         System.out.println("-------------------------------------------------------------------------------------------------------------------------------");
@@ -297,7 +181,4 @@ public class ViewSalesOrder {
     private static void distinctTableLine(){
         System.out.println("-------------------------------------------------------------------------------------------");
     }
-
 }
-    
-
