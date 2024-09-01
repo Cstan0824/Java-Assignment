@@ -9,7 +9,7 @@ import project.view.ViewSalesManagement;
 public class App {
     private static final Scanner sc = new Scanner(System.in);
     public static void main(String[] args) {
-         //initialise a user details for system temporary use
+        //initialise a user details for system temporary use
         User user = new Admin();
         user.setUserId("A001");
         user.setUserType("Admin");

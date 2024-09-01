@@ -100,51 +100,25 @@ public class ViewSalesManagement {
             boolean error = false;
             do {
                 ArrayList<SalesOrder> salesOrders = viewSalesOrder.selectSalesOrderFromList();
-
                 if (salesOrders == null || salesOrders.isEmpty()){
                     System.out.println("No Sales Order found.");
                     error = true;
                 }
-                displaySalesOrder(salesOrders);
             }while (error);
 
         } else if  (user.getUserType().equals("Retailer")) {
             boolean error = false;
             do {
                 ArrayList<SalesOrder> salesOrders = viewSalesOrder.selectSalesOrderFromList();
-
                 if (salesOrders == null || salesOrders.isEmpty()){
                     System.out.println("No Sales Order found.");
                     error = true;
                 }
-                displaySalesOrder(salesOrders);
             }while (error);
         }
          
     }
 
-    //admin or retailer to view sales order
-    private void displaySalesOrder (ArrayList<SalesOrder> salesOrders) {
-        SalesOrder salesOrder = salesOrders.get(0);
-        System.out.println("\n\nSales Order Details");
-        System.out.println("Sales Order No: " + salesOrder.getDoc_No());
-        System.out.println("Order Date: " + salesOrder.getTransaction_Date());
-        System.out.println("Order Recipient: " + salesOrder.getTransaction_Recipient());
-
-        // Display item details
-        System.out.println(String.format("| %-20s | %-20s | %-20s |","Item ID", "Item Name", "Order Quantity"));
-        double totalPrice = 0;
-
-        for (SalesOrder order : salesOrders) {
-            double orderPrice = order.getItem().getItem_Price() * order.getQuantity();
-            totalPrice += orderPrice;
-            System.out.println(String.format("| %-20s | %-20s | %-20s |",order.getItem().getItem_ID(), order.getItem().getItem_Name(), order.getQuantity()));
-        }
-
-        System.out.println(String.format("Total Price: %.2f", totalPrice));
-
-
-    }
 
     //for admin to create DO
     private void createDeliveryOrder() {
@@ -351,4 +325,6 @@ public class ViewSalesManagement {
         return quantity;
     }
 
+
+    
 }
