@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 import project.global.MailSender;
 import project.global.MailTemplate;
+import project.global.UserInputHandler;
 import project.modules.item.Item;
 import project.modules.transaction.GoodReceivedNotes;
 import project.modules.transaction.PurchaseOrder;
@@ -20,6 +21,7 @@ public class ViewPurchaseManagement {
     private final ViewGoodReceivedNotes viewGoodReceivedNotes;
     private final ViewPurchaseOrder viewPurchaseOrder;
     private final ViewItem viewItem;
+
 
     // Enum for stock status
     public enum StockStatus {
@@ -53,34 +55,38 @@ public class ViewPurchaseManagement {
 
     // Main menu for purchase management
     public void menu() {
-        System.out.println("Purchase Management");
-        System.out.println("1. Order Restock");
-        System.out.println("2. Order Modification");
-        System.out.println("3. Order Cancellation");
-        System.out.println("4. View Purchase Records");
-        System.out.println("5. Back to Main Menu");
-        System.out.print("Enter choice: ");
-        int choice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("\n=============================");
+            System.out.println("       Purchase Management       ");
+            System.out.println("=============================");
+            System.out.println("1. Order Restock");
+            System.out.println("2. Order Modification");
+            System.out.println("3. Order Cancellation");
+            System.out.println("4. View Purchase Records");
+            System.out.println("5. Back to Main Menu");
+            System.out.println("=============================");
 
-        switch (choice) {
-            case 1:
-                orderRestock();
-                break;
-            case 2:
-                orderModification();
-                break;
-            case 3:
-                orderCancellation();
-                break;
-            case 4:
-                viewOrderRecords();
-                break;
-            case 5:
-                break;
-            default:
-                System.out.println("Invalid choice");
-                break;
+
+            switch (UserInputHandler.getInteger("Enter choice: ", 1, 5)) {
+                case 1:
+                    orderRestock();
+                    break;
+                case 2:
+                    orderModification();
+                    break;
+                case 3:
+                    orderCancellation();
+                    break;
+                case 4:
+                    viewOrderRecords();
+                    break;
+                case 5:
+                    exit = true; // Exit the loop
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
         }
     }
 
@@ -91,14 +97,9 @@ public class ViewPurchaseManagement {
 
         String choice;
         do {
-            Item item = viewItem.selectItemFromList();
             PurchaseOrder purchaseOrder = new PurchaseOrder();
-            
-            // Get Quantity
-            System.out.print("Enter Quantity: ");
-            purchaseOrder.setQuantity(scanner.nextInt());
-            scanner.nextLine(); // Consume newline
-
+            Item item = viewItem.selectItemFromList();
+            purchaseOrder.setQuantity(getValidatedQuantity());
             purchaseOrder.setItem(item);
             purchaseOrder.setDoc_No(poNo);
             purchaseOrder.setTransaction_Recipient(item.getVendor_ID());
@@ -106,11 +107,10 @@ public class ViewPurchaseManagement {
             purchaseOrder.setTransaction_Created_By(user.getUserId());
 
             purchaseOrders.add(purchaseOrder);
-
             // Add Stock Confirmation
-            System.out.print("Do you want to continue adding stock? [Y/N]: ");
-            choice = scanner.nextLine();
-        } while (choice.equalsIgnoreCase("Y"));
+
+        } while (UserInputHandler.getConfirmation("Do you want to continue adding stock? [Y/N]: ")
+                .equalsIgnoreCase("Y"));
 
         // Add all purchase orders to the database
         purchaseOrders.forEach(PurchaseOrder::Add);
@@ -123,11 +123,11 @@ public class ViewPurchaseManagement {
         // Only Pending status orders can be modified
         ArrayList<PurchaseOrder> purchaseOrders = viewPurchaseOrder.selectPurchaseOrderFromList(StockStatus.PENDING);
         if (purchaseOrders.isEmpty()) {
+            System.out.println("No pending orders available for modification.");
             return;
         }
 
-        //SELECT item to modify
-
+        // SELECT item to modify
         Transaction purchaseOrder = new PurchaseOrder(purchaseOrders.get(0).getDoc_No());
 
         ArrayList<Item> itemsInPurchaseOrders = new ArrayList<>();
@@ -137,32 +137,28 @@ public class ViewPurchaseManagement {
             itemsInPurchaseOrders.add(po.getItem());
         }
 
-        // ArrayList for Items that are not inside the purchase orders
-        
         for (PurchaseOrder po : purchaseOrders) {
-            for(Item item : itemsNotInPurchaseOrders) {
-                if (po.getItem().getItem_ID() == item.getItem_ID()) {
-                    itemsNotInPurchaseOrders.remove(item);
-                    break;
-                }
-            }
+            itemsNotInPurchaseOrders.removeIf(item -> po.getItem().getItem_ID() == item.getItem_ID());
         }
-        
 
         displayOrderDetails(purchaseOrders);
 
-        // Allow user to change item or order quantity
-        //remove item from PO
-        //add new item to PO
-        System.out.println("1. Add Item"); //select new item from list
-        System.out.println("2. Remove Item"); //select item from list
-        System.out.println("3. Change Order Quantity"); //select item from list and enter new quantity
-        System.out.println("4. Back to Purchase Management");
-        System.out.print("Enter choice: ");
-
+        // Menu for order modification
         int choice;
-        choice = scanner.nextInt();
-        scanner.nextLine();
+        do {
+            System.out.println("1. Add Item");
+            System.out.println("2. Remove Item");
+            System.out.println("3. Change Order Quantity");
+            System.out.println("4. Back to Purchase Management");
+            System.out.print("Enter choice (1-4): ");
+
+            while (!scanner.hasNextInt()) {
+                System.out.println("Invalid input. Please enter a number between 1 and 4.");
+                scanner.next();
+            }
+            choice = scanner.nextInt();
+            scanner.nextLine();
+        } while (choice < 1 || choice > 4);
 
         switch (choice) {
             case 1:
@@ -172,12 +168,9 @@ public class ViewPurchaseManagement {
                 }
 
                 purchaseOrder.setItem(item);
+                purchaseOrder.setQuantity(getValidatedQuantity());
 
-                System.out.print("Enter Quantity: ");
-                purchaseOrder.setQuantity(scanner.nextInt());
-                scanner.nextLine(); // Consume newline
-
-                //initialise the value
+                // Initialize other values
                 purchaseOrder.setTransaction_Recipient(item.getVendor_ID());
                 purchaseOrder.setTransaction_Modified_By(user.getUserId());
                 purchaseOrder.setTransaction_Created_By(user.getUserId());
@@ -194,13 +187,16 @@ public class ViewPurchaseManagement {
 
                 purchaseOrder.setItem(itemToRemove);
 
-                //remove confirmation
-                System.out.print("Are you sure you want to remove this Purchase Order? [Y/N]: ");
-                String removeChoice = scanner.nextLine();
+                String removeChoice;
+                do {
+                    System.out.print("Are you sure you want to remove this Purchase Order? [Y/N]: ");
+                    removeChoice = scanner.nextLine();
+                } while (!removeChoice.equalsIgnoreCase("Y") && !removeChoice.equalsIgnoreCase("N"));
 
                 if (!removeChoice.equalsIgnoreCase("Y")) {
-                    return;
+                    break;
                 }
+
                 if (purchaseOrder.Remove()) {
                     System.out.println("Item removed from Purchase Order successfully.");
                     if (itemsInPurchaseOrders.size() == 1) {
@@ -219,10 +215,7 @@ public class ViewPurchaseManagement {
                 purchaseOrder.setItem(itemToChange);
                 purchaseOrder.Get();
 
-                System.out.print("Enter Quantity: ");
-                purchaseOrder.setQuantity(scanner.nextInt());
-                scanner.nextLine();
-
+                purchaseOrder.setQuantity(getValidatedQuantity());
                 purchaseOrder.setTransaction_Modified_By(user.getUserId());
                 purchaseOrder.Update();
 
@@ -232,8 +225,38 @@ public class ViewPurchaseManagement {
             default:
                 System.out.println("Invalid choice");
         }
-        
-        //TODO: Add logic for PDF and MailSender
+
+        // TODO: Add logic for PDF and MailSender
+    }
+
+    // Method to get validated quantity input
+    private int getValidatedQuantity() {
+        int quantity;
+        do {
+            System.out.print("Enter Quantity (must be greater than 0): ");
+            while (!scanner.hasNextInt()) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next(); // Consume the invalid input
+            }
+            quantity = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            if (quantity <= 0) {
+                System.out.println("Quantity must be greater than 0.");
+            }
+        } while (quantity <= 0);
+        return quantity;
+    }
+
+    private String getConfirmation(String message) {
+        String choice;
+        do {
+            System.out.print(message + " [Y/N]: ");
+            choice = scanner.nextLine().trim();
+            if (!choice.equalsIgnoreCase("Y") && !choice.equalsIgnoreCase("N")) {
+                System.out.println("Invalid input. Please enter 'Y' or 'N'.");
+            }
+        } while (!choice.equalsIgnoreCase("Y") && !choice.equalsIgnoreCase("N"));
+        return choice;
     }
 
     // Method for canceling orders
@@ -247,10 +270,8 @@ public class ViewPurchaseManagement {
         displayOrderDetails(purchaseOrders);
 
         // Remove confirmation
-        System.out.print("Are you sure you want to remove this Purchase Order? [Y/N]: ");
-        String choice = scanner.nextLine();
-
-        if (!choice.equalsIgnoreCase("Y")) {
+        if (!getConfirmation("Are you sure you want to remove this Purchase Order? [Y/N]: ")
+                .equalsIgnoreCase("Y")) {
             return;
         }
 
@@ -258,10 +279,9 @@ public class ViewPurchaseManagement {
 
         // Send cancellation email
         MailSender mail = new MailSender(
-                "tancs8803@gmail.com", 
+                "tancs8803@gmail.com",
                 "Order Cancelled",
-                new MailTemplate(purchaseOrder.getDoc_No(), MailTemplate.TemplateType.ORDER_CANCELLATION)
-        );
+                new MailTemplate(purchaseOrder.getDoc_No(), MailTemplate.TemplateType.ORDER_CANCELLATION));
         mail.Send();
     }
 
@@ -283,7 +303,6 @@ public class ViewPurchaseManagement {
         } else {
             System.out.println("No Goods Received Notes found for this order.");
         }
-
 
         // Allow user to follow up or manage stock status - only display if the order is PENDING status
         if (viewPurchaseOrder.getOrderStatusList().get(0) != StockStatus.RECEIVED.getValue()) {
