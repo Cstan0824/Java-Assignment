@@ -1,12 +1,17 @@
 package project.view;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import project.global.MailSender;
 import project.global.MailTemplate;
+import project.global.PdfConverter;
+import project.global.PdfTemplate;
 import project.global.UserInputHandler;
 import project.modules.item.Item;
 import project.modules.transaction.GoodReceivedNotes;
@@ -41,11 +46,11 @@ public class ViewPurchaseManagement {
     }
 
     // Constructor
-    public ViewPurchaseManagement(User user) {
-        ViewPurchaseManagement.user = user;
-        this.viewGoodReceivedNotes = new ViewGoodReceivedNotes(user);
-        this.viewPurchaseOrder = new ViewPurchaseOrder(user);
-        this.viewItem = new ViewItem(user);
+    public ViewPurchaseManagement(User _user) {
+        ViewPurchaseManagement.user = _user;
+        this.viewGoodReceivedNotes = new ViewGoodReceivedNotes(_user);
+        this.viewPurchaseOrder = new ViewPurchaseOrder(_user);
+        this.viewItem = new ViewItem(_user);
     }
 
     // Getter for User
@@ -93,6 +98,11 @@ public class ViewPurchaseManagement {
     // Method for restocking orders
     private void orderRestock() {
         ArrayList<PurchaseOrder> purchaseOrders = new ArrayList<>();
+        Map<String, ArrayList<Transaction>> orders = new HashMap<>();
+        File file;
+        MailSender mail;
+        PdfConverter pdf;
+
         String poNo = new PurchaseOrder().GenerateDocNo();
         viewItem.setItems();
         do {
@@ -114,7 +124,7 @@ public class ViewPurchaseManagement {
             ArrayList<Item> items = viewItem.getItems();
             items.remove(item);
             viewItem.setItems(items);
-            if(items.isEmpty()) {
+            if (items.isEmpty()) {
                 System.out.println("No more items available for restocking.");
                 break;
             }
@@ -122,14 +132,41 @@ public class ViewPurchaseManagement {
                 .equalsIgnoreCase("Y"));
 
         // Add all purchase orders to the database
-        purchaseOrders.forEach(PurchaseOrder::Add);
+        purchaseOrders.forEach(_purchaseOrder -> {
+            _purchaseOrder.Add();
+            if (!orders.containsKey(_purchaseOrder.getTransaction_Recipient())) {
+                orders.put(_purchaseOrder.getTransaction_Recipient(), new ArrayList<>());
+            }
+            orders.get(_purchaseOrder.getTransaction_Recipient()).add(_purchaseOrder);
+        });
 
-        // TODO: Add logic for PDF and MailSender
+        // Send email to vendors
+        for (Map.Entry<String, ArrayList<Transaction>> entry : orders.entrySet()) {
+            file = new File(
+                    "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
+                    entry.getValue().get(0).getDoc_No() + ".pdf");
+            pdf = new PdfConverter(file,
+                    new PdfTemplate(entry.getValue(), PdfTemplate.TemplateType.PURCHASE_ORDER));
+            pdf.Save();
+
+            mail = new MailSender(
+                    "tancs8803@gmail.com",
+                    "Purchase Order",
+                    new MailTemplate(poNo, MailTemplate.TemplateType.PURCHASE_ORDER));
+            mail.AttachFile(file);
+            mail.Send();
+        }
     }
 
     // Method for modifying orders
     private void orderModification() {
         // Only Pending status orders can be modified
+        boolean backToPurchaseManagement = false;
+        boolean orderModified = false;
+        Map<String, ArrayList<Transaction>> orders = new HashMap<>();
+        ArrayList<Item> itemsInPurchaseOrders = new ArrayList<>();
+        ArrayList<Item> itemsNotInPurchaseOrders = Item.GetAll();
+
         viewPurchaseOrder.setPurchaseOrderList();
         ArrayList<PurchaseOrder> purchaseOrders = viewPurchaseOrder.selectPurchaseOrderFromList(StockStatus.PENDING);
         if (purchaseOrders == null || purchaseOrders.isEmpty()) {
@@ -140,8 +177,6 @@ public class ViewPurchaseManagement {
         // SELECT item to modify
         Transaction purchaseOrder = new PurchaseOrder(purchaseOrders.get(0).getDoc_No());
 
-        ArrayList<Item> itemsInPurchaseOrders = new ArrayList<>();
-        ArrayList<Item> itemsNotInPurchaseOrders = Item.GetAll();
 
         for (PurchaseOrder po : purchaseOrders) {
             itemsInPurchaseOrders.add(po.getItem());
@@ -152,7 +187,6 @@ public class ViewPurchaseManagement {
         }
 
         displayOrderDetails(purchaseOrders);
-        boolean backToPurchaseManagement = false;
 
         // Menu for order modification
         while (!backToPurchaseManagement) {
@@ -187,6 +221,7 @@ public class ViewPurchaseManagement {
                     purchaseOrder.Add();
                     itemsNotInPurchaseOrders.remove(item);
                     itemsInPurchaseOrders.add(item);
+                    orderModified = true;
                     break;
                 case 2:
                     viewItem.setItems(itemsInPurchaseOrders);
@@ -211,12 +246,14 @@ public class ViewPurchaseManagement {
                         }
                         itemsInPurchaseOrders.remove(itemToRemove);
                         itemsNotInPurchaseOrders.add(itemToRemove);
-                        
+
                     } else {
                         System.out.println("Failed to remove Purchase Order.");
                     }
+                    orderModified = true;
                     break;
                 case 3:
+
                     viewItem.setItems(itemsInPurchaseOrders);
                     Item itemToChange = viewItem.selectItemFromList();
                     if (itemToChange == null) {
@@ -232,22 +269,57 @@ public class ViewPurchaseManagement {
                                     100000));
                     purchaseOrder.setTransaction_Modified_By(user.getUserId());
                     System.out.println(purchaseOrder.Update());
-
+                    orderModified = true;
                     break;
                 case 4:
                     backToPurchaseManagement = true;
+                    break;
                 default:
                     System.out.println("Invalid choice");
+                    break;
             }
+
+        }
+    
+        if (!orderModified) {
+            return;
         }
 
-        // TODO: Add logic for PDF and MailSender
+        PurchaseOrder.Get(purchaseOrders.get(0).getDoc_No()).forEach(po -> {
+            po.getItem().Get();
+            if (!orders.containsKey(po.getTransaction_Recipient())) {
+                orders.put(po.getTransaction_Recipient(), new ArrayList<>());
+            }
+            orders.get(po.getTransaction_Recipient()).add(po);
+        });
+
+
+        // Send email to vendors
+        MailSender mail;
+        File file;
+        PdfConverter pdf;
+        for (Map.Entry<String, ArrayList<Transaction>> entry : orders.entrySet()) {
+            file = new File(
+                    "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
+                    entry.getValue().get(0).getDoc_No() + ".pdf");
+            pdf = new PdfConverter(file,
+                    new PdfTemplate(entry.getValue(), PdfTemplate.TemplateType.PURCHASE_ORDER));
+            pdf.Save();
+
+            mail = new MailSender(
+                    "tancs8803@gmail.com",
+                    "Reordering",
+                    new MailTemplate(purchaseOrders.get(0).getDoc_No(), MailTemplate.TemplateType.REORDERING));
+            mail.AttachFile(file);
+            mail.Send();
+        }
     }
 
     // Method to get validated quantity input
 
     // Method for canceling orders
     private void orderCancellation() {
+        Set<String> VendorID = new HashSet<>();
         viewPurchaseOrder.setPurchaseOrderList();
         ArrayList<PurchaseOrder> purchaseOrders = viewPurchaseOrder.selectPurchaseOrderFromList(StockStatus.PENDING);
         if (purchaseOrders == null || purchaseOrders.isEmpty()) {
@@ -263,14 +335,20 @@ public class ViewPurchaseManagement {
             return;
         }
 
-        purchaseOrders.forEach(PurchaseOrder::Remove);
+        purchaseOrders.forEach(_purchaseOrder -> {
+            _purchaseOrder.Remove();
+            VendorID.add(_purchaseOrder.getTransaction_Recipient());
+        });
 
         // Send cancellation email
-        MailSender mail = new MailSender(
-                "tancs8803@gmail.com",
-                "Order Cancelled",
-                new MailTemplate(purchaseOrder.getDoc_No(), MailTemplate.TemplateType.ORDER_CANCELLATION));
-        mail.Send();
+        MailSender mail;
+        for (String vendor : VendorID) {
+            mail = new MailSender(
+                    "tancs8803@gmail.com",
+                    "Order Cancelled",
+                    new MailTemplate(purchaseOrder.getDoc_No(), MailTemplate.TemplateType.ORDER_CANCELLATION));
+            mail.Send();
+        }
     }
 
     // Method for viewing order records
@@ -322,7 +400,7 @@ public class ViewPurchaseManagement {
             }
         }
         if (PendingStatus) {
-            viewStockStatusMenu(purchaseOrder);
+            viewStockStatusMenu(purchaseOrders);
         } else {
             try {
                 System.in.read();
@@ -405,8 +483,9 @@ public class ViewPurchaseManagement {
     }
 
     // Submenu for managing stock status - 
-    private void viewStockStatusMenu(PurchaseOrder purchaseOrder) {
+    private void viewStockStatusMenu(ArrayList<PurchaseOrder> _purchaseOrders) {
         boolean backToPurchaseManagement = false;
+        boolean orderManaged = false;
 
         while (!backToPurchaseManagement) {
             System.out.println("\n===============================");
@@ -423,26 +502,35 @@ public class ViewPurchaseManagement {
 
             switch (UserInputHandler.getInteger("Enter choice", 1, 5)) {
                 case 1:
-                    viewPurchaseOrder.followUpStatus(purchaseOrder);
+                    viewPurchaseOrder.followUpStatus(_purchaseOrders);
                     break;
                 case 2:
                     String grnNo = goodReceivedNotes.GenerateDocNo();
-                    this.viewGoodReceivedNotes.addGoodsReceivedNotes(purchaseOrder.getDoc_No(), grnNo);
+                    this.viewGoodReceivedNotes.addGoodsReceivedNotes(_purchaseOrders.get(0).getDoc_No(), grnNo);
+                    orderManaged = true;
+                    if (this.viewGoodReceivedNotes.getItems().isEmpty()) {
+                        backToPurchaseManagement = true;
+                        System.out.println("No more items available.");
+                        break;
+                    }
                     break;
                 case 3:
                     goodReceivedNotes = this.viewGoodReceivedNotes
-                            .selectGoodReceivedNotesFromList(purchaseOrder.getDoc_No());
+                            .selectGoodReceivedNotesFromList(_purchaseOrders.get(0).getDoc_No());
                     if (goodReceivedNotes == null) {
                         System.out.println("No Goods Received Notes found for this order.");
+                        backToPurchaseManagement = true;
                         break;
                     }
                     this.viewGoodReceivedNotes.editGoodReceivedNotes(goodReceivedNotes);
+                    orderManaged = true;
                     break;
                 case 4:
                     goodReceivedNotes = this.viewGoodReceivedNotes
-                            .selectGoodReceivedNotesFromList(purchaseOrder.getDoc_No());
+                            .selectGoodReceivedNotesFromList(_purchaseOrders.get(0).getDoc_No());
                     if (goodReceivedNotes == null) {
                         System.out.println("No Goods Received Notes found for this order.");
+                        backToPurchaseManagement = true;
                         break;
                     }
                     this.viewGoodReceivedNotes.removeGoodsReceivedNotes(goodReceivedNotes);
@@ -453,10 +541,49 @@ public class ViewPurchaseManagement {
                 default:
                     break;
             }
-            if (this.viewGoodReceivedNotes.getItems().isEmpty()) {
-                System.out.println("No more items available.");
-                break;
-            }
+
         }
+    
+        if (!orderManaged) {
+            return;
+        }
+        
+        //Send email to vendors
+        ArrayList<PurchaseOrder> purchaseOrders = PurchaseOrder.Get(_purchaseOrders.get(0).getDoc_No());
+        Map<String, ArrayList<Transaction>> orders = new HashMap<>();
+        for (PurchaseOrder order : purchaseOrders) {
+            order.getItem().Get();
+            if (!orders.containsKey(order.getTransaction_Recipient())) {
+                orders.put(order.getTransaction_Recipient(), new ArrayList<>());
+            }
+            orders.get(order.getTransaction_Recipient()).add(order);
+        }
+
+        //check if the good are all received
+        for (Map.Entry<String, ArrayList<Transaction>> entry : orders.entrySet()) {
+            boolean isFullyReceived = true;
+            for (Transaction order : entry.getValue()) {
+                int totalReceived = 0;
+                ArrayList<GoodReceivedNotes> goodReceivedNotesList = GoodReceivedNotes.Get(order.getItem(), order.getDoc_No());
+                if (goodReceivedNotesList == null || goodReceivedNotesList.isEmpty()) {
+                    isFullyReceived = false;
+                    break;
+                }
+                for (GoodReceivedNotes notes : goodReceivedNotesList) {
+                    totalReceived += notes.getQuantity();
+                }
+                if (totalReceived < order.getQuantity()) {
+                    isFullyReceived = false;
+                    break;
+                }
+            }
+            if (isFullyReceived) {
+                MailSender mail = new MailSender(
+                        "tancs8803@gmail.com",
+                        "Order Confirmation",
+                        new MailTemplate(purchaseOrders.get(0).getDoc_No(), MailTemplate.TemplateType.ORDER_CONFIRMATION));
+                mail.Send();
+            }
+        } 
     }
 }

@@ -35,6 +35,8 @@ public class MailSender {
     private final String MAIL_AUTH = "mail.smtp.auth";
     private final String MAIL_STARTTLS = "mail.smtp.starttls.enable";
 
+    private boolean MailStatus = false;
+
     //getter and setter
     public String getSender() {
         return this.Sender;
@@ -68,13 +70,19 @@ public class MailSender {
         this.Body = _Body;
     }
 
+    public boolean getMailStatus() {
+        return this.MailStatus;
+    }
+
     //MailSender Error: IOException while sending message
     public boolean Send() {
+        MailStatus = false;
         try {
 
             this.multipart.addBodyPart(this.mimeBodyPart);
             this.message.setContent(this.multipart);
             Transport.send(this.message);
+            MailStatus = true;
 
         } catch (MessagingException e) {
             System.out.println("MailSender Error: " + e.getMessage());

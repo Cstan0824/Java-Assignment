@@ -191,7 +191,6 @@ public class AutoReplenishment implements CrudOperation {
         purchaseOrder.setTransaction_Recipient("Vendor Name");
         purchaseOrder.setTransaction_Created_By("System");
         purchaseOrder.setTransaction_Modified_By("System");
-
         purchaseOrder.Add();
 
         //Generate PDF

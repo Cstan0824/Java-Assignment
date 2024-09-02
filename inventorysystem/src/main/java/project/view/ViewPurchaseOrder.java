@@ -16,6 +16,7 @@ public class ViewPurchaseOrder {
     private static User user;
     private final ArrayList<Integer> orderStatusList = new ArrayList<>();
     private ArrayList<PurchaseOrder> purchaseOrderList;
+    private MailSender mail = null;
 
 
     // Constructor
@@ -31,6 +32,10 @@ public class ViewPurchaseOrder {
 
     public ArrayList<Integer> getOrderStatusList() {
         return this.orderStatusList;
+    }
+
+    public MailSender getMail() {
+        return this.mail;
     }
 
     public ArrayList<PurchaseOrder> getPurchaseOrderList() {
@@ -145,16 +150,21 @@ public class ViewPurchaseOrder {
     }
 
     // Follow up on the status of a purchase order
-    public void followUpStatus(PurchaseOrder order) {
+    public void followUpStatus(ArrayList<PurchaseOrder> _purchaseOrders) {
+        Set<String> vendorID = new HashSet<>();
+        _purchaseOrders.forEach(order -> {
+            order.getItem().Get();
+            vendorID.add(order.getTransaction_Recipient());
+        });
         System.out.println("Following up on the status of the purchase order...");
-        MailSender mail = new MailSender(
-                "tancs8803@gmail.com",
-                "Follow Up Order Status",
-                new MailTemplate(order.getDoc_No(), MailTemplate.TemplateType.FOLLOW_ORDER_STATUS));
-        if (mail.Send()) {
-            System.out.println("Follow up email sent successfully.");
-        } else {
-            System.out.println("Failed to send follow up email.");
-        }
+
+        vendorID.forEach(vendor -> {
+            this.mail = new MailSender(
+                    "tanc8803@gmail.com",
+                    "Follow Up Order Status",
+                    new MailTemplate(_purchaseOrders.get(0).getDoc_No(),
+                            MailTemplate.TemplateType.FOLLOW_ORDER_STATUS));
+            mail.Send();
+        });
     }
 }

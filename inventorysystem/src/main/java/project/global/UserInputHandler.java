@@ -4,7 +4,6 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.sun.mail.imap.protocol.INTERNALDATE;
 
 public class UserInputHandler {
     private static final Scanner scanner = new Scanner(System.in);

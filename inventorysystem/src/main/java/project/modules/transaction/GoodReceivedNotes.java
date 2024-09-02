@@ -3,11 +3,8 @@ package project.modules.transaction;
 import java.sql.Date;
 import java.util.ArrayList;
 
-import project.global.MailSender;
-import project.global.MailTemplate;
 import project.global.SqlConnector;
 import project.global.SystemRunNo;
-import project.global.UserInputHandler;
 import project.modules.item.Item;
 
 public class GoodReceivedNotes extends Transaction {
@@ -26,17 +23,15 @@ public class GoodReceivedNotes extends Transaction {
     public boolean Add() {
         ArrayList<GoodReceivedNotes> goodReceivedNotes = GoodReceivedNotes.Get(this.getSource_Doc_No(),
                 GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
-        
-        Transaction purchaseOrder 
-                = PurchaseOrder.Get(
-                    this.getItem(),
-                        ((goodReceivedNotes == null || goodReceivedNotes.isEmpty())
-                            ?
-                                this
-                            :
-                                goodReceivedNotes.get(0)
-                        ).getSource_Doc_No());
-        
+        Transaction purchaseOrder = new PurchaseOrder(this.getItem(),
+                ((goodReceivedNotes == null || goodReceivedNotes.isEmpty())
+                        ? this
+                        : goodReceivedNotes.get(0)).getSource_Doc_No());
+
+        if (!purchaseOrder.Get()) {
+            return false;
+        }
+
         int VirtualStock = purchaseOrder.getQuantity();
         int OnHandStock = 0;
 
@@ -49,7 +44,7 @@ public class GoodReceivedNotes extends Transaction {
                 }
             }
         }
-        
+
         //System.out.println("Virtual Stock: " + VirtualStock);
         //System.out.println("On Hand Stock: " + OnHandStock);
         if (OnHandStock == VirtualStock) {
@@ -74,24 +69,18 @@ public class GoodReceivedNotes extends Transaction {
                 this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(),
                 this.getTransaction_Recipient(),
                 this.getTransaction_Created_By(), this.getTransaction_Modified_By());
+
         connector.Disconnect();
 
         if (QueryExecuted == false) {
-            System.out.println("Cannot insert the data");
             return false;
         }
 
-        MailSender mail;
-        if(VirtualStock == OnHandStock + this.getQuantity()){
-            //Send Email -Correct Amount
-            mail = new MailSender("tancs8803@gmail.com", "Order Confirmation",
-                new MailTemplate(this.getSource_Doc_No(), MailTemplate.TemplateType.ORDER_CONFIRMATION));
-        } else {
-            //The Stock amount is not enough
-            mail = new MailSender("tancs8803@gmail.com", "Follow Up Order Status",
-                    new MailTemplate(this.getSource_Doc_No(), MailTemplate.TemplateType.FOLLOW_ORDER_STATUS));
-        }
-        mail.Send();
+        //Update Item quantity
+        Item item = new Item(this.getItem().getItem_ID());
+        item.Get();
+        item.setItem_Quantity(item.getItem_Quantity() + this.getQuantity());
+        item.Update();
 
         return true;
     }
@@ -105,16 +94,18 @@ public class GoodReceivedNotes extends Transaction {
         //Old GRN
         Transaction OldGoodReceivedNote = new GoodReceivedNotes(this.getItem(), this.getDoc_No(),
                 this.getSource_Doc_No());
-        OldGoodReceivedNote.Get();
-
-        //Purchase Order
-        Transaction purchaseOrder = PurchaseOrder.Get(this.getItem(), this.getSource_Doc_No());
-        if (purchaseOrder == null) {
+        if (!OldGoodReceivedNote.Get()) {
             return false;
         }
 
-        ArrayList<GoodReceivedNotes> goodReceivedNotes = GoodReceivedNotes.Get(this.getSource_Doc_No(),
-                DocumentType.PURCHASE_ORDER);
+        //Purchase Order
+        Transaction purchaseOrder = new PurchaseOrder(this.getItem(), this.getSource_Doc_No());
+        
+        if (!purchaseOrder.Get()) {
+            return false;
+        }
+
+        ArrayList<GoodReceivedNotes> goodReceivedNotes = GoodReceivedNotes.Get(this.getItem(), this.getSource_Doc_No());
 
         if (goodReceivedNotes == null || goodReceivedNotes.isEmpty()) {
             return false;
@@ -146,23 +137,23 @@ public class GoodReceivedNotes extends Transaction {
         boolean QueryExecuted;
         if (OldGoodReceivedNote.getItem().getItem_ID() == this.getItem().getItem_ID()) {
             //The Item is the same
-            String query = "UPDATE Transaction SET  Transaction_Date = ?, Quantity = ?, Transaction_Mode = ?, Transaction_Recipient = ?, Transaction_Created_By = ?, Transaction_Modified_By = ? WHERE Doc_No = ?;";
+            String query = "UPDATE Transaction SET  Transaction_Date = ?, Quantity = ?, Transaction_Mode = ?, Transaction_Recipient = ?, Transaction_Created_By = ?, Transaction_Modified_By = ? WHERE Doc_No = ? AND Item_ID = ?;";
 
             QueryExecuted = connector.PrepareExecuteDML(query,
                     this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(),
                     this.getTransaction_Recipient(),
                     this.getTransaction_Created_By(), this.getTransaction_Modified_By(),
-                    this.getDoc_No());
+                    this.getDoc_No(), this.getItem().getItem_ID());
 
         } else {
-            String query = "UPDATE Transaction SET Item_ID = ?, Transaction_Date = ?, Quantity = ?, Transaction_Mode = ?, Transaction_Recipient = ?, Transaction_Created_By = ?, Transaction_Modified_By = ? WHERE Doc_No = ?;";
+            String query = "UPDATE Transaction SET Item_ID = ?, Transaction_Date = ?, Quantity = ?, Transaction_Mode = ?, Transaction_Recipient = ?, Transaction_Created_By = ?, Transaction_Modified_By = ? WHERE Doc_No = ? AND Item_ID = ?;";
 
             QueryExecuted = connector.PrepareExecuteDML(query,
                     this.getItem().getItem_ID(),
                     this.getTransaction_Date(), this.getQuantity(), this.getTransaction_Mode(),
                     this.getTransaction_Recipient(),
                     this.getTransaction_Created_By(), this.getTransaction_Modified_By(),
-                    this.getDoc_No());
+                    this.getDoc_No(), this.getItem().getItem_ID());
         }
 
         connector.Disconnect();
@@ -171,25 +162,12 @@ public class GoodReceivedNotes extends Transaction {
             return false;
         }
 
-        MailSender mail;
-        if (VirtualStock > (OnHandStock + differenceStockQuantity)) {
-            //The Amount is still not enough, ask user whether need to follow the status with vendor
-            if (!UserInputHandler.getConfirmation("Do you want to follow up the status of the stock?")
-                    .equalsIgnoreCase("Y")) {
-                return true;
-            }
-            mail = new MailSender("tancs8803@gmail.com", "Follow Up Order Status",
-                    new MailTemplate(this.getSource_Doc_No(), MailTemplate.TemplateType.FOLLOW_ORDER_STATUS));
-        } else {
-            //The Amount is correct
-            //Send Order Confirmation Email
-            mail = new MailSender("tancs8803@gmail.com", "Order Confirmation",
-                    new MailTemplate(this.getSource_Doc_No(), MailTemplate.TemplateType.ORDER_CONFIRMATION));
-
-        }
-
-        mail.Send();
-
+        //Update Item quantity
+        Item item = new Item(this.getItem().getItem_ID());
+        item.Get();
+        item.setItem_Quantity(item.getItem_Quantity() + differenceStockQuantity);
+        item.Update();
+        
         return QueryExecuted;
     }
     
@@ -210,6 +188,18 @@ public class GoodReceivedNotes extends Transaction {
         boolean QueryExecuted = connector.PrepareExecuteDML(query, this.getDoc_No());
 
         connector.Disconnect();
+        if (QueryExecuted == false) {
+            return false;
+        }
+
+        Transaction goodReceivedNotes = new GoodReceivedNotes(this.getItem(), this.getDoc_No(),
+                this.getSource_Doc_No());
+        goodReceivedNotes.Get();
+
+        Item item = new Item(this.getItem().getItem_ID());
+
+        item.Get();
+        item.setItem_Quantity(Math.max(item.getItem_Quantity() - this.getQuantity(), 0));
 
         return QueryExecuted;
     }

@@ -1,14 +1,9 @@
 package project.modules.transaction;
 
-import java.io.File;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import project.global.MailSender;
-import project.global.MailTemplate;
-import project.global.PdfConverter;
-import project.global.PdfTemplate;
 import project.global.SqlConnector;
 import project.global.SystemRunNo;
 import project.modules.item.Item;
@@ -38,27 +33,7 @@ public class PurchaseOrder extends Transaction {
 
         connector.Disconnect();
 
-        if (QueryExecuted == false) {
-            return false;
-        }
-
-        //Generate Purchase Order Document
-        //make it to relative path
-        File file = new File(
-                "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
-                this.getDoc_No() + ".pdf");
-
-        PdfConverter pdf = new PdfConverter(file,
-                new PdfTemplate(this, PdfTemplate.TemplateType.PURCHASE_ORDER));
-        pdf.Save();
-
-        //Send Mail - receipent email get from vendor
-        MailSender mail = new MailSender("tarumtmoviesociety@gmail.com", "tancs8803@gmail.com", "Purchase Order",
-                new MailTemplate(this.getDoc_No(), MailTemplate.TemplateType.PURCHASE_ORDER));
-        mail.AttachFile(file);
-        mail.Send();
-
-        return true;
+        return QueryExecuted;
     }
 
     //Only change vendor or item will use this method
@@ -75,39 +50,10 @@ public class PurchaseOrder extends Transaction {
             //The stock is already reiceived
             return false;
         }
-        Transaction oldPurchaseOrder = PurchaseOrder.Get(this.getItem(), this.getDoc_No());
+        Transaction oldPurchaseOrder = new PurchaseOrder(this.getItem(), this.getDoc_No());
 
-        if (oldPurchaseOrder == null) {
+        if (!oldPurchaseOrder.Get()) {
             return false;
-        }
-
-        //Scenario 1: Change vendor
-        //Scenario 2: Only change item but still same vendor
-        if (!this.getTransaction_Recipient().equals(oldPurchaseOrder.getTransaction_Recipient())) {
-            //Send the order cancellation to old vendor
-            MailSender OrderCancellationMail = new MailSender("tancs8803@gmail.com", "Order Cancelled",
-                    new MailTemplate(this.getDoc_No(), MailTemplate.TemplateType.ORDER_CANCELLATION));
-            OrderCancellationMail.Send();
-
-            //send the purchase order to new vendor with new item and new quantity
-            MailSender PurchaseOrderMail = new MailSender("tancs8803@gmail.com", "Purchase Order",
-                    new MailTemplate(this.getDoc_No(), MailTemplate.TemplateType.PURCHASE_ORDER));
-            PurchaseOrderMail.Send();
-
-        } else if (this.getItem().getItem_ID() != oldPurchaseOrder.getItem().getItem_ID()) {
-            //Send Reordering to vendor
-            //generate pdf
-            File file = new File(
-                    "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
-                    this.getDoc_No() + ".pdf");
-            PdfConverter pdf = new PdfConverter(file, new PdfTemplate(this, PdfTemplate.TemplateType.PURCHASE_ORDER));
-            pdf.Save();
-
-            //send reordering mail
-            MailSender ReorderingMail = new MailSender("tancs8803@gmail.com", "Reordering",
-                    new MailTemplate(this.getDoc_No(), MailTemplate.TemplateType.REORDERING));
-            ReorderingMail.AttachFile(file);
-            ReorderingMail.Send();
         }
 
         SqlConnector connector = new SqlConnector();
@@ -164,31 +110,32 @@ public class PurchaseOrder extends Transaction {
 
         connector.Disconnect();
 
-        if (QueryExecuted == false) {
-            return false;
-        }
-        
-
-        //Delete the pdf file
-        File file = new File(
-                "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
-                this.getDoc_No() + ".pdf");
-        file.delete();
-
-        return true;
+        return QueryExecuted;
     }
 
     @Override
     //Check the stock status and ask user whether they want to proceed with the stock[send mail to the vendor for follow up status]
     //Done
     public boolean Get() {
-        Transaction purchaseOrder = PurchaseOrder.Get(this.getItem(), this.getDoc_No());
-
-        if (purchaseOrder == null) {
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
             return false;
         }
 
+        String query = "SELECT * FROM Transaction WHERE Doc_No = ? AND Item_ID = ? ORDER BY Doc_No";
+        ArrayList<PurchaseOrder> purchaseOrders = connector.PrepareExecuteRead(query, PurchaseOrder.class,
+                this.getDoc_No(),
+                this.getItem().getItem_ID());
+        connector.Disconnect();
+
+        if (purchaseOrders == null || purchaseOrders.isEmpty()) {
+            return false;
+        }
+        Transaction purchaseOrder = purchaseOrders.get(0);
+
         //initialize the value
+        purchaseOrder.getItem().Get();
         this.setItem(purchaseOrder.getItem());
         this.setDoc_No(purchaseOrder.getDoc_No());
         this.setSource_Doc_No(purchaseOrder.getSource_Doc_No());
@@ -198,29 +145,6 @@ public class PurchaseOrder extends Transaction {
         this.setTransaction_Recipient(purchaseOrder.getTransaction_Recipient());
         this.setTransaction_Created_By(purchaseOrder.getTransaction_Created_By());
         this.setTransaction_Modified_By(purchaseOrder.getTransaction_Modified_By());
-
-        int VirtualStock = this.getQuantity();
-        int OnHandStock = 0;
-
-        //Check the stock status
-        ArrayList<GoodReceivedNotes> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
-                GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
-
-        if (goodReceiveNotes == null || goodReceiveNotes.isEmpty()) {
-            OnHandStock = 0;
-        } else {
-            for (Transaction goodReceiveNote : goodReceiveNotes) {
-                OnHandStock += goodReceiveNote.getQuantity();
-            }
-        }
-
-        Integer diff = VirtualStock - OnHandStock;
-        if (diff == 0) {
-            return true;
-        }
-
-
-        
 
         return true;
     }

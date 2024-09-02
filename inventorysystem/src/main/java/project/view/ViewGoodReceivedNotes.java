@@ -3,6 +3,8 @@ package project.view;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import project.global.UserInputHandler;
 import project.modules.item.Item;
@@ -43,26 +45,25 @@ public class ViewGoodReceivedNotes {
         this.purchaseOrders = PurchaseOrder.Get(poNo);
 
         //get items and OnhandStock from purchaseOrders
-        purchaseOrders.forEach(purchaseOrder -> {
+        for (Transaction purchaseOrder : this.purchaseOrders) {
             purchaseOrder.getItem().Get();
 
             this.goodReceivedNotes = GoodReceivedNotes.Get(purchaseOrder.getItem(), poNo);
             int OnHandStock = 0;
             if (goodReceivedNotes == null || goodReceivedNotes.isEmpty()) {
                 this.items.add(purchaseOrder.getItem());
-                return;
+                break;
             }
             for (GoodReceivedNotes grn : goodReceivedNotes) {
                 OnHandStock += grn.getQuantity();
             }
 
             if (OnHandStock == purchaseOrder.getQuantity()) {
-                return;
+                break;
             }
-
             OnHandStocks.put(purchaseOrder.getItem(), OnHandStock);
             this.items.add(purchaseOrder.getItem());
-        });
+        }
 
         if (this.purchaseOrders.isEmpty()) {
             System.out.println("No Purchase Orders available.");
@@ -81,17 +82,19 @@ public class ViewGoodReceivedNotes {
                 System.out.println("Item not selected.");
                 return;
             }
-            this.items.remove(item);
+            
             // Get Virtual Stock
             Transaction purchaseOrder = new PurchaseOrder(item, poNo);
             purchaseOrder.Get();
+            purchaseOrder.setItem(item); //idk why need this line but it works
 
-            int maxQuantity = purchaseOrder.getQuantity() - OnHandStocks.getOrDefault(purchaseOrder.getItem(), purchaseOrder.getQuantity());
+            int maxQuantity = purchaseOrder.getQuantity()
+                    - OnHandStocks.getOrDefault(purchaseOrder.getItem(), purchaseOrder.getQuantity());
+
             if (maxQuantity == 0) {
                 maxQuantity = purchaseOrder.getQuantity();
             }
 
-            
             goodReceivedNote.setQuantity(
                     UserInputHandler.getInteger("Enter Quantity", 1,
                             maxQuantity));
@@ -105,6 +108,9 @@ public class ViewGoodReceivedNotes {
 
             // Add to the list
             this.goodReceivedNotes.add(goodReceivedNote);
+
+            this.items.remove(item); //remove item from list once selected
+            
             if (this.items.isEmpty()) {
                 break;
             }
@@ -112,7 +118,9 @@ public class ViewGoodReceivedNotes {
                 .equalsIgnoreCase("Y"));
 
         // Save the GRN to the database
-        this.goodReceivedNotes.forEach(GoodReceivedNotes::Add);
+        this.goodReceivedNotes.forEach(_goodReceivedNote -> {
+            _goodReceivedNote.Add();
+        });
     }
 
     // Method to edit Goods Received Notes
@@ -134,28 +142,31 @@ public class ViewGoodReceivedNotes {
                 UserInputHandler.getInteger("Enter Quantity", 1,
                         purchaseOrder.getQuantity() - (OnHandStock - goodReceivedNote.getQuantity())));
         goodReceivedNote.setTransaction_Modified_By(user.getUserId());
-        if (goodReceivedNote.Update()) {
-            System.out.println("Good Received Notes updated successfully.");
-        } else {
+        if (!goodReceivedNote.Update()) {
             System.out.println("Failed to update Good Received Notes.");
+            return;
         }
+        System.out.println("Good Received Notes updated successfully.");
+        
     }
 
     // Method to remove Goods Received Notes
     public void removeGoodsReceivedNotes(Transaction goodReceivedNote) {
-        if (UserInputHandler.getConfirmation("Are you sure you want to remove this Good Received Notes?")
+        if (!UserInputHandler.getConfirmation("Are you sure you want to remove this Good Received Notes?")
                 .equalsIgnoreCase("Y")) {
-            GoodReceivedNotes.Get(goodReceivedNote.getDoc_No(), GoodReceivedNotes.DocumentType.GOOD_RECEIVED_NOTES)
+            return;
+        }
+        GoodReceivedNotes.Get(goodReceivedNote.getDoc_No(), GoodReceivedNotes.DocumentType.GOOD_RECEIVED_NOTES)
                     .forEach(grn -> {
                         if (grn != null) {
                             grn.Remove();
                         }
                     });
-        }
     }
 
     // Method to select a Goods Received Note from the list
     public Transaction selectGoodReceivedNotesFromList(String poNo) {
+        Set<String> displayedGRN = new HashSet<>();
         this.goodReceivedNotes = GoodReceivedNotes.Get(poNo, GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
         if(this.goodReceivedNotes == null || this.goodReceivedNotes.isEmpty()) {
             return null;
@@ -170,12 +181,21 @@ public class ViewGoodReceivedNotes {
 
         for (int i = 0; i < goodReceivedNotes.size(); i++) {
             goodReceivedNotes.get(i).getItem().Get();
-            System.out.println(String.format("| %-5s | %-20s | %-20s | %-20s | %-20s |",
-                    (i + 1) + ". ",
-                    goodReceivedNotes.get(i).getDoc_No(),
-                    goodReceivedNotes.get(i).getItem().getItem_Name(),
-                    goodReceivedNotes.get(i).getItem().getItem_Price(),
-                    goodReceivedNotes.get(i).getQuantity()));
+
+            if (!displayedGRN.add(goodReceivedNotes.get(i).getDoc_No())) {
+                System.out.println(String.format("| %-20s | %-20s | %-20s | %-20s |",
+                        "",
+                        goodReceivedNotes.get(i).getItem().getItem_Name(),
+                        goodReceivedNotes.get(i).getItem().getItem_Price(),
+                        goodReceivedNotes.get(i).getQuantity()));
+            } else {
+                System.out.println(String.format("| %-5s | %-20s | %-20s | %-20s | %-20s |",
+                        (i + 1) + ". ",
+                        goodReceivedNotes.get(i).getDoc_No(),
+                        goodReceivedNotes.get(i).getItem().getItem_Name(),
+                        goodReceivedNotes.get(i).getItem().getItem_Price(),
+                        goodReceivedNotes.get(i).getQuantity()));
+            }
         }
         System.out.println(
                 " ===================================================================================================== ");
