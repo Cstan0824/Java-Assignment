@@ -78,7 +78,6 @@ public class Request {
         this.Retailer_Address = Retailer_Address;
     }
     
-   
     public String getRetailer_Entry_Id() {
         return Retailer_Entry_Id;
     }
@@ -87,6 +86,8 @@ public class Request {
         this.Retailer_Entry_Id = Retailer_Entry_Id;
     }
 
+
+    
     public void saveRequest() // retailer use , so far ok 
     {
         String sql = "INSERT INTO Request (Request_Id, Retailer_Id, Retailer_Name, Retailer_Email, Retailer_Password, Retailer_Address, Status, Retailer_Entry_Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -186,8 +187,6 @@ public class Request {
         ArrayList<Request> requests = connector.PrepareExecuteRead(sql, Request.class);
 
         if (requests == null || requests.isEmpty()) {
-            System.out.println("No pending requests found.");
-            // return back to menu
             return null;
         }
 

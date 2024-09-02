@@ -46,21 +46,12 @@ public class Validation {
         }
     }
 
-    public static boolean validateUserEmail(String userEmail) {
-        if(userEmail.matches("^[a-zA-Z0-9+_.-]+@[gmail|yahoo]+.com $")) 
-        {
-            return true;
-        }
-        else
-        {
-            System.out.println("Invalid User Email. Please enter a valid User Email: ");
-            return false;
+}
 
-        }
-    }
+    
 
     
 
 
 
-}
+

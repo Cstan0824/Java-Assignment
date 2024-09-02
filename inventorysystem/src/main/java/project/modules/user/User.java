@@ -21,6 +21,8 @@ public abstract class User {
     private LocalDateTime userRegDate;
     private LocalDateTime otpExpiry;
     private String userType;
+    private static String loggedInUserId;
+    private String userAddress;
     final String url = Connector.getUrl();
     final String user = Connector.getUser();
     final String password = ""; 
@@ -108,7 +110,21 @@ public abstract class User {
         this.userType = userType;
     }
 
- 
+    public static void setLoggedInUserId(String userId) {
+        loggedInUserId = userId;
+    }
+
+    public static String getLoggedInUserId() {
+        return loggedInUserId;
+    }
+
+    public String getUserAddress() {
+        return userAddress;
+    }
+
+    public void setUserAddress(String userAddress) {
+        this.userAddress = userAddress;
+    }
 
     public abstract void Add(); 
     public abstract void UserMenu(); 
@@ -220,6 +236,12 @@ public abstract class User {
                 System.out.println("Enter " + this.getUserType() + " ID: ");
                 this.setUserId(scanner.nextLine());
 
+                while(!Validation.validateUserId(this.getUserId()))
+                {
+                    System.out.println("Enter " + this.getUserType() + " ID: ");
+                    this.setUserId(scanner.nextLine());
+                }
+
                 System.out.println("Enter " + this.getUserType() + " Password: ");
                 this.setUserPassword(scanner.nextLine());
 
@@ -247,15 +269,8 @@ public abstract class User {
                         continue;
                     }
     
-                    User users = null;
-    
-                    if (this.userType.equals("Admin")) {
-                        users = new Admin();
+                    User users = this.userType.equals("Admin") ? new Admin() : new Retailer();
 
-                    } else if (this.userType.equals("Retailer")) {
-                        users = new Retailer();
-
-                    }
     
                     if (users != null) {
 
@@ -266,17 +281,8 @@ public abstract class User {
                         users.setUserRegDate(resultSet.getTimestamp(this.getUserType() + "_Reg_Date").toLocalDateTime());
     
                         System.out.println("Login successful.");
-                        if (userType.equals("Admin")) {
-
-                            System.out.println("Admin Menu");
-                            users.UserMenu();
-
-
-                        } else if (userType.equals("Retailer")) {
-                                
-                            System.out.println("Retailer Menu");
-                            users.UserMenu();
-                        }
+                        setLoggedInUserId(this.userId);  // Set the logged-in user's ID
+                        users.UserMenu();
 
                         break;
 
@@ -422,6 +428,7 @@ public abstract class User {
         System.out.println(this.getUserType()+" ID: " + this.getUserId());
         System.out.println(this.getUserType()+" Name: " + this.getUserName());
         System.out.println(this.getUserType()+" Email: " + this.getUserEmail());
+        System.out.println(this.getUserType()+" Password: " + this.getUserPassword());
         System.out.println(this.getUserType()+" Registration Date: " + this.getUserRegDate());        
     }
 
