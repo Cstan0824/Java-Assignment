@@ -42,6 +42,22 @@ public class AutoReplenishment implements CrudOperation {
         this.Item_Threshold = _Item_Threshold;
     }
 
+    //Constructor
+    public AutoReplenishment() {
+
+    }
+    
+    public AutoReplenishment(int _ItemID) {
+        this.item = new Item(_ItemID);
+    }
+    
+    public AutoReplenishment(AutoReplenishment _autoReplenishment) {
+        this.AutoReplenishment_ID = _autoReplenishment.getAutoReplenishment_ID();
+        this.item = _autoReplenishment.getItem();
+        this.Item_Threshold = _autoReplenishment.getItem_Threshold();
+    }
+
+    //Methods
     @Override
     public boolean Get() {
 
@@ -67,6 +83,7 @@ public class AutoReplenishment implements CrudOperation {
         AutoReplenishment result = results.get(0);
         this.AutoReplenishment_ID = result.getAutoReplenishment_ID();
         this.item = result.getItem();
+        this.item.Get();
         this.Item_Threshold = result.getItem_Threshold();
 
         connector.Disconnect();
@@ -211,18 +228,5 @@ public class AutoReplenishment implements CrudOperation {
     }
 
     
-    //Constructor
-    public AutoReplenishment() {
-
-    }
     
-    public AutoReplenishment(int _ItemID) {
-        this.item = new Item(_ItemID);
-    }
-    
-    public AutoReplenishment(AutoReplenishment _autoReplenishment) {
-        this.AutoReplenishment_ID = _autoReplenishment.getAutoReplenishment_ID();
-        this.item = _autoReplenishment.getItem();
-        this.Item_Threshold = _autoReplenishment.getItem_Threshold();
-    }
 }

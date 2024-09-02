@@ -1,5 +1,6 @@
 package project.global;
 
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,6 +57,29 @@ public class UserInputHandler {
 
             // If valid, return the input
             return input;
+        }
+    }
+
+    public static double getDouble(String _message, double _min, double _max) {
+        double number;
+        do {
+            System.out.print(_message + " (" + _min + " - " + _max + "): ");
+            number = scanner.nextDouble();
+            scanner.nextLine();
+
+            if (number < _min || number > _max) {
+                System.out.println("Invalid input. Please enter a number between " + _min + " and " + _max + ".");
+            }
+        } while (number < _min || number > _max);
+        return number;
+    }
+
+    public static void systemPause(String _message) {
+        try {
+            System.out.println(_message);
+            System.in.read();
+        } catch (IOException e) {
+            System.out.println("Pause Error: " + e.getMessage());
         }
     }
 }

@@ -157,7 +157,8 @@ public class ViewPurchaseOrder {
             vendorID.add(order.getTransaction_Recipient());
         });
         System.out.println("Following up on the status of the purchase order...");
-
+        
+        //Send email to vendor
         vendorID.forEach(vendor -> {
             this.mail = new MailSender(
                     "tanc8803@gmail.com",

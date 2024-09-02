@@ -1,7 +1,6 @@
 package project.view;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -402,12 +401,7 @@ public class ViewPurchaseManagement {
         if (PendingStatus) {
             viewStockStatusMenu(purchaseOrders);
         } else {
-            try {
-                System.in.read();
-
-            } catch (IOException e) {
-                System.out.println("Pause Error: " + e.getMessage());
-            }
+            UserInputHandler.systemPause("Press any key to continue...");
         }
     }
 

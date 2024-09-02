@@ -61,6 +61,7 @@ public class ViewGoodReceivedNotes {
             if (OnHandStock == purchaseOrder.getQuantity()) {
                 break;
             }
+            //Add to the list
             OnHandStocks.put(purchaseOrder.getItem(), OnHandStock);
             this.items.add(purchaseOrder.getItem());
         }
@@ -95,6 +96,7 @@ public class ViewGoodReceivedNotes {
                 maxQuantity = purchaseOrder.getQuantity();
             }
 
+            //Set the GRN details
             goodReceivedNote.setQuantity(
                     UserInputHandler.getInteger("Enter Quantity", 1,
                             maxQuantity));
@@ -125,15 +127,17 @@ public class ViewGoodReceivedNotes {
 
     // Method to edit Goods Received Notes
     public void editGoodReceivedNotes(Transaction goodReceivedNote) {
+        int OnHandStock = 0;
         Transaction purchaseOrder = new PurchaseOrder(goodReceivedNote.getItem(),
                 goodReceivedNote.getSource_Doc_No());
         purchaseOrder.Get();
         this.goodReceivedNotes = GoodReceivedNotes.Get(purchaseOrder.getItem(),
                 goodReceivedNote.getSource_Doc_No());
-        int OnHandStock = 0;
+        
         if (goodReceivedNotes == null || goodReceivedNotes.isEmpty()) {
             return;
         }
+        //Get On hand stock
         for (GoodReceivedNotes grn : goodReceivedNotes) {
             OnHandStock += grn.getQuantity();
         }
@@ -142,6 +146,8 @@ public class ViewGoodReceivedNotes {
                 UserInputHandler.getInteger("Enter Quantity", 1,
                         purchaseOrder.getQuantity() - (OnHandStock - goodReceivedNote.getQuantity())));
         goodReceivedNote.setTransaction_Modified_By(user.getUserId());
+
+        //Update
         if (!goodReceivedNote.Update()) {
             System.out.println("Failed to update Good Received Notes.");
             return;
@@ -181,7 +187,7 @@ public class ViewGoodReceivedNotes {
 
         for (int i = 0; i < goodReceivedNotes.size(); i++) {
             goodReceivedNotes.get(i).getItem().Get();
-
+            //Make sure the Doc no will not displayed repeatly
             if (!displayedGRN.add(goodReceivedNotes.get(i).getDoc_No())) {
                 System.out.println(String.format("| %-20s | %-20s | %-20s | %-20s |",
                         "",
