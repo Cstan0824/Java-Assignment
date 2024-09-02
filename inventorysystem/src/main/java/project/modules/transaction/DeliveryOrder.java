@@ -179,7 +179,52 @@ public class DeliveryOrder extends Transaction {
         return deliveryOrders;
     }
 
-    public ArrayList<DeliveryOrder> GetAll() {
+    public static ArrayList<DeliveryOrder> GetDistinctDeliveryOrder(String _Transaction_Recipient){
+
+        SqlConnector connector = new SqlConnector();
+        ArrayList<DeliveryOrder> deliveryOrders = new ArrayList<>();
+        try {
+            connector.Connect();
+            if (!connector.isConnected()) {
+                return null;
+            }
+            String[] DocNos = connector.getDistinctDocNos("DO", _Transaction_Recipient);
+        
+            for (String DocNo : DocNos) {
+                DeliveryOrder deliveryOrder = DeliveryOrder.Get(DocNo);
+                deliveryOrders.add(deliveryOrder);
+            }
+        } finally {
+            connector.Disconnect();
+        }
+        return deliveryOrders;
+    }
+
+    public static ArrayList<DeliveryOrder> GetDistinctPendingDeliveryOrder() {
+
+        SqlConnector connector = new SqlConnector();
+        ArrayList<DeliveryOrder> deliveryOrders = new ArrayList<>();
+
+        try {
+            connector.Connect();
+            if (!connector.isConnected()) {
+                return null;
+            }
+            String[] DocNos = connector.getDistinctPendingDODocNos();
+        
+            for (String DocNo : DocNos) {
+                DeliveryOrder deliveryOrder = DeliveryOrder.Get(DocNo);
+                deliveryOrders.add(deliveryOrder);
+            }
+        } finally {
+            connector.Disconnect();
+        }
+
+        return deliveryOrders;
+
+    }
+
+    public static ArrayList<DeliveryOrder> GetAll() {
 
         SqlConnector connector = new SqlConnector();
         try {

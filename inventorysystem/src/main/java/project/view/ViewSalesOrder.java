@@ -12,8 +12,8 @@ public class ViewSalesOrder {
     
     private static final Scanner sc = new Scanner(System.in);  
     private static User user;
-    private final ArrayList<SalesOrder> salesOrderList;
-    private final ArrayList<SalesOrder> pendingSalesOrderList;
+    private ArrayList<SalesOrder> salesOrderList;
+    private ArrayList<SalesOrder> pendingSalesOrderList;
 
     public ViewSalesOrder(User user) {
         ViewSalesOrder.user = user;
@@ -38,7 +38,7 @@ public class ViewSalesOrder {
     }
 
     public ArrayList<SalesOrder> selectSalesOrderFromList() {
-
+        this.salesOrderList = SalesOrder.GetDistinctSalesOrder();
         int totalSalesOrder = 0;
 
         String[] columnNames = {"SO_No", "Mode", "Date", "Recipient", "Creator"};
@@ -98,7 +98,7 @@ public class ViewSalesOrder {
     }
     
     public ArrayList<SalesOrder> selectPendingSalesOrder(String mode) {
-
+        this.pendingSalesOrderList = SalesOrder.GetDistinctPendingSalesOrder();
         int totalSalesOrder = 0;
 
         String[] columnNames = {"SO_No", "Mode", "Date", "Recipient", "Creator"};
@@ -168,8 +168,6 @@ public class ViewSalesOrder {
         }
 
         return null;
-
-
 
     }
 

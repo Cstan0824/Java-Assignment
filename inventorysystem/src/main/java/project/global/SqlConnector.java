@@ -381,6 +381,31 @@ public class SqlConnector {
         return docNoList.toArray(new String[0]);
     }
 
+    public String[] getDistinctPendingDODocNos() {
+        String query = "SELECT DISTINCT Doc_No FROM TRANSACTION WHERE DOC_NO LIKE 'DO%' AND DOC_NO NOT IN (SELECT Doc_No FROM Schedule);";
+        ArrayList<String> docNoList = new ArrayList<>();
+
+        if (!isConnected()) {
+            return null;
+        }
+        try{
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String docNo = rs.getString("Doc_No");
+                docNoList.add(docNo);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Get Distinct Doc No Error: " + e.getMessage());
+            return null;
+        }
+
+        // Convert ArrayList to String Array
+        return docNoList.toArray(new String[0]);
+    }
+    
     @SuppressWarnings("unchecked")
     private <T> ArrayList<T> ToArrayList(ResultSet _result)
     {

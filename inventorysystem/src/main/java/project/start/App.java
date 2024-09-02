@@ -6,6 +6,7 @@ import project.modules.user.Admin;
 import project.modules.user.User;
 import project.view.ViewSalesManagement;
 
+
 public class App {
     private static final Scanner sc = new Scanner(System.in);
     public static void main(String[] args) {
@@ -17,5 +18,7 @@ public class App {
         ViewSalesManagement view = new ViewSalesManagement(user);
         view.adminMenu();
 
+        
+        
     }
 }

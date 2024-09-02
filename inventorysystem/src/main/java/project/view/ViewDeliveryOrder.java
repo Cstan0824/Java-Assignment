@@ -4,17 +4,30 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import project.modules.transaction.DeliveryOrder;
+import project.modules.user.Admin;
+import project.modules.user.Retailer;
 import project.modules.user.User;
 
 public class ViewDeliveryOrder {
     
     private static final Scanner sc = new Scanner(System.in);  
     private static User user;
-    private final ArrayList<DeliveryOrder> deliveryOrderList;
+    private ArrayList<DeliveryOrder> deliveryOrderList;
+    private ArrayList<DeliveryOrder> pendingDeliveryOrderList;
 
     public ViewDeliveryOrder(User user) {
         ViewDeliveryOrder.user = user;
-        deliveryOrderList = DeliveryOrder.GetDistinctDeliveryOrder();
+        if (user instanceof Admin) {
+            deliveryOrderList = DeliveryOrder.GetDistinctDeliveryOrder();
+            pendingDeliveryOrderList = DeliveryOrder.GetDistinctPendingDeliveryOrder();
+        } else if (user instanceof Retailer) {
+            deliveryOrderList = DeliveryOrder.GetDistinctDeliveryOrder(user.getUserId());
+            pendingDeliveryOrderList = null;
+        } else {
+            deliveryOrderList = null;
+            pendingDeliveryOrderList = null;
+        }
+        
     }
 
     public User getUser() {
@@ -26,6 +39,11 @@ public class ViewDeliveryOrder {
     }
 
     public ArrayList<DeliveryOrder> selectDeliveryOrderFromList() {
+        if (user instanceof Admin) {
+            this.deliveryOrderList = DeliveryOrder.GetDistinctDeliveryOrder();
+        } else if (user instanceof Retailer) {
+            this.deliveryOrderList = DeliveryOrder.GetDistinctDeliveryOrder(user.getUserId());
+        }
 
         int totalSalesOrder = 0;
 
@@ -48,12 +66,12 @@ public class ViewDeliveryOrder {
                 distinctTableLine();
             }
 
-            System.out.println("Total Sales Order available in the database: " + totalSalesOrder);
+            System.out.println("Total Delivery Order available in the database: " + totalSalesOrder);
 
             ArrayList<DeliveryOrder> selectedDeliveryOrderList;
 
             do{
-                System.out.println("Enter Sales Order Doc No: ");
+                System.out.println("Enter Delivery Order Doc No: ");
                 String docNo = sc.nextLine();
 
                 selectedDeliveryOrderList = DeliveryOrder.GetAll(docNo);
@@ -85,9 +103,70 @@ public class ViewDeliveryOrder {
         return null;
     }
     
+    public ArrayList<DeliveryOrder> selectPendingDeliveryOrder(){
+
+        this.pendingDeliveryOrderList = DeliveryOrder.GetDistinctPendingDeliveryOrder();
+
+        int totalPendingOrder = 0;
+
+        String[] columnNames = {"DO_No", "Mode", "Date", "Recipient", "Creator"};
+
+        if (pendingDeliveryOrderList != null && !pendingDeliveryOrderList.isEmpty() ){
+
+            System.out.println("Pending Delivery Order List");
+            distinctTableLine();
+            System.out.printf("|");
+            for (String columnName : columnNames) {
+                System.out.printf(" %-15s ", columnName);
+                System.out.printf("|");
+            }
+            System.out.println("");
+            distinctTableLine();
+            for (DeliveryOrder DO : pendingDeliveryOrderList) {
+                System.out.print(DO.distinctToString());
+                totalPendingOrder++;
+                distinctTableLine();
+            }
+
+            System.out.println("Total Pending Delivery Order available in the database: " + totalPendingOrder);
+
+            ArrayList<DeliveryOrder> selectedDeliveryOrderList;
+
+            do{
+                System.out.println("Enter Delivery Order Doc No: ");
+                String docNo = sc.nextLine();
+
+                selectedDeliveryOrderList = DeliveryOrder.GetAll(docNo);
+
+                if (selectedDeliveryOrderList != null && !selectedDeliveryOrderList.isEmpty()) {
+                    //display and save into array list
+                    String[] selectedColumnNames = {"DO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
+                    System.out.println("Delivery Order List found for Doc No: " + docNo);
+                    normalTableLine();
+                    System.out.printf("|");
+                    for (String columnName : selectedColumnNames) {
+                        System.out.printf(" %-15s ", columnName);
+                        System.out.printf("|");
+                    }
+                    System.out.println("");
+                    normalTableLine();
+                    for (DeliveryOrder DO : selectedDeliveryOrderList) {
+                        System.out.print(DO.toString());
+                        normalTableLine();
+                    }
+
+                    return selectedDeliveryOrderList;
+                } else {
+                    System.out.println("No Delivery Order found with the given Doc No. Please try again.");
+                }
+            } while (selectedDeliveryOrderList == null ||selectedDeliveryOrderList.isEmpty());
+        }
+
+        return null;
+
+    }
+
     
-
-
     //display design methods
     private static void normalTableLine(){
         System.out.println("-------------------------------------------------------------------------------------------------------------------------------");

@@ -1,8 +1,13 @@
 package project.modules.schedule;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 
 import project.global.CrudOperation;
 import project.global.SqlConnector;
@@ -11,20 +16,26 @@ import project.modules.transaction.DeliveryOrder;
 
 public class Schedule implements CrudOperation{
     private int Schedule_ID;
-    private DeliveryOrder DeliveryOrder;
+    private DeliveryOrder deliveryOrder;
     private Vehicle vehicle;
-    private Date Schedule_Date;
+    private LocalDate Schedule_Date;
     private LocalTime Time_Slot;
 
     public Schedule() {
     }
 
-    public Schedule(int _Schedule_ID, Vehicle _vehicle, Date _Schedule_Date, LocalTime _Time_Slot) {
+    public Schedule(int _Schedule_ID, DeliveryOrder _deliveryOrder, Vehicle _vehicle, LocalDate _Schedule_Date, LocalTime _Time_Slot) {
         this.Schedule_ID = _Schedule_ID;
+        this.deliveryOrder = _deliveryOrder;
         this.vehicle = _vehicle;
         this.Schedule_Date = _Schedule_Date;
         this.Time_Slot = _Time_Slot;
     }
+
+    public Schedule (DeliveryOrder DO){
+        this.deliveryOrder = DO;
+    }
+
 
     public int getSchedule_ID() {
         return this.Schedule_ID;
@@ -35,11 +46,11 @@ public class Schedule implements CrudOperation{
     }
 
     public DeliveryOrder getDeliveryOrder() {
-        return this.DeliveryOrder;
+        return this.deliveryOrder;
     }
 
     public void setDeliveryOrder(DeliveryOrder _DeliveryOrder) {
-        this.DeliveryOrder = _DeliveryOrder;
+        this.deliveryOrder = _DeliveryOrder;
     }
     
     public Vehicle getVehicle() {
@@ -50,11 +61,11 @@ public class Schedule implements CrudOperation{
         this.vehicle = _vehicle;
     }
 
-    public Date getSchedule_Date() {
+    public LocalDate getSchedule_Date() {
         return this.Schedule_Date;
     }
 
-    public void setSchedule_Date(Date _Schedule_Date) {
+    public void setSchedule_Date(LocalDate _Schedule_Date) {
         this.Schedule_Date = _Schedule_Date;
     }
 
@@ -95,8 +106,7 @@ public class Schedule implements CrudOperation{
             return false;
         }
 
-        String query = "UPDATE Schedule SET Vehicle_Plat = ?, Schedule_Date = ?, Time_Slot = ? WHERE Schedule_ID = ?";
-
+        String query = "UPDATE Schedule SET Vehicle_Plate = ?, Schedule_Date = ?, Time_Slot = ? WHERE Schedule_ID = ?";
         boolean queryExecuted = connector.PrepareExecuteDML(query, this.getVehicle().getVehicle_Plate(), this.getSchedule_Date(), this.getTime_Slot(), this.getSchedule_ID());
 
         if (!queryExecuted) {
@@ -106,7 +116,7 @@ public class Schedule implements CrudOperation{
 
         connector.Disconnect();
 
-        return false;
+        return queryExecuted;
     }
 
     @Override
@@ -135,64 +145,151 @@ public class Schedule implements CrudOperation{
     public boolean Get() {
         Schedule schedule = Schedule.Get(this.Schedule_ID);
 
-        if (schedule != null) {
-            this.setDeliveryOrder(schedule.getDeliveryOrder());
-            this.setVehicle(schedule.getVehicle());
-            this.setSchedule_Date(schedule.getSchedule_Date());
-            this.setTime_Slot(schedule.getTime_Slot());
-            return true;
-        }else{
-
+        if (schedule == null) {
             return false;
-
         }
+
+        this.setDeliveryOrder(schedule.getDeliveryOrder());
+        this.setVehicle(schedule.getVehicle());
+        this.setSchedule_Date(schedule.getSchedule_Date());
+        this.setTime_Slot(schedule.getTime_Slot());
+
+        return true;
     }
 
     public static Schedule Get(int _Schedule_ID) {
 
-        SqlConnector connector = new SqlConnector();
-        connector.Connect();
-        if (!connector.isConnected()) {
+        String query = "SELECT * FROM Schedule WHERE Schedule_ID = " + _Schedule_ID;
+        ArrayList<Schedule> schedules = GetScheduleList(query);
+        if (schedules.isEmpty()) {
             return null;
         }
-
-        String query = "SELECT * FROM Schedule WHERE Schedule_ID = ?";
-        ArrayList<Schedule> schedules = connector.PrepareExecuteRead(query, Schedule.class, _Schedule_ID);
-
-        if (schedules != null && !schedules.isEmpty()) {
-            Schedule schedule = schedules.get(0);
-            connector.Disconnect();
-            return schedule;
-        }else{
-            connector.Disconnect();
-            return null;
-        }
+        Schedule schedule = schedules.get(0);
+        return schedule;
 
     }
 
     public static Schedule Get(String _DocNo) {
 
-        SqlConnector connector = new SqlConnector();
-        connector.Connect();
-        if (!connector.isConnected()) {
-            return null;
-        }
-
-        String query = "SELECT * FROM Schedule WHERE Doc_No = ?";
-        ArrayList<Schedule> schedules = connector.PrepareExecuteRead(query, Schedule.class, _DocNo);
-
-        if (schedules != null && !schedules.isEmpty()) {
-            Schedule schedule = schedules.get(0);
-            connector.Disconnect();
-            return schedule;
-        }else{
-            connector.Disconnect();
-            return null;
-        }
+       
+        String query = "SELECT * FROM Schedule WHERE Doc_No = '"+ _DocNo + "';";
+        ArrayList<Schedule> schedules = GetScheduleList(query);
+        Schedule schedule = schedules.get(0);
+        return schedule;
 
     }
 
+    public static Schedule Get(Vehicle _vehicle) {
+
+        String query = "SELECT * FROM Schedule WHERE Vehicle_Plate = '"+ _vehicle.getVehicle_Plate() + "'";
+        ArrayList<Schedule> schedules = GetScheduleList(query);
+        Schedule schedule = schedules.get(0);
+        return schedule;
     
+    }
+
+    public static ArrayList<Schedule> GetScheduleList(String query) {
+        ArrayList<Schedule> schedules = new ArrayList<>();
+        final String url = "jdbc:mysql://localhost:3306/furniture_db";
+        final String user = "root";
+        final String password = "";
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            // Step 1: Establish the connection
+            connection = DriverManager.getConnection(url, user, password);
+
+            // Step 2: Execute the SQL query
+            statement = connection.prepareStatement(query);
+            resultSet = statement.executeQuery();
+
+            // Step 3: Process the ResultSet and map the data to Schedule objects
+            while (resultSet.next()) {
+                int scheduleId = resultSet.getInt("Schedule_ID");
+                String docNo = resultSet.getString("Doc_No");
+                String vehiclePlate = resultSet.getString("Vehicle_Plate");
+                LocalTime timeSlot = resultSet.getTime("Time_Slot").toLocalTime();
+                LocalDate scheduleDate = resultSet.getDate("Schedule_Date").toLocalDate();
+
+                // Retrieve the DeliveryOrder and Vehicle objects
+                DeliveryOrder deliveryOrder = DeliveryOrder.Get(docNo);
+                Vehicle vehicle = Vehicle.Get(vehiclePlate);
+
+                // Create a new Schedule object
+                Schedule schedule = new Schedule(scheduleId, deliveryOrder, vehicle, scheduleDate, timeSlot);
+
+                // Add the Schedule object to the list
+                schedules.add(schedule);
+            }
+
+        } catch (SQLException e) { 
+        } finally {
+            // Step 4: Close resources
+            try {
+                if (resultSet != null) resultSet.close();
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+            }
+        }
+
+        return schedules;
+    }
+
+    public static ArrayList<Schedule> GetAll() {
+
+        String query = "SELECT * FROM Schedule";
+        return GetScheduleList(query);
+    }
+
+
+    public static ArrayList<Schedule> GetAll(String recipient) {
+
+        String query = "SELECT * FROM Schedule WHERE Doc_No LIKE 'DO%' AND Doc_No IN (SELECT Doc_No FROM DeliveryOrder WHERE Transaction_Recipient ='" + recipient + "')";
+
+        return GetScheduleList(query);
+       
+    }
+
+    public static ArrayList<Schedule> GetAllPending() {
+
+        String query = "SELECT * FROM schedule WHERE (Schedule_Date > CURDATE()) OR (Schedule_Date = CURDATE() AND Time_Slot > CURTIME())";
+
+        return GetScheduleList(query);
+        
+    }   
+
+    public static ArrayList<Schedule> GetAllForCancel(Vehicle vehicle) {
+
+        String query = "SELECT * FROM Schedule WHERE Vehicle_Plate ='"+ vehicle + "'  AND (Schedule_Date > CURDATE()) OR (Schedule_Date = CURDATE() AND Time_Slot > CURTIME())";
+       
+        return GetScheduleList(query);
+       
+    }
+
+
+    @Override
+    public String toString() {
+
+        String format = "| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |%n";
+
+        this.getVehicle().Get();
+        this.getDeliveryOrder().Get();
+
+        return String.format(format,
+                this.getSchedule_ID(),
+                this.deliveryOrder.getDoc_No(),
+                this.vehicle.getVehicle_Plate(),
+                this.vehicle.getDriver(),
+                this.getTime_Slot(),
+                this.getSchedule_Date()
+                );
+    }
+
 
 
 }
+

@@ -1,5 +1,7 @@
 package project.modules.schedule;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 import project.global.CrudOperation;
@@ -168,5 +170,35 @@ public class Vehicle implements CrudOperation {
 
     }
 
+    public static ArrayList<Vehicle> GetAll(LocalTime timeslot, LocalDate date) {
+
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return null;
+        }
+
+        String query = "SELECT * FROM Vehicle WHERE Vehicle_Plate NOT IN (SELECT Vehicle_Plate FROM Schedule WHERE Time_Slot = ? AND Schedule_Date = ?)";
+        ArrayList<Vehicle> vehicles = connector.PrepareExecuteRead(query, Vehicle.class, timeslot, date);
+
+        if (vehicles != null && !vehicles.isEmpty()) {
+            connector.Disconnect();
+            return vehicles;
+        }else {
+            connector.Disconnect();
+            return null;
+        }
+
+
+    }
+
     
+    @Override
+    public String toString(){
+
+        String format = "| %-15s | %-15s | %-15s |%n";
+
+        return String.format(format, this.getVehicle_Plate(), this.getVehicle_Type(), this.getDriver());
+
+    }
 }

@@ -15,8 +15,8 @@ import project.modules.user.User;
 public class ViewSalesManagement {
 
     private static final Scanner sc = new Scanner(System.in);
-    private final ViewSalesOrder viewSalesOrder;
-    private final ViewItem viewItem;
+    private ViewSalesOrder viewSalesOrder;
+    private ViewItem viewItem;
     private static User user;
     
     public ViewSalesManagement(User user){
@@ -26,6 +26,22 @@ public class ViewSalesManagement {
         this.viewItem = new ViewItem(user);
 
 
+    }
+
+    public ViewSalesOrder getViewSalesOrder() {
+        return this.viewSalesOrder;
+    }
+
+    public void setViewSalesOrder(ViewSalesOrder viewSalesOrder) {
+        this.viewSalesOrder = viewSalesOrder;
+    }
+
+    public ViewItem getViewItem() {
+        return this.viewItem;
+    }
+
+    public void setViewItem(ViewItem viewItem) {
+        this.viewItem = viewItem;
     }
 
     //menu for admin
@@ -96,7 +112,7 @@ public class ViewSalesManagement {
     }
 
     private void viewOrderRecords() {
-        if (user.getUserType().equals("Admin")) {
+        if (user.getUserType().equals("Admin") || user.getUserType().equals("Retailer")) {
             boolean error = false;
             do {
                 ArrayList<SalesOrder> salesOrders = viewSalesOrder.selectSalesOrderFromList();
@@ -106,15 +122,6 @@ public class ViewSalesManagement {
                 }
             }while (error);
 
-        } else if  (user.getUserType().equals("Retailer")) {
-            boolean error = false;
-            do {
-                ArrayList<SalesOrder> salesOrders = viewSalesOrder.selectSalesOrderFromList();
-                if (salesOrders == null || salesOrders.isEmpty()){
-                    System.out.println("No Sales Order found.");
-                    error = true;
-                }
-            }while (error);
         }
          
     }
@@ -141,8 +148,8 @@ public class ViewSalesManagement {
                 deliveryOrder.setTransaction_Date(new Date(System.currentTimeMillis()));
                 deliveryOrder.setQuantity(salesOrder.getQuantity());
                 deliveryOrder.setTransaction_Recipient(salesOrder.getTransaction_Recipient());  // Customize as needed
-                deliveryOrder.setTransaction_Created_By(user.getUserName());  // Customize as needed
-                deliveryOrder.setTransaction_Modified_By(user.getUserName());  // Customize as needed
+                deliveryOrder.setTransaction_Created_By(user.getUserId());  // Customize as needed
+                deliveryOrder.setTransaction_Modified_By(user.getUserId());  // Customize as needed
                 if (deliveryOrder.Add()) {
                     System.out.println("Delivery Order for " + deliveryOrder.getItem().getItem_Name() + " is added.");
                 } else {
@@ -173,6 +180,8 @@ public class ViewSalesManagement {
             }
 
         }
+
+        
 
     }
 
