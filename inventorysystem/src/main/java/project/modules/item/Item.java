@@ -193,6 +193,16 @@ public class Item implements CrudOperation{
         ArrayList<Item> items = connector.ExecuteRead(query, Item.class);
         connector.Disconnect();
 
+        if (items == null || items.isEmpty()) {
+            return null;
+        }
+
+        items.forEach(item -> {
+            item.getVendor().Get();
+            item.getItemCategory().Get();
+        });
+
+
         return items;
     }
 
@@ -208,6 +218,15 @@ public class Item implements CrudOperation{
         ArrayList<Item> items = connector.PrepareExecuteRead(query, Item.class, _value);
 
         connector.Disconnect();
+
+        if (items == null || items.isEmpty()) {
+            return null;
+        }
+
+        items.forEach(item -> {
+            item.getVendor().Get();
+            item.getItemCategory().Get();
+        });
 
         return items;
     }

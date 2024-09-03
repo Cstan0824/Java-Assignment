@@ -11,20 +11,18 @@ public class App {
         User user = new Admin();
         user.setUserId("A001");
         user.setUserType("Admin");
-        
+
         ViewSalesManagement view = new ViewSalesManagement(user);
         view.userMenu();
-
-        
 
         //ViewReport view = new ViewReport(user);
         //view.menu();
 
-
-
-        
         //ViewVendor view = new ViewVendor(user);
         //view.menu();
-        
+
+        //ViewItem viewItem = new ViewItem(user);
+        //viewItem.menu();
+
     }
 }
