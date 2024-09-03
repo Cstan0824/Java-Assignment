@@ -35,6 +35,64 @@ public class UserInputHandler {
         return number;
     }
 
+    public static String getString(String _message, String _regexPattern) {
+        String input;
+        Pattern pattern = Pattern.compile(_regexPattern);
+
+        while (true) {
+            System.out.print(_message + ": ");
+            input = scanner.nextLine().trim();
+
+            Matcher matcher = pattern.matcher(input);
+            if (!matcher.matches()) {
+                System.out.println("Input does not match the required pattern. Please try again.");
+                continue;
+            }
+            return input;
+        }
+    }
+
+    public static String getString(String _message, int _minLength, int _maxLength) {
+        String input;
+        while (true) {
+            System.out.print(_message + " (" + _minLength + " - " + _maxLength + "): ");
+            input = scanner.nextLine().trim();
+
+            if (input.length() < _minLength || input.length() > _maxLength) {
+                System.out.println("Invalid input length. Please enter between " + _minLength + " and " + _maxLength
+                        + " characters.");
+                continue;
+            }
+
+            return input;
+        }
+    }
+
+    public static String getString (String _message, int _minLength, int _maxLength, String _regexPattern) {
+        String input;
+        Pattern pattern = Pattern.compile(_regexPattern);
+
+        while (true) {
+            System.out.print(_message + " (" + _minLength + " - " + _maxLength + "): ");
+            input = scanner.nextLine().trim();
+
+            // Check if the input matches the required length and pattern
+            if (input.length() < _minLength || input.length() > _maxLength) {
+                System.out.println("Invalid input length. Please enter between " + _minLength + " and " + _maxLength + " characters.");
+                continue;
+            }
+
+            Matcher matcher = pattern.matcher(input);
+            if (!matcher.matches()) {
+                System.out.println("Input does not match the required pattern. Please try again.");
+                continue;
+            }
+
+            // If valid, return the input
+            return input;
+        }
+    }
+
     public static String getString(String _message, int _requiredLength, String _regexPattern) {
         String input;
         Pattern pattern = Pattern.compile(_regexPattern);

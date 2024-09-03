@@ -2,7 +2,6 @@ package project.start;
 
 import project.modules.user.Admin;
 import project.modules.user.User;
-import project.view.ViewReport;
 
 
 public class App {
@@ -15,7 +14,7 @@ public class App {
         //ViewPurchaseManagement view = new ViewPurchaseManagement(user);
         //view.menu();
 
-        ViewReport view = new ViewReport(user);
-        view.menu();
+        //ViewReport view = new ViewReport(user);
+        //view.menu();
     }
 }

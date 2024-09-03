@@ -24,11 +24,12 @@ CREATE TABLE Item_Category (
 
 CREATE TABLE Vendor (
   Vendor_ID VARCHAR(100),
-  Item_Category_ID INT,
-  Vendor_Name VARCHAR(100),
-  Vendor_Address VARCHAR(255),
-  Vendor_Created_By VARCHAR(100),
-  Vendor_Modified_By VARCHAR(100),
+  Item_Category_ID INT NOT NULL,
+  Vendor_Name VARCHAR(100) NOT NULL,
+  Vendor_Address VARCHAR(255) NOT NULL,
+  Vendor_Email VARCHAR(100) NOT NULL,
+  Vendor_Created_By VARCHAR(100) NOT NULL,
+  Vendor_Modified_By VARCHAR(100) NOT NULL,
   PRIMARY KEY (Vendor_ID),
   FOREIGN KEY (Item_Category_ID) REFERENCES Item_Category(Item_Category_ID)
 );
