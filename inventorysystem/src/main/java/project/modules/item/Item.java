@@ -1,6 +1,7 @@
 package project.modules.item;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import project.global.CrudOperation;
 import project.global.SqlConnector;
@@ -252,6 +253,21 @@ public class Item implements CrudOperation{
         connector.Disconnect();
 
         return QueryExecuted;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        Item item = (Item) obj;
+        return Objects.equals(this.Item_ID, item.getItem_ID()); // Compare based on logical attribute
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.Item_ID); // Hash code based on logical attribute
     }
 
 

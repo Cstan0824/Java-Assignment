@@ -1,7 +1,10 @@
 package project.global;
 
 import java.util.ArrayList;
+import java.util.Map;
 
+import project.modules.item.Item;
+import project.modules.transaction.Report;
 import project.modules.transaction.Transaction;
 
 public class PdfTemplate {
@@ -20,9 +23,6 @@ public class PdfTemplate {
     private String PurchaseOrder() {
         StringBuilder html = new StringBuilder();
         html.append("<head>");
-        html.append("<meta charset=\"UTF-8\" />");
-        html.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />");
-        html.append("<title>Purchase Order</title>");
         html.append("<style>");
         html.append("body { font-family: Arial, sans-serif; margin: 20px; padding: 0; }");
         html.append("h1 { text-align: center; }");
@@ -103,9 +103,146 @@ public class PdfTemplate {
         return "Your Sale Order No is " + this.purchaseOrders.get(0).getDoc_No();
     }
 
+    private String SalesReport(Report _report) {
+        StringBuilder html = new StringBuilder();
+        html.append("<!DOCTYPE html>")
+                .append("<html lang=\"en\">")
+                .append("<head>")
+                .append("<style>")
+                .append("body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }")
+                .append(".container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }")
+                .append("h1, h2 { text-align: center; }")
+                .append("table { width: 100%; border-collapse: collapse; margin-top: 20px; }")
+                .append("table, th, td { border: 1px solid #ddd; }")
+                .append("th, td { padding: 12px; text-align: left; }")
+                .append("th { background-color: #f1f1f1; }")
+                .append(".footer { margin-top: 30px; text-align: center; font-size: 14px; color: #555; }")
+                .append("</style>")
+                .append("</head>")
+                .append("<body>")
+                .append("<div class=\"container\">")
+                .append("<h1>Yearly Sales Report</h1>")
+                .append("<h2>Inventory Solution Company</h2>")
+                .append("<p>Report generated on ").append(_report.getReportDateTime()).append("</p>")
+                .append("<table>")
+                .append("<thead>")
+                .append("<tr>")
+                .append("<th>Item</th>")
+                .append("<th>Total Quantity</th>")
+                .append("<th>Total Price</th>")
+                .append("</tr>")
+                .append("</thead>")
+                .append("<tbody>");
+
+        double grandTotal = 0; // Initialize total amount
+
+        // Add rows for each item
+        for (Map.Entry<Item, Integer> entry : _report.getItemMap().entrySet()) {
+            Item item = entry.getKey();
+            int totalQuantity = entry.getValue();
+            double totalPrice = item.getItem_Price() * totalQuantity;
+
+            // Update the grand total
+            grandTotal += totalPrice;
+
+            html.append("<tr>")
+                    .append("<td>").append(item.getItem_Name()).append("</td>")
+                    .append("<td>").append(totalQuantity).append("</td>")
+                    .append("<td>").append(String.format("$%.2f", totalPrice)).append("</td>")
+                    .append("</tr>");
+        }
+
+        // Add the total amount row
+        html.append("<tr>")
+                .append("<td colspan=\"2\" style=\"text-align: right; font-weight: bold;\">Total Amount</td>")
+                .append("<td>").append(String.format("$%.2f", grandTotal)).append("</td>")
+                .append("</tr>");
+
+        html.append("</tbody>")
+                .append("</table>")
+                .append("<div class=\"footer\">")
+                .append("<p>&copy; 2024 Company Name. All rights reserved.</p>")
+                .append("</div>")
+                .append("</div>")
+                .append("</body>")
+                .append("</html>");
+        return html.toString();
+    }
+
+    private String PurchaseReport(Report _report) {
+        StringBuilder html = new StringBuilder();
+        html.append("<!DOCTYPE html>")
+                .append("<html lang=\"en\">")
+                .append("<head>")
+                .append("<style>")
+                .append("body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }")
+                .append(".container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }")
+                .append("h1, h2 { text-align: center; }")
+                .append("table { width: 100%; border-collapse: collapse; margin-top: 20px; }")
+                .append("table, th, td { border: 1px solid #ddd; }")
+                .append("th, td { padding: 12px; text-align: left; }")
+                .append("th { background-color: #f1f1f1; }")
+                .append(".footer { margin-top: 30px; text-align: center; font-size: 14px; color: #555; }")
+                .append("</style>")
+                .append("</head>")
+                .append("<body>")
+                .append("<div class=\"container\">")
+                .append("<h1>Yearly Purchase Report</h1>")
+                .append("<h2>Inventory Solution Company</h2>")
+                .append("<p>Report generated on ").append(_report.getReportDateTime()).append("</p>")
+                .append("<table>")
+                .append("<thead>")
+                .append("<tr>")
+                .append("<th>Item</th>")
+                .append("<th>Total Quantity</th>")
+                .append("<th>Total Price</th>")
+                .append("</tr>")
+                .append("</thead>")
+                .append("<tbody>");
+
+        double grandTotal = 0; // Initialize total amount
+
+        // Add rows for each item
+        for (Map.Entry<Item, Integer> entry : _report.getItemMap().entrySet()) {
+            Item item = entry.getKey();
+            int totalQuantity = entry.getValue();
+            double totalPrice = item.getItem_Price() * totalQuantity;
+
+            // Update the grand total
+            grandTotal += totalPrice;
+
+            html.append("<tr>")
+                    .append("<td>").append(item.getItem_Name()).append("</td>")
+                    .append("<td>").append(totalQuantity).append("</td>")
+                    .append("<td>").append(String.format("$%.2f", totalPrice)).append("</td>")
+                    .append("</tr>");
+        }
+
+        // Add the total amount row
+        html.append("<tr>")
+                .append("<td colspan=\"2\" style=\"text-align: right; font-weight: bold;\">Total Amount</td>")
+                .append("<td>").append(String.format("$%.2f", grandTotal)).append("</td>")
+                .append("</tr>");
+
+        html.append("</tbody>")
+                .append("</table>")
+                .append("<div class=\"footer\">")
+                .append("<p>&copy; 2024 Company Name. All rights reserved.</p>")
+                .append("</div>")
+                .append("</div>")
+                .append("</body>")
+                .append("</html>");
+        return html.toString();
+    }
+
     public enum TemplateType {
         PURCHASE_ORDER,
         SALES_ORDER
+    }
+
+    public enum ReportType {
+        SALES_REPORT,
+        PURCHASE_REPORT
     }
 
     public PdfTemplate(ArrayList<Transaction> _transaction, TemplateType _templateType) {
@@ -118,11 +255,11 @@ public class PdfTemplate {
             case SALES_ORDER:
                 this.Content = this.SaleOrder();
                 break;
-
             default:
                 break;
         }
     }
+
     public PdfTemplate(Transaction _transaction, TemplateType _templateType) {
         this.purchaseOrders.add(_transaction);
         switch (_templateType) {
@@ -132,7 +269,19 @@ public class PdfTemplate {
             case SALES_ORDER:
                 this.Content = this.SaleOrder();
                 break;
+            default:
+                break;
+        }
+    }
 
+    public PdfTemplate(Report _report, ReportType _templateType) {
+        switch (_templateType) {
+            case SALES_REPORT:
+                this.Content = this.SalesReport(_report);
+                break;
+            case PURCHASE_REPORT:
+                this.Content = this.PurchaseReport(_report);
+                break;
             default:
                 break;
         }

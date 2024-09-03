@@ -5,11 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.html.simpleparser.HTMLWorker;
-import com.lowagie.text.pdf.PdfWriter;
-
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
 public class PdfConverter {
     private final File file;
     private StringReader htmlString;
@@ -24,12 +23,12 @@ public class PdfConverter {
 
         try {
             // Create a PdfWriter instance
-            PdfWriter.getInstance(document, new FileOutputStream(this.file));
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(this.file));
+
 
             document.open();
 
-            HTMLWorker htmlWorker = new HTMLWorker(document);
-            htmlWorker.parse(this.htmlString);
+            XMLWorkerHelper.getInstance().parseXHtml(writer, document, this.htmlString);
 
             document.close();
 

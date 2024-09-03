@@ -10,6 +10,7 @@ import project.modules.user.User;
 public class ViewAutoReplenishment {
     private static User user;
     private ArrayList<AutoReplenishment> autoReplenishments = new ArrayList<>();
+    private ViewItem viewItem = null;
     //getter 
     public User getUser() {
         return user;
@@ -19,6 +20,7 @@ public class ViewAutoReplenishment {
     public ViewAutoReplenishment(User _user) {
         user = _user;
         this.autoReplenishments = AutoReplenishment.GetAll();
+        this.viewItem = new ViewItem(_user);
     }
 
     public void setAutoReplenishment() {
@@ -59,17 +61,30 @@ public class ViewAutoReplenishment {
 
     //Method to view Auto Replenishment
     public void viewAutoReplenishment() {
-        System.out.println("View Auto Replenishment");
+        displayASutoReplenishmentDetails();
+        UserInputHandler.systemPause("Press any key to continue...");
     }
 
     //Method to add Auto Replenishment
     public void addAutoReplenishment() {
-        System.out.println("Add Auto Replenishment");
+        AutoReplenishment autoReplenishment = new AutoReplenishment();
+        this.viewItem.setItems();
+        Item item = viewItem.selectItemFromList();
+        if (item == null) {
+            return;
+        }
+        autoReplenishment.setItem(item);
+        autoReplenishment.setItem_Threshold(UserInputHandler.getInteger("Enter threshold level", 1, 100000));
+        autoReplenishment.Add();
     }
 
     //Method to update Auto Replenishment
     public void updateAutoReplenishment() {
-        System.out.println("Update Auto Replenishment");
+        AutoReplenishment autoReplenishment = selectAutoReplenishmentFromList();
+        //Update Threshold level
+        autoReplenishment.setItem_Threshold(UserInputHandler.getInteger("Enter new threshold level", 1, 100000));
+    
+        autoReplenishment.Update();
     }
 
     //Method to delete Auto Replenishment
@@ -78,8 +93,8 @@ public class ViewAutoReplenishment {
         autoReplenishments.forEach(autoReplenishment -> {
             items.add(autoReplenishment.getItem());
         });
-        ViewItem viewItem = new ViewItem(user);
-        viewItem.setItems(items);
+        
+        this.viewItem.setItems(items);
         Item item = viewItem.selectItemFromList();
 
         AutoReplenishment ar = new AutoReplenishment();
@@ -89,7 +104,28 @@ public class ViewAutoReplenishment {
 
     public void displayASutoReplenishmentDetails() {
         //display auto replenishment details
+        //print header
+        System.out.println("===============Auto Replenishment Details================");
+        System.out.println(String.format("| %-5s | %-20s | %-20s | %-50s | %-20s |", "No.", "Item ID", "Item Name",
+                "Item Description", "Threshold Level"));
+        System.out.println("=========================================================");
 
+        //print data
+        for (int i = 0; i < autoReplenishments.size(); i++) {
+            AutoReplenishment autoReplenishment = autoReplenishments.get(i);
+            System.out.println(
+                    String.format("| %-5s | %-20s | %-20s | %-50s | %-20s |", (i + 1) + ".",
+                            autoReplenishment.getItem().getItem_ID(),
+                            autoReplenishment.getItem().getItem_Name(), autoReplenishment.getItem().getItem_Desc(),
+                            autoReplenishment.getItem_Threshold()));
+        }
 
+        System.out.println("=========================================================");
+    }
+    
+    public AutoReplenishment selectAutoReplenishmentFromList() {
+        displayASutoReplenishmentDetails();
+        int index = UserInputHandler.getInteger("Select an Auto Replenishment", 1, autoReplenishments.size()) - 1;
+        return autoReplenishments.get(index);
     }
 }
