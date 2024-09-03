@@ -1,6 +1,7 @@
 package project.modules.vendor;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import project.global.SqlConnector;
 import project.global.SystemRunNo;
@@ -224,6 +225,21 @@ public class Vendor {
 
     public String GenerateVendorID() {
         return "V" + String.format("%05d", SystemRunNo.Get("V"));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        Vendor item = (Vendor) obj;
+        return Objects.equals(this.Vendor_ID, item.getVendor_ID()); // Compare based on logical attribute
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.Vendor_ID); // Hash code based on logical attribute
     }
 
     @Override
