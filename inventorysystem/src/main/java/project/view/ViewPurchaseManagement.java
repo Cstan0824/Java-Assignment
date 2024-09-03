@@ -20,7 +20,7 @@ import project.modules.user.User;
 
 
 public class ViewPurchaseManagement {
-    private static User user;
+    private static User user; //Session
 
     private final ViewGoodReceivedNotes viewGoodReceivedNotes;
     private final ViewPurchaseOrder viewPurchaseOrder;
