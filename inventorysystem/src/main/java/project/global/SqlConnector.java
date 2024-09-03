@@ -406,6 +406,31 @@ public class SqlConnector {
         return docNoList.toArray(new String[0]);
     }
     
+    public String[] getDistinctPassedSODocNos() {
+        String query = "SELECT DISTINCT Doc_No FROM TRANSACTION WHERE Doc_No LIKE 'SO%' AND Doc_No IN ( SELECT DISTINCT Source_Doc_No FROM TRANSACTION WHERE Doc_No LIKE 'DO%' AND Doc_No IN ( SELECT Doc_No FROM Schedule WHERE (Schedule_Date < CURDATE()) OR (Schedule_Date = CURDATE() AND Time_Slot < CURTIME()) ) );";
+        ArrayList<String> docNoList = new ArrayList<>();
+
+        if (!isConnected()) {
+            return null;
+        }
+        try{
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String docNo = rs.getString("Doc_No");
+                docNoList.add(docNo);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Get Distinct Doc No Error: " + e.getMessage());
+            return null;
+        }
+
+        // Convert ArrayList to String Array
+        return docNoList.toArray(new String[0]);
+    }
+    
     @SuppressWarnings("unchecked")
     private <T> ArrayList<T> ToArrayList(ResultSet _result)
     {

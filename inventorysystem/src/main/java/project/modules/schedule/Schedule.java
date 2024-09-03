@@ -260,7 +260,7 @@ public class Schedule implements CrudOperation{
 
         return GetScheduleList(query);
         
-    }   
+    }
 
     public static ArrayList<Schedule> GetAllForCancel(Vehicle vehicle) {
 

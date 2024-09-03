@@ -2,16 +2,19 @@ package project.view;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import project.modules.transaction.SalesOrder;
 import project.modules.user.Admin;
 import project.modules.user.Retailer;
 import project.modules.user.User;
 
+
 public class ViewSalesOrder {
     
     private static final Scanner sc = new Scanner(System.in);  
     private static User user;
+    private final ArrayList<Integer> orderStatusList = new ArrayList<>();
     private ArrayList<SalesOrder> salesOrderList;
     private ArrayList<SalesOrder> pendingSalesOrderList;
 
@@ -37,11 +40,18 @@ public class ViewSalesOrder {
         return salesOrderList;
     }
 
-    public ArrayList<SalesOrder> selectSalesOrderFromList() {
-        this.salesOrderList = SalesOrder.GetDistinctSalesOrder();
-        int totalSalesOrder = 0;
+    
 
-        String[] columnNames = {"SO_No", "Mode", "Date", "Recipient", "Creator"};
+    public ArrayList<SalesOrder> selectSalesOrderFromList() {
+        orderStatusList.clear();
+        int totalSalesOrder = 0;
+        if (user instanceof Admin) {
+            this.salesOrderList = SalesOrder.GetDistinctSalesOrder();
+        }
+        else if (user instanceof Retailer) {
+            this.salesOrderList = SalesOrder.GetDistinctSalesOrder(user.getUserId());
+        }
+        String[] columnNames = {"SO_No", "Mode", "Date", "Recipient", "Creator", "Order Status"};
 
         if (salesOrderList != null && !salesOrderList.isEmpty() ){
 
@@ -55,9 +65,11 @@ public class ViewSalesOrder {
             System.out.println("");
             distinctTableLine();
             for (SalesOrder salesOrder : salesOrderList) {
-                System.out.print(salesOrder.distinctToString());
+                AtomicInteger orderStatus = new AtomicInteger(); 
+                System.out.print(salesOrder.distinctToString(orderStatus));
                 totalSalesOrder++;
                 distinctTableLine();
+                orderStatusList.add(orderStatus.get());
             }
 
             System.out.println("Total Sales Order available in the database: " + totalSalesOrder);
@@ -86,7 +98,6 @@ public class ViewSalesOrder {
                         System.out.print(salesOrder.toString());
                         normalTableLine();
                     }
-
                     return selectedSalesOrderList;
                 } else {
                     System.out.println("No Sales Order found with the given Doc No. Please try again.");
@@ -98,10 +109,11 @@ public class ViewSalesOrder {
     }
     
     public ArrayList<SalesOrder> selectPendingSalesOrder(String mode) {
+        orderStatusList.clear();
         this.pendingSalesOrderList = SalesOrder.GetDistinctPendingSalesOrder();
         int totalSalesOrder = 0;
 
-        String[] columnNames = {"SO_No", "Mode", "Date", "Recipient", "Creator"};
+        String[] columnNames = {"SO_No", "Mode", "Date", "Recipient", "Creator", "Order Status"};
 
         if (pendingSalesOrderList != null && !pendingSalesOrderList.isEmpty() ){
 
@@ -115,9 +127,11 @@ public class ViewSalesOrder {
             System.out.println("");
             distinctTableLine();
             for (SalesOrder salesOrder : pendingSalesOrderList) {
-                System.out.print(salesOrder.distinctToString());
+                AtomicInteger orderStatus = new AtomicInteger(); 
+                System.out.print(salesOrder.distinctToString(orderStatus));
                 totalSalesOrder++;
                 distinctTableLine();
+                orderStatusList.add(orderStatus.get());
             }
 
             System.out.println("Total Pending Sales Order available in the database: " + totalSalesOrder);
@@ -177,6 +191,6 @@ public class ViewSalesOrder {
     }
 
     private static void distinctTableLine(){
-        System.out.println("-------------------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------------------------------------------------");
     }
 }

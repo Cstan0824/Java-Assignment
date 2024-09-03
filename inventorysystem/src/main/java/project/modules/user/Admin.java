@@ -3,7 +3,8 @@ package project.modules.user;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
-import project.global.*;
+
+import project.global.SqlConnector;
 
 
 
@@ -116,7 +117,11 @@ public class Admin extends User {
         do {
 
             System.out.println("Enter Admin ID to delete: ");
+            //adminID = sc.nextLine();
             this.setUserId(sc.nextLine());
+            //User selectedAdmin = new Admin(adminID);
+            //selectedAdmin.Get();
+            //selectedAdmin.Remove();
 
         } while (!Validation.validateUserId(this.getUserId()));
     

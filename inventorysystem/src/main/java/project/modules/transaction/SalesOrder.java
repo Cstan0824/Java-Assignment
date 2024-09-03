@@ -2,10 +2,14 @@ package project.modules.transaction;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import project.global.SqlConnector;
 import project.global.SystemRunNo;
 import project.modules.item.Item;
+import project.view.ViewSalesManagement.OrderStatus;
+
+
 public class SalesOrder extends Transaction {
 
     //Constructor
@@ -252,6 +256,27 @@ public class SalesOrder extends Transaction {
         }
         return salesOrders;
     }
+
+    public static ArrayList<SalesOrder> GetPassedSalesOrder(){
+
+        SqlConnector connector = new SqlConnector();
+        ArrayList<SalesOrder> salesOrders = new ArrayList<>();
+        try {
+            connector.Connect();
+            if (!connector.isConnected()) {
+                return null;
+            }
+            String[] DocNos = connector.getDistinctPassedSODocNos();
+        
+            for (String DocNo : DocNos) {
+                SalesOrder salesOrder = SalesOrder.Get(DocNo);
+                salesOrders.add(salesOrder);
+            }
+        } finally {
+            connector.Disconnect();
+        }
+        return salesOrders;
+    }
     
 
     //Generate Document Number
@@ -264,6 +289,7 @@ public class SalesOrder extends Transaction {
     //Display SO (to String)
     @Override
     public String toString() {
+
         String format = "| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |%n";
         this.getItem().Get();
         // Format the fields according to the placeholders
@@ -278,9 +304,31 @@ public class SalesOrder extends Transaction {
                 );
     }
 
-    public String distinctToString(){
+    public String distinctToString(AtomicInteger orderStatus){
 
-        String format = "| %-15s | %-15s | %-15s | %-15s | %-15s |%n";
+        ArrayList<DeliveryOrder> deliveryOrders = DeliveryOrder.GetForStatus(this.getDoc_No());
+
+        if (deliveryOrders != null && !deliveryOrders.isEmpty()) {
+           orderStatus.set(OrderStatus.IN_PROCESS.getValue());
+        }else{
+            orderStatus.set(OrderStatus.PENDING.getValue());
+        }
+
+        ArrayList<SalesOrder> passedSalesOrders = SalesOrder.GetPassedSalesOrder();
+
+        if (passedSalesOrders != null && !passedSalesOrders.isEmpty()) {
+            for (SalesOrder salesOrder : passedSalesOrders) {
+                if (salesOrder.getDoc_No().equals(this.getDoc_No())) {
+                    orderStatus.set(2);
+                    break;
+                }
+            }
+        }
+        
+        String status = (orderStatus.get() == 0 ? "Pending" : (orderStatus.get() == 1 ? "In-Process" : "Delivered"));
+
+
+        String format = "| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |%n";
         this.getItem().Get();
         // Format the fields according to the placeholders
         return String.format(format,
@@ -288,7 +336,7 @@ public class SalesOrder extends Transaction {
                 this.getTransaction_Mode() + " (" + (this.getTransaction_Mode() == TransactionMode.STOCK_IN ? "IN" : "OUT") + ")",
                 this.getTransaction_Date(),
                 this.getTransaction_Recipient(),
-                this.getTransaction_Created_By()
+                this.getTransaction_Created_By(), status
                 );
     }
 }

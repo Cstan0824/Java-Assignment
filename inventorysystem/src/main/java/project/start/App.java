@@ -2,7 +2,7 @@ package project.start;
 
 import project.modules.user.Admin;
 import project.modules.user.User;
-import project.view.ViewPurchaseManagement;
+import project.view.ViewSalesManagement;
 
 
 public class App {
@@ -11,9 +11,11 @@ public class App {
         User user = new Admin();
         user.setUserId("A001");
         user.setUserType("Admin");
+        
+        ViewSalesManagement view = new ViewSalesManagement(user);
+        view.userMenu();
 
-        ViewPurchaseManagement view = new ViewPurchaseManagement(user);
-        view.menu();
+        
 
         //ViewReport view = new ViewReport(user);
         //view.menu();

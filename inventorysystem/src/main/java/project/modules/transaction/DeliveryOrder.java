@@ -266,6 +266,26 @@ public class DeliveryOrder extends Transaction {
 
     }
 
+    public static ArrayList<DeliveryOrder> GetForStatus(String _sourceDoc){
+
+        SqlConnector connector = new SqlConnector();
+        try {
+            connector.Connect();
+            if (!connector.isConnected()) {
+                return null;
+            }
+            
+            String query = "SELECT * FROM TRANSACTION WHERE Doc_No LIKE 'DO%' AND Source_Doc_No = ?";
+            ArrayList<DeliveryOrder> deliveryOrders = connector.PrepareExecuteRead(query, DeliveryOrder.class, _sourceDoc);
+            if (deliveryOrders == null) {
+                return new ArrayList<>();
+            }
+            return deliveryOrders;
+        } finally {
+            connector.Disconnect();
+        }
+    }
+    
      //Display DO (to String)
      @Override
      public String toString() {

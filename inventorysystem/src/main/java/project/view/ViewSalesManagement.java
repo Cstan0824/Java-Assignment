@@ -10,6 +10,8 @@ import project.modules.transaction.DeliveryOrder;
 import project.modules.transaction.SalesOrder;
 import project.modules.user.User;
 
+
+
 //use by retailer to order stock, check their order records
 //use by admin to view SO list, receive SO and Create DO
 public class ViewSalesManagement {
@@ -18,6 +20,22 @@ public class ViewSalesManagement {
     private ViewSalesOrder viewSalesOrder;
     private ViewItem viewItem;
     private static User user;
+
+    public enum OrderStatus {
+        PENDING(0),
+        IN_PROCESS(1),
+        DELIVERED(2);
+
+        private final int value;
+
+        OrderStatus(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
     
     public ViewSalesManagement(User user){
 
@@ -42,6 +60,15 @@ public class ViewSalesManagement {
 
     public void setViewItem(ViewItem viewItem) {
         this.viewItem = viewItem;
+    }
+
+    //menu for user
+    public void userMenu() {
+        if (user.getUserType().equals("Admin")) {
+            adminMenu();
+        } else if (user.getUserType().equals("Retailer")) {
+            retailerMenu();
+        }
     }
 
     //menu for admin
@@ -334,6 +361,6 @@ public class ViewSalesManagement {
         return quantity;
     }
 
-
+    
     
 }
