@@ -132,14 +132,13 @@ public class ViewItem {
         System.out.println("6. Back to Item Management");
         System.out.println("===============================");
 
-
         switch (UserInputHandler.getInteger("Select an option", 1, 6)) {
             case 1:
                 //display Item category on menu
-                item.setItem_Category_ID(UserInputHandler.getInteger("Enter Item Category", 1, 100));
+                item.getItemCategory().setItem_Category_ID(UserInputHandler.getInteger("Enter Item Category", 1, 100));
                 break;
             case 2:
-                item.setVendor_ID(UserInputHandler.getString("Enter Vendor ID", 1, ".*"));
+                item.getVendor().setVendor_ID(UserInputHandler.getString("Enter Vendor ID", 1, ".*"));
                 break;
             case 3:
                 item.setItem_name(UserInputHandler.getString("Enter Item Name", 1, ".*"));
@@ -189,8 +188,8 @@ public class ViewItem {
         // Add a new item to the list
         Item item = new Item();
         //display Item category on menu
-        item.setItem_Category_ID(UserInputHandler.getInteger("Enter Item Category", 1, 100));
-        item.setVendor_ID(UserInputHandler.getString("Enter Vendor ID", 1, ".*"));
+        item.getItemCategory().setItem_Category_ID(UserInputHandler.getInteger("Enter Item Category", 1, 100));
+        item.getVendor().setVendor_ID(UserInputHandler.getString("Enter Vendor ID", 1, ".*"));
         item.setItem_name(UserInputHandler.getString("Enter Item Name", 1, ".*"));
         item.setItem_Desc(UserInputHandler.getString("Enter Item Description", 1, ".*"));
         item.setItem_Quantity(UserInputHandler.getInteger("Enter Item Quantity", 1, 1000000));

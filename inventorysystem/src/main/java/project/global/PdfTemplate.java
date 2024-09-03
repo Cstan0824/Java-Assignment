@@ -44,11 +44,11 @@ public class PdfTemplate {
         html.append("</div>");
 
         html.append("<div class=\"supplier-details\">");
-        html.append("<p><strong>Supplier:</strong> ").append(this.purchaseOrders.get(0).getItem().getVendor_ID())
+        html.append("<p><strong>Supplier:</strong> ").append(this.purchaseOrders.get(0).getItem().getVendor().getVendor_Name())
                 .append("</p>");
-        html.append("<p><strong>Address:</strong> ").append(this.purchaseOrders.get(0).getItem().getVendor_ID())
+        html.append("<p><strong>Address:</strong> ").append(this.purchaseOrders.get(0).getItem().getVendor().getVendor_Address())
                 .append("</p>");
-        html.append("<p><strong>Contact:</strong> ").append(this.purchaseOrders.get(0).getItem().getVendor_ID())
+        html.append("<p><strong>Email:</strong> ").append(this.purchaseOrders.get(0).getItem().getVendor().getVendor_Email())
                 .append("</p>");
         html.append("</div>");
 

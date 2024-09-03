@@ -106,7 +106,7 @@ public class ViewGoodReceivedNotes {
             goodReceivedNote.setTransaction_Created_By(user.getUserId());
             goodReceivedNote.setTransaction_Modified_By(user.getUserId());
             goodReceivedNote.setTransaction_Date(new Date());
-            goodReceivedNote.setTransaction_Recipient(item.getVendor_ID());
+            goodReceivedNote.setTransaction_Recipient(item.getVendor().getVendor_ID());
 
             // Add to the list
             this.goodReceivedNotes.add(goodReceivedNote);

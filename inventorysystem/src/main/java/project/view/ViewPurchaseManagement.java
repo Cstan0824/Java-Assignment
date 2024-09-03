@@ -17,6 +17,7 @@ import project.modules.transaction.GoodReceivedNotes;
 import project.modules.transaction.PurchaseOrder;
 import project.modules.transaction.Transaction;
 import project.modules.user.User;
+import project.modules.vendor.Vendor;
 
 
 public class ViewPurchaseManagement {
@@ -25,7 +26,6 @@ public class ViewPurchaseManagement {
     private final ViewGoodReceivedNotes viewGoodReceivedNotes;
     private final ViewPurchaseOrder viewPurchaseOrder;
     private final ViewItem viewItem;
-
 
     // Enum for stock status
     public enum StockStatus {
@@ -71,7 +71,6 @@ public class ViewPurchaseManagement {
             System.out.println("5. Back to Main Menu");
             System.out.println("=============================");
 
-
             switch (UserInputHandler.getInteger("Enter choice", 1, 5)) {
                 case 1:
                     orderRestock();
@@ -97,7 +96,7 @@ public class ViewPurchaseManagement {
     // Method for restocking orders
     private void orderRestock() {
         ArrayList<PurchaseOrder> purchaseOrders = new ArrayList<>();
-        Map<String, ArrayList<Transaction>> orders = new HashMap<>();
+        Map<Vendor, ArrayList<Transaction>> orders = new HashMap<>();
         File file;
         MailSender mail;
         PdfConverter pdf;
@@ -114,7 +113,7 @@ public class ViewPurchaseManagement {
                     UserInputHandler.getInteger("Enter Quantity", 1, 100000));
             purchaseOrder.setItem(item);
             purchaseOrder.setDoc_No(poNo);
-            purchaseOrder.setTransaction_Recipient(item.getVendor_ID());
+            purchaseOrder.setTransaction_Recipient(item.getVendor().getVendor_ID());
             purchaseOrder.setTransaction_Modified_By(user.getUserId());
             purchaseOrder.setTransaction_Created_By(user.getUserId());
 
@@ -133,14 +132,14 @@ public class ViewPurchaseManagement {
         // Add all purchase orders to the database
         purchaseOrders.forEach(_purchaseOrder -> {
             _purchaseOrder.Add();
-            if (!orders.containsKey(_purchaseOrder.getTransaction_Recipient())) {
-                orders.put(_purchaseOrder.getTransaction_Recipient(), new ArrayList<>());
+            if (!orders.containsKey(_purchaseOrder.getItem().getVendor())) {
+                orders.put(_purchaseOrder.getItem().getVendor(), new ArrayList<>());
             }
-            orders.get(_purchaseOrder.getTransaction_Recipient()).add(_purchaseOrder);
+            orders.get(_purchaseOrder.getItem().getVendor()).add(_purchaseOrder);
         });
 
         // Send email to vendors
-        for (Map.Entry<String, ArrayList<Transaction>> entry : orders.entrySet()) {
+        for (Map.Entry<Vendor, ArrayList<Transaction>> entry : orders.entrySet()) {
             file = new File(
                     "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
                     entry.getValue().get(0).getDoc_No() + ".pdf");
@@ -149,7 +148,7 @@ public class ViewPurchaseManagement {
             pdf.Save();
 
             mail = new MailSender(
-                    "tancs8803@gmail.com",
+                    entry.getKey().getVendor_Email(),
                     "Purchase Order",
                     new MailTemplate(poNo, MailTemplate.TemplateType.PURCHASE_ORDER));
             mail.AttachFile(file);
@@ -162,7 +161,7 @@ public class ViewPurchaseManagement {
         // Only Pending status orders can be modified
         boolean backToPurchaseManagement = false;
         boolean orderModified = false;
-        Map<String, ArrayList<Transaction>> orders = new HashMap<>();
+        Map<Vendor, ArrayList<Transaction>> orders = new HashMap<>();
         ArrayList<Item> itemsInPurchaseOrders = new ArrayList<>();
         ArrayList<Item> itemsNotInPurchaseOrders = Item.GetAll();
 
@@ -175,7 +174,6 @@ public class ViewPurchaseManagement {
 
         // SELECT item to modify
         Transaction purchaseOrder = new PurchaseOrder(purchaseOrders.get(0).getDoc_No());
-
 
         for (PurchaseOrder po : purchaseOrders) {
             itemsInPurchaseOrders.add(po.getItem());
@@ -213,7 +211,7 @@ public class ViewPurchaseManagement {
                                     100000));
 
                     // Initialize other values
-                    purchaseOrder.setTransaction_Recipient(item.getVendor_ID());
+                    purchaseOrder.setTransaction_Recipient(item.getVendor().getVendor_ID());
                     purchaseOrder.setTransaction_Modified_By(user.getUserId());
                     purchaseOrder.setTransaction_Created_By(user.getUserId());
 
@@ -279,25 +277,24 @@ public class ViewPurchaseManagement {
             }
 
         }
-    
+
         if (!orderModified) {
             return;
         }
 
         PurchaseOrder.Get(purchaseOrders.get(0).getDoc_No()).forEach(po -> {
             po.getItem().Get();
-            if (!orders.containsKey(po.getTransaction_Recipient())) {
-                orders.put(po.getTransaction_Recipient(), new ArrayList<>());
+            if (!orders.containsKey(po.getItem().getVendor())) {
+                orders.put(po.getItem().getVendor(), new ArrayList<>());
             }
-            orders.get(po.getTransaction_Recipient()).add(po);
+            orders.get(po.getItem().getVendor()).add(po);
         });
-
 
         // Send email to vendors
         MailSender mail;
         File file;
         PdfConverter pdf;
-        for (Map.Entry<String, ArrayList<Transaction>> entry : orders.entrySet()) {
+        for (Map.Entry<Vendor, ArrayList<Transaction>> entry : orders.entrySet()) {
             file = new File(
                     "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
                     entry.getValue().get(0).getDoc_No() + ".pdf");
@@ -306,7 +303,7 @@ public class ViewPurchaseManagement {
             pdf.Save();
 
             mail = new MailSender(
-                    "tancs8803@gmail.com",
+                    entry.getKey().getVendor_Email(),
                     "Reordering",
                     new MailTemplate(purchaseOrders.get(0).getDoc_No(), MailTemplate.TemplateType.REORDERING));
             mail.AttachFile(file);
@@ -318,7 +315,7 @@ public class ViewPurchaseManagement {
 
     // Method for canceling orders
     private void orderCancellation() {
-        Set<String> VendorID = new HashSet<>();
+        Set<Vendor> vendors = new HashSet<>();
         viewPurchaseOrder.setPurchaseOrderList();
         ArrayList<PurchaseOrder> purchaseOrders = viewPurchaseOrder.selectPurchaseOrderFromList(StockStatus.PENDING);
         if (purchaseOrders == null || purchaseOrders.isEmpty()) {
@@ -336,14 +333,14 @@ public class ViewPurchaseManagement {
 
         purchaseOrders.forEach(_purchaseOrder -> {
             _purchaseOrder.Remove();
-            VendorID.add(_purchaseOrder.getTransaction_Recipient());
+            vendors.add(_purchaseOrder.getItem().getVendor());
         });
 
         // Send cancellation email
         MailSender mail;
-        for (String vendor : VendorID) {
+        for (Vendor vendor : vendors) {
             mail = new MailSender(
-                    "tancs8803@gmail.com",
+                    vendor.getVendor_Email(),
                     "Order Cancelled",
                     new MailTemplate(purchaseOrder.getDoc_No(), MailTemplate.TemplateType.ORDER_CANCELLATION));
             mail.Send();
@@ -391,10 +388,10 @@ public class ViewPurchaseManagement {
 
         // Allow user to follow up or manage stock status - only display if the order is PENDING status
         //for loop 
-        
-        for (Integer orderStatus : viewPurchaseOrder.getOrderStatusList()) {           
+
+        for (Integer orderStatus : viewPurchaseOrder.getOrderStatusList()) {
             if (orderStatus != StockStatus.RECEIVED.getValue()) {
-                
+
                 PendingStatus = true;
             }
         }
@@ -537,28 +534,29 @@ public class ViewPurchaseManagement {
             }
 
         }
-    
+
         if (!orderManaged) {
             return;
         }
-        
+
         //Send email to vendors
         ArrayList<PurchaseOrder> purchaseOrders = PurchaseOrder.Get(_purchaseOrders.get(0).getDoc_No());
-        Map<String, ArrayList<Transaction>> orders = new HashMap<>();
+        Map<Vendor, ArrayList<Transaction>> orders = new HashMap<>();
         for (PurchaseOrder order : purchaseOrders) {
             order.getItem().Get();
-            if (!orders.containsKey(order.getTransaction_Recipient())) {
-                orders.put(order.getTransaction_Recipient(), new ArrayList<>());
+            if (!orders.containsKey(order.getItem().getVendor())) {
+                orders.put(order.getItem().getVendor(), new ArrayList<>());
             }
-            orders.get(order.getTransaction_Recipient()).add(order);
+            orders.get(order.getItem().getVendor()).add(order);
         }
 
         //check if the good are all received
-        for (Map.Entry<String, ArrayList<Transaction>> entry : orders.entrySet()) {
+        for (Map.Entry<Vendor, ArrayList<Transaction>> entry : orders.entrySet()) {
             boolean isFullyReceived = true;
             for (Transaction order : entry.getValue()) {
                 int totalReceived = 0;
-                ArrayList<GoodReceivedNotes> goodReceivedNotesList = GoodReceivedNotes.Get(order.getItem(), order.getDoc_No());
+                ArrayList<GoodReceivedNotes> goodReceivedNotesList = GoodReceivedNotes.Get(order.getItem(),
+                        order.getDoc_No());
                 if (goodReceivedNotesList == null || goodReceivedNotesList.isEmpty()) {
                     isFullyReceived = false;
                     break;
@@ -573,11 +571,12 @@ public class ViewPurchaseManagement {
             }
             if (isFullyReceived) {
                 MailSender mail = new MailSender(
-                        "tancs8803@gmail.com",
+                        entry.getKey().getVendor_Email(),
                         "Order Confirmation",
-                        new MailTemplate(purchaseOrders.get(0).getDoc_No(), MailTemplate.TemplateType.ORDER_CONFIRMATION));
+                        new MailTemplate(purchaseOrders.get(0).getDoc_No(),
+                                MailTemplate.TemplateType.ORDER_CONFIRMATION));
                 mail.Send();
             }
-        } 
+        }
     }
 }
