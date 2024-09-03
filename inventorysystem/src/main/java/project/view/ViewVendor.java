@@ -54,16 +54,17 @@ public class ViewVendor {
                 break;
             case 2:
                 //call modify vendor function
-                vendor.modifyVendor();
-
+                displayVendors();
+                Vendor vendorToModify = selectVendorFromList();
+                modifyVendor(vendorToModify);
                 System.out.println("\n\n**Redirecting To Main Menu**");
                 menu();
                 break;
             case 3:
                 //call delete vendor function
                 displayVendors();
-                Vendor vendor = selectVendorFromList();
-                deleteVendor(vendor);
+                Vendor vendorToRemove = selectVendorFromList();
+                deleteVendor(vendorToRemove);
 
                 System.out.println("\n\n**Redirecting To Main Menu**");
                 menu();
@@ -104,7 +105,7 @@ public class ViewVendor {
 
         do {
             Vendor vendor = new Vendor();
-            vendor.setItem_Category_ID(
+            vendor.getItemCategory().setItem_Category_ID(
                     UserInputHandler.getInteger(String.format("%-40s", "Please enter item category ID: "), 1, 10));
             vendor.setVendor_Name(
                     UserInputHandler.getString(String.format("%-40s", "Please enter vendor name: "), 4, 50));
@@ -143,6 +144,59 @@ public class ViewVendor {
         } else {
             System.out.println("Unable to remove vendor: " + _vendor.getVendor_ID());
         }
+    }
+
+    public void modifyVendor(Vendor _vendor)
+    {
+        String column;
+        String value;
+        //display
+        System.out.println(
+                "\n\n\n=================================================================================\nMODIFY VENDOR\n");
+
+        //search for vendor
+        _vendor.setVendor_ID(UserInputHandler.getString(String.format("%-40s", "Please enter vendor ID: "), 6,
+                "^V[0-9]{5}"));
+
+        do {
+            //select what to modify
+            System.out.println("1. Vendor Name\n2. Vendor Address\n3. Vendor Email");
+
+            switch (UserInputHandler.getInteger("Enter choice ", 1, 3)) {
+                case 1:
+                    System.out.println("===Update Vendor Name===");
+                    _vendor.setVendor_Name(
+                            UserInputHandler.getString(String.format("%-40s", "Please enter vendor name: "), 4, 50));
+
+                    column = ("Vendor_Name");
+                    value = _vendor.getVendor_Name();
+
+                    break;
+
+                case 2:
+                    System.out.println("===Update Vendor Address===");
+                    _vendor.setVendor_Address(
+                            UserInputHandler.getString(String.format("%-40s", "Please enter vendor address: "), 4,
+                                    100));
+
+                    column = "Vendor_Address";
+                    value =_vendor.getVendor_Address();
+                    break;
+
+                default:
+                    System.out.println("===Update Vendor Email===");
+                    _vendor.setVendorEmail(
+                            UserInputHandler.getString(String.format("%-40s", "Please enter vendor email: "), ""));
+
+                    column = "Vendor_Email";
+                    value = _vendor.getVendor_Email();
+                    break;
+            }
+            //add to database
+
+            _vendor.Update(column, value);
+        } while (UserInputHandler.getConfirmation(String.format("%-40s", "\nContinue to edit vendor?"))
+                .equalsIgnoreCase("Y"));
     }
 
     public Vendor selectVendorFromList() {
