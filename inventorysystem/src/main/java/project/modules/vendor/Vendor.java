@@ -10,7 +10,7 @@ import project.modules.item.ItemCategory;
 public class Vendor {
     //variables
     private String Vendor_ID;
-    private ItemCategory itemCategory;
+    private ItemCategory item_Category;
     private String Vendor_Name;
     private String Vendor_Email;
     private String Vendor_Address;
@@ -25,7 +25,7 @@ public class Vendor {
     public Vendor(String Vendor_ID, ItemCategory itemCategory, String Vendor_Name, String Vendor_Email,
             String Vendor_Address, String Vendor_Created_By, String Vendor_Modified_By) {
         this.Vendor_ID = Vendor_ID;
-        this.itemCategory = itemCategory;
+        this.item_Category = itemCategory;
         this.Vendor_Name = Vendor_Name;
         this.Vendor_Address = Vendor_Address;
         this.Vendor_Created_By = Vendor_Created_By;
@@ -45,12 +45,12 @@ public class Vendor {
 
     //get item category id
     public ItemCategory getItemCategory(){
-        return this.itemCategory;
+        return this.item_Category;
     }
 
     //set item category id
     public void setItemCategory(ItemCategory itemCategory) {
-        this.itemCategory = itemCategory;
+        this.item_Category = itemCategory;
     }
 
     //get vendor name

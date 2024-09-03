@@ -5,13 +5,12 @@ import java.util.Objects;
 
 import project.global.CrudOperation;
 import project.global.SqlConnector;
-
 import project.modules.vendor.Vendor;
 
 public class Item implements CrudOperation{
     //Data Fields
     private int Item_ID;
-    private ItemCategory itemCategory;
+    private ItemCategory item_Category;
     private Vendor vendor;
 
     private String Item_name;
@@ -36,11 +35,11 @@ public class Item implements CrudOperation{
     //Item_Category
     public void setItemCategory(ItemCategory _itemCategory) {
         
-        this.itemCategory = _itemCategory;
+        this.item_Category = _itemCategory;
     }
 
     public ItemCategory getItemCategory() {
-        return this.itemCategory;
+        return this.item_Category;
     }
 
     //Vendor
@@ -133,7 +132,7 @@ public class Item implements CrudOperation{
 
         String query = "INSERT INTO item (Item_Category_ID, Vendor_ID, Item_name, Item_Desc, Item_Quantity, Item_Price, Item_Created_By, Item_Modified_By) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
         boolean QueryExecuted = connector.PrepareExecuteDML(query,
-                this.itemCategory.getItem_Category_ID(), this.vendor.getVendor_ID(),
+                this.item_Category.getItem_Category_ID(), this.vendor.getVendor_ID(),
                 this.Item_name, this.Item_Desc, this.Item_Quantity, this.Item_Price,
                 this.Item_Created_By, this.Item_Modified_By);
 
@@ -169,7 +168,7 @@ public class Item implements CrudOperation{
        item.getVendor().Get(); //get the vendor from the vendor id
 
        this.Item_ID = item.getItem_ID();
-       this.itemCategory = item.getItemCategory();
+       this.item_Category = item.getItemCategory();
        this.vendor = item.getVendor();
        this.Item_name = item.getItem_Name();
        this.Item_Desc = item.getItem_Desc();
@@ -224,7 +223,7 @@ public class Item implements CrudOperation{
         String query = "UPDATE ITEM SET Item_Category_ID = ?, Vendor_ID = ?, Item_name = ?, Item_Desc = ?, Item_Quantity = ?, Item_Price = ?, Item_Modified_By = ? WHERE Item_ID = ?";
 
         boolean QueryExecuted = connector.PrepareExecuteDML(query,
-                this.itemCategory.getItem_Category_ID(), this.vendor.getVendor_ID(),
+                this.item_Category.getItem_Category_ID(), this.vendor.getVendor_ID(),
                 this.Item_name, this.Item_Desc, this.Item_Quantity,
                 this.Item_Price, this.Item_Modified_By,
                 this.Item_ID);
@@ -272,7 +271,7 @@ public class Item implements CrudOperation{
     public String toString() {
         //display data in columns
         return String.format("| %-15s | %-15s | %-20s | %-50s |",
-                this.itemCategory.getItem_Category_ID(), this.vendor.getVendor_ID(),
+                this.item_Category.getItem_Category_ID(), this.vendor.getVendor_Name(),
                 this.Item_name, this.Item_Desc);
     }
 
