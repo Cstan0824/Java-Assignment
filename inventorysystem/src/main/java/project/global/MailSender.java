@@ -103,6 +103,7 @@ public class MailSender {
     }
 
     private Session MailServerConfiguration() {
+        
         Properties properties = System.getProperties();
 
         // Setting up mail server 

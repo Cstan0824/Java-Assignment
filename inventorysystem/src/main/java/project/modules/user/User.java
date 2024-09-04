@@ -251,8 +251,10 @@ public abstract class User {
                         return;
                     }
     
+                // for sucessful login 
                 String sql = "SELECT * FROM " + this.userType + " WHERE " + this.getUserType() + "_ID = ? AND " + this.getUserType() + "_Password = ?";
-    
+                // for fetching email and reg date
+                String sql1 = "SELECT * FROM " + this.userType + " WHERE " + this.getUserType() + "_ID = ?";
     
                 
     
@@ -266,35 +268,38 @@ public abstract class User {
                         System.out.println("Invalid ID or password.");
                         System.out.println("You have " + (MAX_ATTEMPTS - attempts - 1) + " attempts left.");
                         attempts++;
-                        continue;
-                    }
-    
-                    User users = this.userType.equals("Admin") ? new Admin() : new Retailer();
 
-    
-                    if (users != null) {
+                        // Fetch Email and Reg Date for OTP if password fails
+                        try (PreparedStatement statement1 = conn.prepareStatement(sql1)) {
+                            statement1.setString(1, this.getUserId());
+                            ResultSet resultSet1 = statement1.executeQuery();
 
-                        users.setUserId(resultSet.getString(this.getUserType() + "_ID"));
-                        users.setUserName(resultSet.getString(this.getUserType() + "_Name"));
-                        users.setUserPassword(resultSet.getString(this.getUserType() + "_Password"));
-                        users.setUserEmail(resultSet.getString(this.getUserType() + "_Email"));
-                        users.setUserRegDate(resultSet.getTimestamp(this.getUserType() + "_Reg_Date").toLocalDateTime());
-    
-                        System.out.println("Login successful.");
-                        setLoggedInUserId(this.userId);  // Set the logged-in user's ID
-                        users.UserMenu();
+                            if (resultSet1.next()) {
+                                this.setUserEmail(resultSet1.getString(this.getUserType() + "_Email"));
+                                this.setUserRegDate(resultSet1.getTimestamp(this.getUserType() + "_Reg_Date").toLocalDateTime());
+                            }
+                        }
 
-                        break;
-
+                        continue; // Go for next login attempt
                     }
 
-                } catch (SQLException e) {
-                    System.out.println("SQL Error: " + e.getMessage());
+                    // Case 2: Successful Login
+                    this.setUserId(resultSet.getString(this.getUserType() + "_ID"));
+                    this.setUserName(resultSet.getString(this.getUserType() + "_Name"));
+                    this.setUserPassword(resultSet.getString(this.getUserType() + "_Password"));
+                    this.setUserEmail(resultSet.getString(this.getUserType() + "_Email"));
+                    this.setUserRegDate(resultSet.getTimestamp(this.getUserType() + "_Reg_Date").toLocalDateTime());
+
+                    System.out.println("Login successful.");
+                    setLoggedInUserId(this.userId);  // Set the logged-in user's ID
+                    this.UserMenu();
+                    break;  // Exit loop on successful logi
                 }
+
+            } catch (SQLException e) {
+                System.out.println("SQL Error: " + e.getMessage());
             }
-            catch (SQLException e) {
-                System.out.println("Connection Error: " + e.getMessage());
-            }
+        
         }
 
     
@@ -318,7 +323,9 @@ public abstract class User {
                         attempts = 0;  
                         handleLogin();
                     case 2:
+                   
                         this.generateOTP();
+                        this.handleOTP();
                         this.verifyOTP();
                         break;
                     case 3:
@@ -340,7 +347,7 @@ public abstract class User {
         // Generate a random 6-digit OTP
         int otp = (int) (Math.random() * 900000) + 100000;
         this.otpCode = Integer.toString(otp);
-        this.otpExpiry = LocalDateTime.now().plusSeconds(10); 
+        this.otpExpiry = LocalDateTime.now().plusSeconds(1000); 
 
         //insert into database 
         SqlConnector Connector = new SqlConnector(); 
@@ -355,8 +362,6 @@ public abstract class User {
         
         String query = "Update " + this.userType + " set otp_code = ?, otp_expiry = ? where " + this.userType + "_Id = ?" ;
 
-        System.out.println("Executing SQL: " + query);
-        System.out.println("With values: " + this.getUserId() + " " + this.otpCode + " " + this.otpExpiry);
 
         Boolean checking = Connector.PrepareExecuteDML(query,this.otpCode,this.otpExpiry,this.getUserId());
 
@@ -378,10 +383,9 @@ public abstract class User {
 
         System.out.println("Enter the OTP sent to your email: ");
         String userOTP = scanner.nextLine();
-        scanner.close();
 
     
-        String sql= "SELECT otp_expiry, otp_code FROM " + this.getUserType() + " WHERE " + this.getUserType() + "_Id = ?";
+        String sql = "SELECT otp_expiry, otp_code, " + this.getUserType() + "_Password FROM " + this.getUserType() + " WHERE " + this.getUserType() + "_Id = ?";
 
         try (Connection conn = DriverManager.getConnection(url, user, password)) {
             if (conn == null || conn.isClosed()) {
@@ -398,6 +402,7 @@ public abstract class User {
                 if (resultSet.next()) {
                     this.otpExpiry = resultSet.getTimestamp(1).toLocalDateTime();
                     this.otpCode = resultSet.getString(2);
+                    this.setUserPassword(resultSet.getString(3)); 
                 }
 
             } catch (SQLException e) {
@@ -416,13 +421,33 @@ public abstract class User {
 
         } else if (userOTP.equals(this.otpCode)) {
             System.out.println("OTP verified successfully!");
-
+            System.out.println("Your password is: " + this.getUserPassword());
+            try {
+                Thread.sleep(3000);
+                handleLogin();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         else{
             System.out.println("Invalid OTP. Please try again.");
         }
 
+        scanner.close();
+
     }
+
+    public void handleOTP()
+    {
+        System.out.println(this.otpCode);
+        MailSender mail = new MailSender(
+            this.userEmail,
+            "OTP Recovery",
+            new MailTemplate(this.otpCode, MailTemplate.TemplateType.OTP));
+        mail.Send();
+    }
+
+
 
     public void displayUserDetails() {  // can work
         System.out.println(this.getUserType()+" ID: " + this.getUserId());
