@@ -4,11 +4,13 @@ import java.util.ArrayList;
 
 import project.global.UserInputHandler;
 import project.modules.item.Item;
+import project.modules.item.ItemCategory;
 import project.modules.user.User;
 
 public class ViewItem {
     private static User user;
     private ArrayList<Item> items = new ArrayList<>();
+    private final ViewVendor viewVendor;
 
     //getter
     public ArrayList<Item> getItems() {
@@ -27,7 +29,7 @@ public class ViewItem {
     public ViewItem(User _user) {
         user = _user;
         this.items = Item.GetAll();
-
+        this.viewVendor = new ViewVendor(user);
     }
 
     // Getter for User
@@ -49,6 +51,7 @@ public class ViewItem {
 
             switch (UserInputHandler.getInteger("Select an option", 1, 6)) {
                 case 1:
+                //only able to add item while adding the vendor
                     Item newItem = addNewItem();
                     this.items.add(newItem);
                     break;
@@ -111,7 +114,7 @@ public class ViewItem {
     }
 
     // Method to edit item details (implementation placeholder)
-    public void editItemDetails() {
+    private void editItemDetails() {
         // Select an item from the list
         Item item = selectItemFromList();
         if (item == null) {
@@ -134,11 +137,11 @@ public class ViewItem {
 
         switch (UserInputHandler.getInteger("Select an option", 1, 6)) {
             case 1:
-                //display Item category on menu
-                item.getItemCategory().setItem_Category_ID(UserInputHandler.getInteger("Enter Item Category", 1, 100));
+                item.getItemCategory().setItem_Category_ID(selectItemCategoryFromList().getItem_Category_ID());
                 break;
             case 2:
-                item.getVendor().setVendor_ID(UserInputHandler.getString("Enter Vendor ID", 1, ".*"));
+                this.viewVendor.getVendors().remove(item.getVendor());
+                item.getVendor().setVendor_ID(this.viewVendor.selectVendorFromList().getVendor_ID());
                 break;
             case 3:
                 item.setItem_name(UserInputHandler.getString("Enter Item Name", 1, ".*"));
@@ -157,12 +160,12 @@ public class ViewItem {
         item.Update();
     }
 
-    public void searchItem() {
+    private void searchItem() {
         // Search for items based on the search field and value with a menu
         System.out.println("======== Search Item ========");
         System.out.println("1. Search by Item Name");
         System.out.println("2. Search by Item Category");
-        System.out.println("3. Search by Vendor ID");
+        System.out.println("3. Search by Vendor");
         System.out.println("4. Back to Item Management");
         System.out.println("=============================");
 
@@ -172,11 +175,12 @@ public class ViewItem {
                 this.items = Item.Get("Item_Name", UserInputHandler.getString("Enter Item Name", 1, ".*"));
                 break;
             case 2:
-                //display Item category on menu
-                this.items = Item.Get("Item_Category_ID", UserInputHandler.getString("Enter Item Category", 1, ".*"));
+                ;
+                this.items = Item.Get("Item_Category_ID", selectItemCategoryFromList().getItem_Category_ID() + "");
                 break;
             case 3:
-                this.items = Item.Get("Vendor_ID", UserInputHandler.getString("Enter Vendor ID", 1, ".*"));
+                this.viewVendor.setVendors();
+                this.items = Item.Get("Vendor_ID", this.viewVendor.selectVendorFromList().getVendor_ID());
                 break;
             case 4:
                 System.out.println("Exiting...");
@@ -184,12 +188,13 @@ public class ViewItem {
         }
     }
 
-    public static Item addNewItem() {
+    private Item addNewItem() {
         // Add a new item to the list
         Item item = new Item();
+        this.viewVendor.setVendors();
         //display Item category on menu
-        item.getItemCategory().setItem_Category_ID(UserInputHandler.getInteger("Enter Item Category", 1, 100));
-        item.getVendor().setVendor_ID(UserInputHandler.getString("Enter Vendor ID", 1, ".*"));
+        item.getItemCategory().setItem_Category_ID(selectItemCategoryFromList().getItem_Category_ID());
+        item.getVendor().setVendor_ID(this.viewVendor.selectVendorFromList().getVendor_ID());
         item.setItem_name(UserInputHandler.getString("Enter Item Name", 1, ".*"));
         item.setItem_Desc(UserInputHandler.getString("Enter Item Description", 1, ".*"));
         item.setItem_Quantity(UserInputHandler.getInteger("Enter Item Quantity", 1, 1000000));
@@ -198,6 +203,22 @@ public class ViewItem {
         item.setItem_Modified_By(user.getUserId());
         item.Add();
         return item;
+    }
+
+    public ItemCategory selectItemCategoryFromList() {
+        ArrayList<ItemCategory> itemCategories = ItemCategory.GetAll();
+
+        System.out.println(" =================== Item Category =================== ");
+        System.out.println(String.format("| %-5s | %-15s |", "No.", "Item Category"));
+        System.out.println(" ===================================================== ");
+        for (int i = 0; i < itemCategories.size(); i++) {
+            System.out.println(String.format("| %-5s | %-15s |", (i + 1) + ". ", itemCategories.get(i)));
+        }
+
+        System.out.println(" ===================================================== ");
+
+        return itemCategories
+                .get(UserInputHandler.getInteger("Select Item Category by No", 1, itemCategories.size()) - 1);
     }
 }
 

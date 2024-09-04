@@ -24,7 +24,6 @@ CREATE TABLE Item_Category (
 
 CREATE TABLE Vendor (
   Vendor_ID VARCHAR(100),
-  Item_Category_ID INT NOT NULL,
   Vendor_Name VARCHAR(100) NOT NULL,
   Vendor_Address VARCHAR(255) NOT NULL,
   Vendor_Email VARCHAR(100) NOT NULL,

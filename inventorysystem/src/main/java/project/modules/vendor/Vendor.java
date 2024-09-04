@@ -5,12 +5,10 @@ import java.util.Objects;
 
 import project.global.SqlConnector;
 import project.global.SystemRunNo;
-import project.modules.item.ItemCategory;
 
 public class Vendor {
     //variables
     private String Vendor_ID;
-    private ItemCategory item_Category;
     private String Vendor_Name;
     private String Vendor_Email;
     private String Vendor_Address;
@@ -22,10 +20,9 @@ public class Vendor {
 
     }
 
-    public Vendor(String Vendor_ID, ItemCategory itemCategory, String Vendor_Name, String Vendor_Email,
+    public Vendor(String Vendor_ID, String Vendor_Name, String Vendor_Email,
             String Vendor_Address, String Vendor_Created_By, String Vendor_Modified_By) {
         this.Vendor_ID = Vendor_ID;
-        this.item_Category = itemCategory;
         this.Vendor_Name = Vendor_Name;
         this.Vendor_Address = Vendor_Address;
         this.Vendor_Created_By = Vendor_Created_By;
@@ -41,16 +38,6 @@ public class Vendor {
     //set vendor id
     public void setVendor_ID(String Vendor_ID){
         this.Vendor_ID = Vendor_ID;
-    }
-
-    //get item category id
-    public ItemCategory getItemCategory(){
-        return this.item_Category;
-    }
-
-    //set item category id
-    public void setItemCategory(ItemCategory itemCategory) {
-        this.item_Category = itemCategory;
     }
 
     //get vendor name
@@ -126,11 +113,9 @@ public class Vendor {
         }
 
         Vendor vendor = vendors.get(0); //get the first result
-        vendor.getItemCategory().Get(); //get the item category from the item category id
 
         //assign the value to current instance  
         this.setVendor_ID(vendor.getVendor_ID());
-        this.setItemCategory(vendor.getItemCategory());
         this.setVendor_Name(vendor.getVendor_Name());
         this.setVendor_Address(vendor.getVendor_Address());
         this.setVendorEmail(vendor.getVendor_Email());
@@ -141,6 +126,20 @@ public class Vendor {
         return true;
     }
 
+    public static ArrayList<Vendor> Get(String _field, String _value) {
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return null;
+        }
+
+        String query = "SELECT * FROM vendor WHERE " + _field + " = ?;";
+
+        ArrayList<Vendor> vendors = connector.PrepareExecuteRead(query, Vendor.class, _value);
+        return vendors;
+    }
+        
+    //GET ALL VENDORS
     public static ArrayList<Vendor> GetAll() {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -151,9 +150,6 @@ public class Vendor {
         String query = "SELECT * FROM vendor;";
 
         ArrayList<Vendor> vendors = connector.ExecuteRead(query, Vendor.class);
-        vendors.forEach(vendor -> {
-            vendor.getItemCategory().Get();
-        });
         return vendors;
     }
     
@@ -166,39 +162,31 @@ public class Vendor {
             return false;
         }
 
-        String insertVendorQuery = ("INSERT INTO vendor (Vendor_ID, Item_Category_ID, Vendor_Name, Vendor_Address, Vendor_Created_By, Vendor_Modified_By, Vendor_Email) VALUES (?,?,?,?,?,?,?)");
-        String insertVendorItemCategoryQuery = ("INSERT INTO vendor_itemcategory (Item_Category_ID, Vendor_ID) VALUES (?,?)");
+        String insertVendorQuery = ("INSERT INTO vendor (Vendor_ID, Vendor_Name, Vendor_Address, Vendor_Created_By, Vendor_Modified_By, Vendor_Email) VALUES (?,?,?,?,?,?,?)");
 
         boolean checkQuery = Connector.PrepareExecuteDML(insertVendorQuery, this.getVendor_ID(),
-                this.getItemCategory().getItem_Category_ID(), this.getVendor_Name(), this.getVendor_Address(),
+                this.getVendor_Name(), this.getVendor_Address(),
                 this.getVendor_Created_By(), this.getVendor_Modified_By(), this.getVendor_Email());
-        boolean checkQuery2 = Connector.PrepareExecuteDML(insertVendorItemCategoryQuery, this.getItemCategory().getItem_Category_ID(),
-                this.getVendor_ID());
 
         Connector.Disconnect();
-        return checkQuery && checkQuery2;
-    }    
+
+        return checkQuery;
+    }
 
     //DELETE VENDOR FROM DB
-    public boolean Remove(){
+    public boolean Remove() {
         SqlConnector Connector = new SqlConnector();
         Connector.Connect();
         if (!Connector.isConnected()) {
             return false;
         }
 
-
-        String DeleteQuery = ("DELETE FROM vendor_itemcategory WHERE Vendor_ID = ?;");
-        boolean DeleteQueryExecuted = Connector.PrepareExecuteDML(DeleteQuery,
-        this.getVendor_ID());
-
-        String DeleteVendorQuery = ("DELETE FROM vendor WHERE Vendor_ID = ?;");
-        boolean QueryExecuted = Connector.PrepareExecuteDML(DeleteVendorQuery,
-        this.getVendor_ID());
-
+        String query = ("DELETE FROM vendor WHERE Vendor_ID = ?;");
+        boolean QueryExecuted = Connector.PrepareExecuteDML(query,
+                this.getVendor_ID());
         Connector.Disconnect();
 
-        return QueryExecuted && DeleteQueryExecuted;
+        return QueryExecuted;
     }
     
 

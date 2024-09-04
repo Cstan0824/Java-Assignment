@@ -15,14 +15,14 @@ public class App {
         ViewSalesManagement view = new ViewSalesManagement(user);
         view.userMenu();
 
-        //ViewReport view = new ViewReport(user);
-        //view.menu();
+        menu();
 
-        //ViewVendor view = new ViewVendor(user);
-        //view.menu();
+    }
 
-        //ViewItem viewItem = new ViewItem(user);
-        //viewItem.menu();
-
+    private static void menu() {
+        System.out.println("1. Sales Management");
+        System.out.println("2. Inventory Management");
+        System.out.println("3. Report Management");
+        System.out.println("4. Exit");
     }
 }

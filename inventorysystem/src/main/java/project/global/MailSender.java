@@ -78,7 +78,7 @@ public class MailSender {
     public boolean Send() {
         MailStatus = false;
         try {
-
+            this.mimeBodyPart.setContent(this.Body, "text/html; charset=utf-8");
             this.multipart.addBodyPart(this.mimeBodyPart);
             this.message.setContent(this.multipart);
             Transport.send(this.message);
