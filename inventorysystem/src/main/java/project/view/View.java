@@ -1,7 +1,7 @@
 package project.view;
 
 public interface View {
-        public void Menu();
+        public void menu();
 
         public void Table();
 

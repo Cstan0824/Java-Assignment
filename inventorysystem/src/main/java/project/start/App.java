@@ -14,9 +14,7 @@ public class App {
 
         ViewSalesManagement view = new ViewSalesManagement(user);
         view.userMenu();
-
         menu();
-
     }
 
     private static void menu() {

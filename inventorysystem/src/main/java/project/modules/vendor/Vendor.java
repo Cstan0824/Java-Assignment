@@ -16,7 +16,7 @@ public class Vendor {
     private String Vendor_Modified_By;
 
     //constructor
-    public Vendor(){
+    public Vendor() {
 
     }
 
@@ -29,72 +29,71 @@ public class Vendor {
         this.Vendor_Modified_By = Vendor_Modified_By;
         this.Vendor_Email = Vendor_Email;
     }
-    
+
     //get vendor id
     public String getVendor_ID() {
         return this.Vendor_ID;
     }
 
     //set vendor id
-    public void setVendor_ID(String Vendor_ID){
+    public void setVendor_ID(String Vendor_ID) {
         this.Vendor_ID = Vendor_ID;
     }
 
     //get vendor name
-    public String getVendor_Name(){
+    public String getVendor_Name() {
         return this.Vendor_Name;
     }
 
     //set vendor name
-    public void setVendor_Name(String Vendor_Name){
+    public void setVendor_Name(String Vendor_Name) {
         this.Vendor_Name = Vendor_Name;
     }
 
     //get vendor email
-    public String getVendor_Email(){
+    public String getVendor_Email() {
         return this.Vendor_Email;
     }
 
     //set vendor email
-    public void setVendorEmail(String Vendor_Email){
+    public void setVendorEmail(String Vendor_Email) {
         this.Vendor_Email = Vendor_Email;
     }
 
     //get vendor address
-    public String getVendor_Address(){
+    public String getVendor_Address() {
         return this.Vendor_Address;
     }
 
     //set vendor address
-    public void setVendor_Address(String Vendor_Address){
+    public void setVendor_Address(String Vendor_Address) {
         this.Vendor_Address = Vendor_Address;
     }
 
     //get vendor created by
-    public String getVendor_Created_By(){
+    public String getVendor_Created_By() {
         return this.Vendor_Created_By;
     }
 
     //set vendor created by
-    public void setVendor_Created_By(String Vendor_Created_By){
+    public void setVendor_Created_By(String Vendor_Created_By) {
         this.Vendor_Created_By = Vendor_Created_By;
     }
 
     //get vendor modified by
-    public String getVendor_Modified_By(){
+    public String getVendor_Modified_By() {
         return this.Vendor_Modified_By;
     }
 
     //set vendor modified by
-    public void setVendor_Modified_By(String Vendor_Modified_By){
+    public void setVendor_Modified_By(String Vendor_Modified_By) {
         this.Vendor_Modified_By = Vendor_Modified_By;
     }
-
 
     //FUNCTIONS
     //=========================================================================================================
     //=========================================================================================================
-    
+
     //GET VENDOR
     public boolean Get() {
 
@@ -138,7 +137,7 @@ public class Vendor {
         ArrayList<Vendor> vendors = connector.PrepareExecuteRead(query, Vendor.class, _value);
         return vendors;
     }
-        
+
     //GET ALL VENDORS
     public static ArrayList<Vendor> GetAll() {
         SqlConnector connector = new SqlConnector();
@@ -152,7 +151,7 @@ public class Vendor {
         ArrayList<Vendor> vendors = connector.ExecuteRead(query, Vendor.class);
         return vendors;
     }
-    
+
     //ADD NEW VENDOR TO DB
     public boolean Add() {
         SqlConnector Connector = new SqlConnector();
@@ -188,10 +187,8 @@ public class Vendor {
 
         return QueryExecuted;
     }
-    
 
     //MODIFY VENDOR
-    
 
     //MODIFY VENDOR FROM DB
     public boolean Update(String _field, String _data) {

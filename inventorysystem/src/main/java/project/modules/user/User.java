@@ -1,7 +1,4 @@
 package project.modules.user;
-import project.global.*;
-
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,6 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Scanner;
+
+import project.global.MailSender;
+import project.global.MailTemplate;
+import project.global.SqlConnector;
 
 public abstract class User {
     //private data field can be only access by the class itself
