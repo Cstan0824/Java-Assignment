@@ -90,7 +90,7 @@ public class Retailer extends User {
         this.setUserEmail(sc.nextLine());
 
         System.out.println("Enter Retailer Address: ");
-        this.setUserAddress(sc.nextLine());
+        this.setRetailerAddress(sc.nextLine());
 
         Add();
 

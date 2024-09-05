@@ -139,8 +139,9 @@ public abstract class User {
                 return false;
             }
 
-            String sql = "SELECT " + this.userType + "_Name, " + this.userType + "_Email, " + this.userType + "_Reg_Date " +
+            String sql = "SELECT " + this.userType + "_Name, " + this.userType + "_Email, " + this.userType + "_Reg_Date, " + this.userType + "_Password " +
             "FROM " + this.userType + " WHERE " + this.getUserType() + "_Id = ?";
+
 
             
             
@@ -154,7 +155,8 @@ public abstract class User {
                     this.setUserName(result.getString(1));
                     this.setUserEmail(result.getString(2));
                     this.setUserRegDate(result.getTimestamp(3).toLocalDateTime());
-                
+                    this.setUserPassword(result.getString(4));
+
 
                     return true;
                 
