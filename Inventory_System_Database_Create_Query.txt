@@ -29,16 +29,7 @@ CREATE TABLE Vendor (
   Vendor_Email VARCHAR(100) NOT NULL,
   Vendor_Created_By VARCHAR(100) NOT NULL,
   Vendor_Modified_By VARCHAR(100) NOT NULL,
-  PRIMARY KEY (Vendor_ID),
-  FOREIGN KEY (Item_Category_ID) REFERENCES Item_Category(Item_Category_ID)
-);
-
-CREATE TABLE Vendor_ItemCategory (
-  Item_Category_ID INT,
-  Vendor_ID VARCHAR(100),
-  PRIMARY KEY (Vendor_ID, Item_Category_ID),
-  FOREIGN KEY (Vendor_ID) REFERENCES Vendor(Vendor_ID),
-  FOREIGN KEY (Item_Category_ID) REFERENCES Item_Category(Item_Category_ID)
+  PRIMARY KEY (Vendor_ID)
 );
 
 
@@ -48,6 +39,7 @@ CREATE TABLE Admin (
   Admin_Password VARCHAR(255) NOT NULL,
   Admin_Email VARCHAR(100) NOT NULL,
   OTP_Code VARCHAR(6),
+  OTP_Expiry timestamp(6) NOT NULL DEFAULT current_timestamp(6) ON UPDATE current_timestamp(6),
   Admin_Reg_Date DATE DEFAULT CURRENT_DATE,
   PRIMARY KEY (Admin_ID)
 );

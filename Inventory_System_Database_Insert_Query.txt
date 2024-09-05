@@ -5,7 +5,7 @@ INSERT INTO Sys_RunNo (Sys_Prefix, Sys_Next, Sys_Desc) VALUES
 ('GRN', 2, 'Good Received Notes'),
 ('SO', 2, 'Sales Order'),
 ('DO', 2, 'Delivery Order'),
-('A',3,'Admin'),
+('A',6,'Admin'),
 ('R',4,'Retailer'),
 ('V',4,'Vendor');
 
@@ -19,14 +19,12 @@ INSERT INTO Vendor (Vendor_ID, Vendor_Name, Vendor_Address,Vendor_Email, Vendor_
 ('V00002', 'FurniCo', '456 Oak St, Townsville','Cstantan@gmail.com', 'Admin', 'Admin'),
 ('V00003', 'Clothing World', '789 Pine St, Villagetown','myDawgGan@gmail.com', 'Admin', 'Admin');
 
-INSERT INTO Vendor_ItemCategory (Item_Category_ID, Vendor_ID) VALUES
-(1, 'V00001'),
-(2, 'V00002'),
-(3, 'V00003');
-
-INSERT INTO Admin (Admin_ID, Admin_Name, Admin_Password, Admin_Email, OTP_Code, Admin_Reg_Date) VALUES
-('A00001', 'John Doe', 'password123', 'john.doe@example.com', '123456', CURRENT_DATE),
-('A00002', 'Jane Smith', 'password456', 'jane.smith@example.com', '654321', CURRENT_DATE);
+INSERT INTO `admin` (`Admin_ID`, `Admin_Name`, `Admin_Password`, `Admin_Email`, `OTP_Code`, `OTP_Expiry`, `Admin_Reg_Date`) VALUES
+('A00001', 'JAVA123', 'Java@123', 'Java@gmail.conm', NULL, '2024-09-02 10:59:32.819874', '2024-09-02'),
+('A00002', 'JaneSmith', 'password456', 'jane.smith@example.com', '654321', '2024-09-02 11:02:32.595933', '2024-08-28'),
+('A00003', 'Java123', 'JaVa@123', 'jaba', NULL, '2024-09-02 11:36:53.307298', '2024-09-02'),
+('A00005', 'Cstan', '123456789', 'Cstan@gmail.com', NULL, '2024-08-28 09:49:15.068811', '2024-08-28'),
+('A00004', 'vnslvlsvnslkv', '123hacAn@', 'vnsj', NULL, '2024-09-02 08:27:50.215207', '2024-09-02');
 
 INSERT INTO Item (Item_Category_ID, Vendor_ID, Item_Name, Item_Desc, Item_Quantity, Item_Price, Item_Location, Item_Created_By, Item_Modified_By) VALUES
 (1, 'V00001', 'Laptop', 'High-performance laptop', 100, 999.99, 'Aisle 1', 'Admin', 'Admin'),
