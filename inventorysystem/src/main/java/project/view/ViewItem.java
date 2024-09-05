@@ -46,10 +46,11 @@ public class ViewItem {
             System.out.println("3. Update Item");
             System.out.println("4. Delete Item");
             System.out.println("5. View All Items");
-            System.out.println("6. Back");
+            System.out.println("6. Auto Replenishment Management");
+            System.out.println("7. Back");
             System.out.println("=============================");
 
-            switch (UserInputHandler.getInteger("Select an option", 1, 6)) {
+            switch (UserInputHandler.getInteger("Select an option", 1, 7)) {
                 case 1:
                 //only able to add item while adding the vendor
                     Item newItem = addNewItem();
@@ -76,6 +77,10 @@ public class ViewItem {
                     UserInputHandler.systemPause("Press any key to continue...");
                     break;
                 case 6:
+                    ViewAutoReplenishment viewAutoReplenishment = new ViewAutoReplenishment(user);
+                    viewAutoReplenishment.menu();
+                    break;
+                case 7:
                     exit = false;
                     break;
             }
