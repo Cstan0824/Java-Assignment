@@ -161,11 +161,12 @@ public class Vendor {
             return false;
         }
 
-        String insertVendorQuery = ("INSERT INTO vendor (Vendor_ID, Vendor_Name, Vendor_Address, Vendor_Created_By, Vendor_Modified_By, Vendor_Email) VALUES (?,?,?,?,?,?,?)");
+        String insertVendorQuery = ("INSERT INTO vendor (Vendor_ID, Vendor_Name, Vendor_Address,Vendor_Email, Vendor_Created_By, Vendor_Modified_By) VALUES (?,?,?,?,?,?)");
 
         boolean checkQuery = Connector.PrepareExecuteDML(insertVendorQuery, this.getVendor_ID(),
                 this.getVendor_Name(), this.getVendor_Address(),
-                this.getVendor_Created_By(), this.getVendor_Modified_By(), this.getVendor_Email());
+                this.getVendor_Email(),
+                this.getVendor_Created_By(), this.getVendor_Modified_By());
 
         Connector.Disconnect();
 

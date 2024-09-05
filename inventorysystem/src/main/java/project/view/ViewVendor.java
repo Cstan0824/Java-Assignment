@@ -43,25 +43,28 @@ public class ViewVendor {
             System.out.println("=========================================");
 
             //switch case
-            switch (UserInputHandler.getInteger("Enter choice", 1, 5)) {
+            switch (UserInputHandler.getInteger("Enter choice", 1, 6)) {
                 case 1:
                     //call add vendor function
                     addVendor();
                     break;
                 case 2:
                     //call modify vendor function
+                    this.setVendors();
                     displayVendors();
                     Vendor vendorToModify = selectVendorFromList();
                     modifyVendor(vendorToModify);
                     break;
                 case 3:
                     //call delete vendor function
+                    this.setVendors();
                     displayVendors();
                     Vendor vendorToRemove = selectVendorFromList();
                     deleteVendor(vendorToRemove);
                     break;
                 case 4:
                     //call display vendor fucntion
+                    this.setVendors();
                     displayVendors();
                     UserInputHandler.systemPause("Press any key to continue...");
                     break;
@@ -75,7 +78,7 @@ public class ViewVendor {
                     exit = true;
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("Invalid choice. Please try Vagain.");
                     break;
             }
         }
@@ -89,7 +92,7 @@ public class ViewVendor {
         System.out.println(" ================================================== ");
 
         //display vendors and item they handled
-        for (Vendor vendor : vendors) {
+        for (Vendor vendor : this.vendors) {
             System.out.println(vendor.toString());
         }
     }
@@ -108,7 +111,8 @@ public class ViewVendor {
             vendor.setVendor_Address(
                     UserInputHandler.getString(String.format("%-40s", "Please enter vendor address: "), 4, 100));
             vendor.setVendorEmail(
-                    UserInputHandler.getString(String.format("%-40s", "Please enter vendor email: "), ""));
+                    UserInputHandler.getString(String.format("%-40s", "Please enter vendor email: "),
+                            "^[a-zA-Z0-9]{4,24}@gmail.com"));
             vendor.setVendor_Created_By(user.getUserId());
             vendor.setVendor_Modified_By(user.getUserId());
             vendor.setVendor_ID(vendor.GenerateVendorID());
@@ -146,10 +150,6 @@ public class ViewVendor {
         //display
         System.out.println(
                 "\n\n\n=================================================================================\nMODIFY VENDOR\n");
-
-        //search for vendor
-        _vendor.setVendor_ID(UserInputHandler.getString(String.format("%-40s", "Please enter vendor ID: "), 6,
-                "^V[0-9]{5}"));
 
         do {
             //select what to modify including the item they handle? - maybe no need to modify the item they handle
@@ -194,7 +194,7 @@ public class ViewVendor {
 
     public Vendor selectVendorFromList() {
         //get vendor id
-        String vendorId = UserInputHandler.getString("Enter Vendor ID", "V[0-9]{3}");
+        String vendorId = UserInputHandler.getString("Enter Vendor ID", "V[0-9]{5}");
 
         //search for vendor
         for (Vendor vendor : vendors) {
@@ -213,26 +213,31 @@ public class ViewVendor {
             System.out.println("======== Search Vendor ========");
             System.out.println("1. Search by Vendor Name");
             System.out.println("2. Search by Vendor ID");
-            System.out.println("4. Back to Vendor Management");
+            System.out.println("3. Back to Vendor Management");
             System.out.println("===============================");
 
             switch (UserInputHandler.getInteger("Select an option", 1, 3)) {
                 case 1:
                     this.vendors = Vendor.Get("Vendor_Name",
-                            UserInputHandler.getString("Enter Vendor Name", 1, ".*"));
+                            UserInputHandler.getString("Enter Vendor Name", 4,50));
                     break;
                 case 2:
                     this.vendors = Vendor.Get("Vendor_ID",
-                            UserInputHandler.getString("Enter Vendor ID", 1, ".*"));
+                            UserInputHandler.getString("Enter Vendor ID", 6, "^V[0-9]{5}"));
                     break;
                 case 3:
                     backToVendorManagement = true;
                     break;
                 default:
                     break;
+
+            }
+            if (backToVendorManagement != true) {
+                displayVendors();
             }
         }
     }
+}
 
      
-}
+

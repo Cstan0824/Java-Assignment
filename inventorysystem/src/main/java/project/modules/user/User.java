@@ -13,7 +13,8 @@ import project.global.SqlConnector;
 
 public abstract class User {
     //private data field can be only access by the class itself
-    SqlConnector Connector = new SqlConnector();
+    private final SqlConnector Connector = new SqlConnector();
+    private static Scanner scanner = new Scanner(System.in);
     private String userId;
     private String userName;
     private String userPassword;
@@ -24,9 +25,9 @@ public abstract class User {
     private String userType;
     private static String loggedInUserId;
     private String userAddress;
-    final String url = Connector.getUrl();
-    final String user = Connector.getUser();
-    final String password = ""; 
+    private final String url = Connector.getUrl();
+    private final String user = Connector.getUser();
+    private final String password = ""; 
 
     public User(String userId, String userName, String userPassword, String userEmail, String usertype) {
         this.userId = userId;
@@ -180,16 +181,18 @@ public abstract class User {
     {
         String sql = "UPDATE " + this.userType + " SET " + field + " = ? WHERE " + this.getUserType() + "_Id = ?";
 
-        SqlConnector Connector = new SqlConnector(); 
-        Connector.Connect();   
+        this.Connector.Connect();   
         
-        if(!Connector.isConnected())
+        if(!this.Connector.isConnected())
         {
             System.out.println("Connection failed");
             return;
         }
 
-        Boolean checking = Connector.PrepareExecuteDML(sql, value, this.getUserId());
+        Boolean checking = this.Connector.PrepareExecuteDML(sql, value, this.getUserId());
+
+        this.Connector.Disconnect();
+
 
         if(checking)
         {
@@ -205,18 +208,17 @@ public abstract class User {
     {
         String sql = "DELETE FROM " + this.userType + " WHERE " + this.getUserType() + "_Id = ?";
 
-        SqlConnector Connector = new SqlConnector(); 
-        Connector.Connect();   
+        this.Connector.Connect();   
         
-        if(!Connector.isConnected())
+        if(!this.Connector.isConnected())
         {
             System.out.println("Connection failed");
             return;
         }
 
-        Boolean checking = Connector.PrepareExecuteDML(sql, this.getUserId());
+        Boolean checking = this.Connector.PrepareExecuteDML(sql, this.getUserId());
 
-       
+        this.Connector.Disconnect();
 
         if(checking)
         {
@@ -228,45 +230,44 @@ public abstract class User {
         }
     }
 
-    public void handleLogin() // can work
-    { 
+    public boolean handleLogin() // can work
+    {
         final int MAX_ATTEMPTS = 3;
         int attempts = 0;
-    
-        try (Scanner scanner = new Scanner(System.in)) { 
-            while (attempts < MAX_ATTEMPTS) {
 
+        while (attempts < MAX_ATTEMPTS) {
+
+            //input user id and password
+            System.out.println("Enter " + this.getUserType() + " ID: ");
+            this.setUserId(scanner.nextLine());
+
+            while (!Validation.validateUserId(this.getUserId())) {
                 System.out.println("Enter " + this.getUserType() + " ID: ");
                 this.setUserId(scanner.nextLine());
+            }
 
-                while(!Validation.validateUserId(this.getUserId()))
-                {
-                    System.out.println("Enter " + this.getUserType() + " ID: ");
-                    this.setUserId(scanner.nextLine());
+            System.out.println("Enter " + this.getUserType() + " Password: ");
+            this.setUserPassword(scanner.nextLine());
+
+            //connect to database and check existence of user
+            try (Connection conn = DriverManager.getConnection(url, user, password)) {
+                if (conn == null || conn.isClosed()) {
+                    System.out.println("Failed to establish a connection.");
+                    return false;
                 }
 
-                System.out.println("Enter " + this.getUserType() + " Password: ");
-                this.setUserPassword(scanner.nextLine());
-
-                try (Connection conn = DriverManager.getConnection(url, user, password)) {
-                    if (conn == null || conn.isClosed()) {
-                        System.out.println("Failed to establish a connection.");
-                        return;
-                    }
-    
                 // for sucessful login 
-                String sql = "SELECT * FROM " + this.userType + " WHERE " + this.getUserType() + "_ID = ? AND " + this.getUserType() + "_Password = ?";
+                String sql = "SELECT * FROM " + this.userType + " WHERE " + this.getUserType() + "_ID = ? AND "
+                        + this.getUserType() + "_Password = ?";
                 // for fetching email and reg date
                 String sql1 = "SELECT * FROM " + this.userType + " WHERE " + this.getUserType() + "_ID = ?";
-    
-                
-    
+
                 try (PreparedStatement statement = conn.prepareStatement(sql)) {
                     statement.setString(1, this.getUserId());
                     statement.setString(2, this.getUserPassword());
-    
+
                     ResultSet resultSet = statement.executeQuery();
-    
+
                     if (!resultSet.next()) {
                         System.out.println("Invalid ID or password.");
                         System.out.println("You have " + (MAX_ATTEMPTS - attempts - 1) + " attempts left.");
@@ -279,7 +280,8 @@ public abstract class User {
 
                             if (resultSet1.next()) {
                                 this.setUserEmail(resultSet1.getString(this.getUserType() + "_Email"));
-                                this.setUserRegDate(resultSet1.getTimestamp(this.getUserType() + "_Reg_Date").toLocalDateTime());
+                                this.setUserRegDate(resultSet1.getTimestamp(this.getUserType() + "_Reg_Date")
+                                        .toLocalDateTime());
                             }
                         }
 
@@ -294,94 +296,90 @@ public abstract class User {
                     this.setUserRegDate(resultSet.getTimestamp(this.getUserType() + "_Reg_Date").toLocalDateTime());
 
                     System.out.println("Login successful.");
-                    setLoggedInUserId(this.userId);  // Set the logged-in user's ID
-                    this.UserMenu();
-                    break;  // Exit loop on successful logi
+                    setLoggedInUserId(this.userId); // Set the logged-in user's ID
+                    //this.UserMenu();
+                    return true; // Exit loop on successful logi
                 }
 
             } catch (SQLException e) {
                 System.out.println("SQL Error: " + e.getMessage());
             }
-        
+
         }
 
-    
-            if (attempts >= MAX_ATTEMPTS) {
-                System.out.println("Maximum attempts reached. Please try again later.");
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-    
-                System.out.println("1. Try again");
-                System.out.println("2. Forgot Password");
-                System.out.println("3. Exit");
-                System.out.print("Enter choice: ");
-                int choice = scanner.nextInt();
-                scanner.nextLine();  
-    
-                switch (choice) {
-                    case 1:
-                        attempts = 0;  
-                        handleLogin();
-                    case 2:
-                        this.generateOTP();
-                        this.handleOTP();
-                        this.verifyOTP();
-                        break;
-                    case 3:
-                        System.out.println("Exiting...");
-                        System.exit(0);
-                        break;
-                    default:
-                        System.out.println("Invalid choice.");
-                        return;
-                }
+        // Case 3: Maximum attempts reached
+        if (attempts >= MAX_ATTEMPTS) {
+            System.out.println("Maximum attempts reached. Please try again later.");
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                System.out.println("Thread interrupted.");
             }
-        
+
+            System.out.println("1. Try again");
+            System.out.println("2. Forgot Password");
+            System.out.println("3. Exit");
+            System.out.print("Enter choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    handleLogin();
+                    break;
+                case 2:
+                    this.generateOTP();
+                    this.handleOTP();
+                    this.verifyOTP();
+                    break;
+                case 3:
+                    System.out.println("Exiting...");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
         }
+
+        return false;
     }
 
-    public void generateOTP() // can work
-    { 
+
+    private void generateOTP() // can work
+    {
 
         // Generate a random 6-digit OTP
         int otp = (int) (Math.random() * 900000) + 100000;
         this.otpCode = Integer.toString(otp);
-        this.otpExpiry = LocalDateTime.now().plusSeconds(1000); 
+        this.otpExpiry = LocalDateTime.now().plusSeconds(1000);
 
         //insert into database 
-        SqlConnector Connector = new SqlConnector(); 
-        Connector.Connect();   
-            
-            if(!Connector.isConnected())
-            {
-                System.out.println("Connection failed");
-                return;
-            }
+        this.Connector.Connect();
 
-        
-        String query = "Update " + this.userType + " set otp_code = ?, otp_expiry = ? where " + this.userType + "_Id = ?" ;
-
-
-        Boolean checking = Connector.PrepareExecuteDML(query,this.otpCode,this.otpExpiry,this.getUserId());
-
-        if(checking)
-        {
-            System.out.println("OTP generated successfully.");
+        if (!this.Connector.isConnected()) {
+            System.out.println("Connection failed");
+            return;
         }
-        else
-        {
+
+        String query = "Update " + this.userType + " set otp_code = ?, otp_expiry = ? where " + this.userType
+                + "_Id = ?";
+
+        Boolean checking = this.Connector.PrepareExecuteDML(query, this.otpCode, this.otpExpiry, this.getUserId());
+
+        this.Connector.Disconnect();
+
+        if (checking) {
+            System.out.println("OTP generated successfully.");
+        } else {
             System.out.println("OTP generation failed.");
         }
-        
+
     }
 
-    public void verifyOTP() //  can work
+    private void verifyOTP() //  can work
     {  
         
-        Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter the OTP sent to your email: ");
         String userOTP = scanner.nextLine();
@@ -428,18 +426,17 @@ public abstract class User {
                 Thread.sleep(3000);
                 handleLogin();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.out.println("Thread interrupted.");
             }
         }
         else{
             System.out.println("Invalid OTP. Please try again.");
         }
 
-        scanner.close();
 
     }
 
-    public void handleOTP()
+    private void handleOTP()
     {
         System.out.println(this.otpCode);
         MailSender mail = new MailSender(
