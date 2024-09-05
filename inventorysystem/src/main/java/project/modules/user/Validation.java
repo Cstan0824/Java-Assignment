@@ -14,12 +14,6 @@ public class Validation {
         }
     }
 
-    //String
-    //Integer range
-    //Date Checking
-
-
-
     public static boolean validateUserName(String userName) {
         if(userName.matches("^[a-zA-Z0-9]{6,20}$")) 
         {
@@ -34,7 +28,7 @@ public class Validation {
     }
 
     public static boolean validateUserPassword(String userPassword) {
-        if(userPassword.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,20}$")) 
+        if(userPassword.matches("^(?=.*[@#$%^&+=])(?=\\S+$).{5,}$"))
         {
             return true;
         }

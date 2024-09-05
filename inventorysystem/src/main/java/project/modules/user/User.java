@@ -324,7 +324,6 @@ public abstract class User {
                         attempts = 0;  
                         handleLogin();
                     case 2:
-                   
                         this.generateOTP();
                         this.handleOTP();
                         this.verifyOTP();
@@ -447,7 +446,6 @@ public abstract class User {
             new MailTemplate(this.otpCode, MailTemplate.TemplateType.OTP));
         mail.Send();
     }
-
 
 
     public void displayUserDetails() {  // can work
