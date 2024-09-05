@@ -2,6 +2,7 @@ package project.view;
 
 import java.util.Scanner;
 
+import project.global.UserInputHandler;
 import project.modules.user.Admin;
 import project.modules.user.Retailer;
 import project.modules.user.User;
@@ -11,15 +12,6 @@ public class ViewUser {
     private static User user;
 
     private static Scanner scanner = new Scanner(System.in);
-
-    //getter and setter
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User _user) {
-        user = _user;
-    }
 
     //method
     public void menu() {
@@ -32,11 +24,11 @@ public class ViewUser {
 
         switch (choice) {
             case 1:
-                Admin admin = new Admin();
-                if (admin.handleLogin()) {
+                user = new Admin();
+                if (user.handleLogin()) {
                     System.out.println("Login successful.");
-                    admin.UserMenu();
-                } 
+                    AdminAccess();
+                }
                 break;
             case 2:
                 retailerLog();
@@ -49,31 +41,97 @@ public class ViewUser {
     }
 
     private void retailerLog() {
-        Retailer retailer = new Retailer();
-        System.out.println("1. Login");
-        System.out.println("2. Register");
-        System.out.println("Enter choice (1-2): ");
+        boolean back = false;
+        while (!back) {
+            System.out.println("1. Login");
+            System.out.println("2. Register");
+            System.out.println("3. Back");
+            System.out.println("Enter choice (1-2): ");
 
-        int choice2 = scanner.nextInt();
-
-        switch (choice2) {
-            case 1:
-                if (retailer.handleLogin()) {
-                    retailer.UserMenu();
-                    System.out.println("Login successful.");
-                }
-                break;
-            case 2:
-                retailer.Register();
-                break;
-            default:
-                System.out.println("Invalid choice.");
-                break;
+            switch (UserInputHandler.getInteger("Enter choice", 1, 2)) {
+                case 1:
+                    if (user.handleLogin()) {
+                        RetailerAccess();
+                        user.UserMenu();
+                        System.out.println("Login successful.");
+                    }
+                    break;
+                case 2:
+                    (new Retailer()).Register();
+                    break;
+                case 3:
+                    back = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
         }
     }
 
     private void RetailerAccess() {
-        System.out.println("1. Purchase Management (Sales Order - remove ini)");
-        
+        boolean logOut = false;
+        while (!logOut) {
+            System.out.println("1. Profile Management"); //Retailer
+            System.out.println("2. Purchase Management"); // Sales Order
+            System.out.println("3. log out");
+
+            switch (UserInputHandler.getInteger("Enter choice", 1, 3)) {
+                case 1:
+                    user.UserMenu();
+                    break;
+                case 2:
+                    ViewSalesManagement viewSalesManagement = new ViewSalesManagement(user);
+                    viewSalesManagement.userMenu();
+                    break;
+                case 3:
+                    logOut = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
+        }
+    }
+
+    private void AdminAccess() {
+        boolean logOut = false;
+        while (!logOut) {
+            System.out.println("1. Admin & Retailer Management"); //Admin and Retailer
+            System.out.println("2. Vendor Management"); //Vendor
+            System.out.println("3. Item Management"); //Item，Auto Replenishment
+            System.out.println("4. Purchase Management");//PO, GRN
+            System.out.println("5. Schedule Management"); //DO, Schedule, Vehicle Management
+            System.out.println("6. Report Management"); //Report
+            System.out.println("7. log out");
+
+            switch (UserInputHandler.getInteger("Enter choice", 1, 8)) {
+                case 1:
+                    user.UserMenu();
+                    break;
+                case 2:
+                    ViewVendor viewVendor = new ViewVendor(user);
+                    viewVendor.menu();
+                case 3:
+                    ViewItem viewItem = new ViewItem(user);
+                    viewItem.menu();
+                    break;
+                case 4:
+                    ViewPurchaseManagement viewPurchaseManagement = new ViewPurchaseManagement(user);
+                    viewPurchaseManagement.menu();
+                    break;
+                case 5:
+                    ViewScheduleManagement viewScheduleManagement = new ViewScheduleManagement(user);
+                    viewScheduleManagement.adminMenu();
+                    break;
+                case 6:
+                    ViewReport viewReport = new ViewReport(user);
+                    viewReport.menu();
+                    break;
+                case 7:
+                    logOut = true;
+                    break;
+            }
+        }
     }
 }
