@@ -10,6 +10,7 @@ import java.util.Scanner;
 import project.global.MailSender;
 import project.global.MailTemplate;
 import project.global.SqlConnector;
+import project.global.SystemRunNo;
 
 public abstract class User {
     //private data field can be only access by the class itself
@@ -466,6 +467,10 @@ public abstract class User {
         if(this.getUserType().equals("Retailer")) {
             System.out.println("Retailer Address: " + this.getUserAddress());
         }
+    }
+    
+    public String generateUserId(String _prefix) {
+        return _prefix + String.format("%05d", SystemRunNo.Get(_prefix));
     }
 
 

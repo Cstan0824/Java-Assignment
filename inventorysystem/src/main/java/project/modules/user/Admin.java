@@ -9,7 +9,7 @@ import project.global.SqlConnector;
 
 
 public class Admin extends User {
-
+    private static Scanner scanner = new Scanner(System.in);
 
     public Admin(String userId, String userName, String userPassword, String userEmail, String usertype) {
         super(userId, userName, userPassword, userEmail, usertype);
@@ -24,19 +24,7 @@ public class Admin extends User {
 
     public void createAdmin()  // can work , validated  ,  redirected
     {
-        Scanner scanner = new Scanner(System.in);
-        boolean idExists ;   
-
-        do {
-            System.out.println("Enter Admin ID: ");
-            this.setUserId(scanner.nextLine()); 
-            idExists = this.Get();    
-    
-            if (idExists) {
-                System.out.println("Admin ID already exists. Please enter a different ID.");
-            }
-
-        } while (idExists || !Validation.validateUserId(this.getUserId())); 
+        this.setUserId(super.generateUserId("A"));
 
         System.out.println("Enter Admin Name: ");
         this.setUserName(scanner.nextLine());
@@ -73,14 +61,12 @@ public class Admin extends User {
             redirectToMenu(scanner);
         }
 
-        scanner.close();
 
        
     }
     
     public void searchAdmin() //can work , validated ,  redirected
     {
-        Scanner scanner = new Scanner(System.in);
 
         do{
 
@@ -113,12 +99,11 @@ public class Admin extends User {
 
     public void deleteAdmin() // can work , validated , X redirect
     {
-        Scanner sc = new Scanner(System.in);
         do {
 
             System.out.println("Enter Admin ID to delete: ");
-            //adminID = sc.nextLine();
-            this.setUserId(sc.nextLine());
+            //adminID = scanner.nextLine();
+            this.setUserId(scanner.nextLine());
             //User selectedAdmin = new Admin(adminID);
             //selectedAdmin.Get();
             //selectedAdmin.Remove();
@@ -129,42 +114,42 @@ public class Admin extends User {
             System.out.println("Admin ID does not exist.");
 
             System.out.println("Try again? (Y/N): ");
-            String choice = sc.nextLine();
+            String choice = scanner.nextLine();
 
             if (choice.equalsIgnoreCase("Y")) {
                 deleteAdmin();
             } else {
-                redirectToMenu(sc);
+                redirectToMenu(scanner);
             }
 
             return;  
         } 
         else if (this.getUserId().equals(User.getLoggedInUserId())) {
             System.out.println("Error: You cannot delete your own account while logged in.");
-            redirectToMenu(sc);
+            redirectToMenu(scanner);
             return; 
         } 
     
         displayUserDetails();
     
         System.out.println("Are you sure you want to delete this Admin (Y/N): ");
-        String choice = sc.nextLine();
+        String choice = scanner.nextLine();
     
         if (choice.equalsIgnoreCase("Y")) {
             this.Remove();
             System.out.println("Admin account deleted successfully.");
 
             System.out.println("Do you want to delete another Admin? (Y/N): ");
-            String choice2 = sc.nextLine();
+            String choice2 = scanner.nextLine();
 
             if (choice2.equalsIgnoreCase("Y")) {
                 deleteAdmin();
             } else {
-                redirectToMenu(sc);
+                redirectToMenu(scanner);
             }
        } else {
             System.out.println("Operation cancelled.");
-            redirectToMenu(sc);
+            redirectToMenu(scanner);
 
         }
     
@@ -173,7 +158,6 @@ public class Admin extends User {
 
     public void UpdateAdmin() // can work
     {
-        Scanner scanner = new Scanner(System.in);
 
         do{
                 System.out.println("Enter Admin ID: ");
@@ -213,8 +197,8 @@ public class Admin extends User {
             int choice = scanner.nextInt();
             scanner.nextLine();
     
-            String field = "";
-            String value = "";
+            String field;
+            String value;
     
             switch (choice) {
                 case 1:
@@ -257,7 +241,6 @@ public class Admin extends User {
         }
 
         redirectToMenu(scanner);
-        scanner.close();
     }
 
    
@@ -284,7 +267,6 @@ public class Admin extends User {
 
     @Override
     public  void UserMenu(){
-        Scanner scanner = new Scanner(System.in);
 
         User user =  new Retailer();
         Retailer retailer  =  (Retailer) user ;
@@ -332,7 +314,6 @@ public class Admin extends User {
 
     public void Notification() {
         ArrayList<Request> pendingRequests = Request.viewRequest();
-        Scanner scanner = new Scanner(System.in);
 
         if (pendingRequests != null && !pendingRequests.isEmpty()) {
             System.out.println("Enter Request ID to further proceed: ");
@@ -385,21 +366,19 @@ public class Admin extends User {
                 redirectToMenu(scanner);
             }
 
-            scanner.close();
         } else {
             System.out.println("No pending requests found.");
             redirectToMenu(scanner);
         }
-        scanner.close();
 
 
         
     }
 
 
-    private void redirectToMenu(Scanner sc) {
+    private void redirectToMenu(Scanner scanner) {
         System.out.println("Do you want to return to the main menu? (Y/N): ");
-        String choice = sc.next();
+        String choice = scanner.next();
         if (choice.equalsIgnoreCase("Y")) {
             UserMenu();
         } else {

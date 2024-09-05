@@ -11,7 +11,7 @@ public class ViewUser {
 
     private static User user;
 
-    private static Scanner scanner = new Scanner(System.in);
+    private final static Scanner scanner = new Scanner(System.in);
 
     //method
     public void menu() {
@@ -31,6 +31,7 @@ public class ViewUser {
                 }
                 break;
             case 2:
+                user = new Retailer();
                 retailerLog();
                 break;
             default:
@@ -46,7 +47,6 @@ public class ViewUser {
             System.out.println("1. Login");
             System.out.println("2. Register");
             System.out.println("3. Back");
-            System.out.println("Enter choice (1-2): ");
 
             switch (UserInputHandler.getInteger("Enter choice", 1, 2)) {
                 case 1:

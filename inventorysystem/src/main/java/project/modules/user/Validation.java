@@ -4,7 +4,7 @@ public class Validation {
     //validation for all data field 
 
     public static  boolean validateUserId(String userId) { 
-        if(userId.matches("^[ARV][0-9]{2}[1-9]{1}$")) {
+        if (userId.matches("^[ARV][0-9]{5}$")) {
             return true;
         } 
         else 
