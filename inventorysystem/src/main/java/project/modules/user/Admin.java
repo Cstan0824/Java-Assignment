@@ -1,5 +1,10 @@
 package project.modules.user;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -65,37 +70,7 @@ public class Admin extends User {
        
     }
     
-    public void searchAdmin() //can work , validated ,  redirected
-    {
-
-        do{
-
-            System.out.println("Enter Admin ID: ");
-            this.setUserId(scanner.nextLine());
-
-        }while(!Validation.validateUserId(this.getUserId()));
-
-        if (this.Get()) {  
-
-            this.displayUserDetails(); 
-
-            System.out.println("Do you want to search for another Admin? (Y/N): ");
-            String choice = scanner.next();
-
-            if (choice.equalsIgnoreCase("Y")) {
-                searchAdmin();
-            } else {
-                redirectToMenu(scanner);
-            }
-
-
-        } else {
-
-            System.out.println("Admin ID does not exist."); 
-            redirectToMenu(scanner);
-
-        }
-    }
+   
 
     public void deleteAdmin() // can work , validated , X redirect
     {
@@ -289,7 +264,8 @@ public class Admin extends User {
                 createAdmin();
                 break;
               case 2:
-                searchAdmin();
+                displayAllUsers();
+                redirectToMenu(scanner);
                 break;
               case 3:
                 UpdateAdmin();

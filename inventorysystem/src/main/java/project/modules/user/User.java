@@ -355,6 +355,51 @@ public abstract class User {
         return false;
     }
 
+    public void displayAllUsers() // can work
+    {
+
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            if (conn == null || conn.isClosed()) {
+                System.out.println("Failed to establish a connection.");
+                return;
+            }
+            
+            String sql = "SELECT " + this.userType + "_ID," + this.userType + "_Name," + this.userType + "_Password," + this.userType + "_Email," + this.userType + "_Reg_Date " + "FROM " + this.userType;
+    
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+    
+                ResultSet result = statement.executeQuery();
+                
+                if (!result.isBeforeFirst()) {
+                    System.out.println("No users found.");
+                    return;
+                }
+
+                System.out.printf("%-10s | %-20s | %-30s | %-25s | %-10s%n", this.userType + " ID",this.userType + " Name", this.userType + " Email", this.userType + " Registration Date", this.userType + " Password");
+                System.out.println("--------------------------------------------------------------------------------------------------------------");
+                
+                while (result.next()) {
+    
+                    String userId = result.getString(1);
+                    String userName = result.getString(2);
+                    String userPassword = result.getString(3);
+                    String userEmail = result.getString(4);
+                    LocalDateTime userRegDate = result.getTimestamp(5).toLocalDateTime();
+    
+                    // Display the user details
+                    System.out.printf("%-10s | %-20s | %-30s | %-25s | %-10s%n", userId, userName, userEmail, userPassword , userRegDate);
+
+                }
+                
+            } catch (SQLException e) {
+                System.out.println("SQL Error: " + e.getMessage());
+            }
+    
+        } catch (SQLException e) {
+            System.out.println("Connection Error: " + e.getMessage());
+        }
+    
+    }
 
     private void generateOTP() // can work
     {
