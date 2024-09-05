@@ -288,17 +288,26 @@ public abstract class User {
                         continue; // Go for next login attempt
                     }
 
-                    // Case 2: Successful Login
-                    this.setUserId(resultSet.getString(this.getUserType() + "_ID"));
-                    this.setUserName(resultSet.getString(this.getUserType() + "_Name"));
-                    this.setUserPassword(resultSet.getString(this.getUserType() + "_Password"));
-                    this.setUserEmail(resultSet.getString(this.getUserType() + "_Email"));
-                    this.setUserRegDate(resultSet.getTimestamp(this.getUserType() + "_Reg_Date").toLocalDateTime());
+                    if (this.userType.equals("Retailer")) {
+                        this.setUserId(resultSet.getString("Retailer_ID"));
+                        this.setUserName(resultSet.getString("Retailer_Name"));
+                        this.setUserPassword(resultSet.getString("Retailer_Password"));
+                        this.setUserEmail(resultSet.getString("Retailer_Email"));
+                        this.setUserRegDate(resultSet.getTimestamp("Retailer_Reg_Date").toLocalDateTime());
+                        this.setUserAddress(resultSet.getString("Retailer_Address"));  // Only Retailer has this field
 
+                    } else if (this.userType.equals("Admin")) {
+                        this.setUserId(resultSet.getString("Admin_ID"));
+                        this.setUserName(resultSet.getString("Admin_Name"));
+                        this.setUserPassword(resultSet.getString("Admin_Password"));
+                        this.setUserEmail(resultSet.getString("Admin_Email"));
+                        this.setUserRegDate(resultSet.getTimestamp("Admin_Reg_Date").toLocalDateTime());
+                        
+                    }
+                    
                     System.out.println("Login successful.");
-                    setLoggedInUserId(this.userId); // Set the logged-in user's ID
-                    //this.UserMenu();
-                    return true; // Exit loop on successful logi
+                    setLoggedInUserId(this.userId);  // Set the logged-in user's ID
+                    return true;  // Exit loop on successful login
                 }
 
             } catch (SQLException e) {
@@ -452,8 +461,14 @@ public abstract class User {
         System.out.println(this.getUserType()+" Name: " + this.getUserName());
         System.out.println(this.getUserType()+" Email: " + this.getUserEmail());
         System.out.println(this.getUserType()+" Password: " + this.getUserPassword());
-        System.out.println(this.getUserType()+" Registration Date: " + this.getUserRegDate());        
+        System.out.println(this.getUserType()+" Registration Date: " + this.getUserRegDate());     
+        
+        if(this.getUserType().equals("Retailer")) {
+            System.out.println("Retailer Address: " + this.getUserAddress());
+        }
     }
+
+
 
 
 

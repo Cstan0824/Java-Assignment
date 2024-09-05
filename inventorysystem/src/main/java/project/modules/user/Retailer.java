@@ -116,6 +116,7 @@ public class Retailer extends User {
     public void viewRetailer() {
         System.out.println("This is your Retailer Details: ");
         displayUserDetails();
+        redirectToMenu(new Scanner(System.in));
         
     }
 
@@ -176,8 +177,7 @@ public class Retailer extends User {
         
         
             super.displayUserDetails();
-            
-            
+
 
             boolean continueEditing = true;
 

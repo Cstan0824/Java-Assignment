@@ -198,11 +198,12 @@ public class Admin extends User {
         
 
         boolean continueEditing = true;
+        
+        displayUserDetails();
 
 
         while (continueEditing) {
 
-            displayUserDetails();
 
             System.out.println("Which field would you like to update?");
             System.out.println("1. Admin Name");
