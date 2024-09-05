@@ -113,24 +113,13 @@ public class Retailer extends User {
 
     }
 
-    public void searchRetailer() {
-
-        try (Scanner sc = new Scanner(System.in)) {
-            System.out.println("Enter Retailer ID: ");
-            this.setUserId(sc.nextLine()); 
+    public void viewRetailer() {
+        System.out.println("This is your Retailer Details: ");
+        displayUserDetails();
         
-
-            if (this.Get()) {  
-
-                this.displayUserDetails(); 
-                redirectToMenu(sc);
-
-            } else {
-
-                System.out.println("Admin ID does not exist.");  
-            }
-        }
     }
+
+   
 
     public void deleteRetailer() {  //can work
 
@@ -185,21 +174,9 @@ public class Retailer extends User {
     public void UpdateRetailer() {
         try (Scanner scanner = new Scanner(System.in)) {
         
-            do{
-                System.out.println("Enter Retailer ID: ");
-                this.setUserId(scanner.nextLine());
-                
-            }while (!Validation.validateUserId(this.getUserId()));
-
-            if (!Get()){
-
-                System.out.println("Retailer ID does not exist.");
-                redirectToMenu(scanner);
-                
-            }
-            else{
-                super.displayUserDetails();
-            }
+        
+            super.displayUserDetails();
+            
             
 
             boolean continueEditing = true;
@@ -284,7 +261,7 @@ public class Retailer extends User {
 
         switch (choice) {
             case 1:
-                searchRetailer();
+                viewRetailer();
                 break;
             case 2:
                 UpdateRetailer();
