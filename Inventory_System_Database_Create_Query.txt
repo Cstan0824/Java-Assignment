@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS SCHEDULE;
 DROP TABLE IF EXISTS VEHICLE;
 DROP TABLE IF EXISTS VENDOR;
 DROP TABLE IF EXISTS Item_Category;
+DROP TABLE IF EXISTS REQUEST;
 
 CREATE TABLE Sys_RunNo (
   Sys_Prefix VARCHAR(10) NOT NULL,
@@ -82,6 +83,7 @@ CREATE TABLE Schedule (
   Vehicle_Plate VARCHAR(15) NOT NULL,
   Time_Slot TIME NOT NULL,
   Schedule_Date DATE NOT NULL,
+  Status INT NOT NULL,
   PRIMARY KEY (Schedule_ID),
   FOREIGN KEY (Vehicle_Plate) REFERENCES Vehicle(Vehicle_Plate)
   -- Removed foreign key reference to Transaction since Doc_No is not guaranteed to be unique
@@ -112,3 +114,14 @@ CREATE TABLE Transaction (
   PRIMARY KEY (Item_ID, Doc_No),
   FOREIGN KEY (Item_ID) REFERENCES Item(Item_ID)
 );
+
+CREATE TABLE `request` (
+  `Request_ID` int(128) NOT NULL,
+  `Retailer_ID` varchar(128) NOT NULL,
+  `Retailer_Name` varchar(128) NOT NULL,
+  `Retailer_Email` varchar(128) NOT NULL,
+  `Retailer_Password` varchar(128) NOT NULL,
+  `Retailer_Address` varchar(128) NOT NULL,
+  `Status` varchar(128) NOT NULL,
+  `Retailer_Entry_Id` varchar(255) DEFAULT NULL
+)

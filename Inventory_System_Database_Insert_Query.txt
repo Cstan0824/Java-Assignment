@@ -36,8 +36,8 @@ INSERT INTO Vehicle (Vehicle_Plate, Vehicle_Type,Driver) VALUES
 ('XYZ789', 'Van','Liau Orang Utan'),
 ('LMN456', 'SUV','Cstantan');
 
-INSERT INTO Schedule (Doc_No, Vehicle_Plate, Time_Slot, Schedule_Date) VALUES
-('DO00001','ABC123', '08:00:00', '2024-08-15');
+INSERT INTO Schedule (Doc_No, Vehicle_Plate, Time_Slot, Schedule_Date, Status) VALUES
+('DO00001','ABC123', '08:00:00', '2024-08-15', 0);
 
 INSERT INTO Retailer (Retailer_ID, Retailer_Name, Retailer_Password, Retailer_Email, OTP_Code, Retailer_Reg_Date, Retailer_Address, Retailer_Created_By) VALUES
 ('R00001', 'Retailer One', 'retail123', 'retailer1@example.com', '123456', CURRENT_DATE, '123 Retail St, Cityville', 'Admin'),
@@ -54,3 +54,7 @@ INSERT INTO Transaction (Item_ID, Doc_No, Source_Doc_No, Transaction_Date, Quant
 INSERT INTO AutoReplenishment (Item_ID, Item_Threshold) VALUES
 (2, 200),
 (3, 150);
+
+INSERT INTO `request` (`Request_ID`, `Retailer_ID`, `Retailer_Name`, `Retailer_Email`, `Retailer_Password`, `Retailer_Address`, `Status`, `Retailer_Entry_Id`) VALUES
+(1, 'R007', 'djvbjkad', 'dbvkja', 'aaaAAA@123', 'dkjabv', 'Approved', NULL),
+(2, 'R008', 'hfjasjv', 'dkjsnvld', 'Password@123', 'vndklsnv', 'Approved', NULL);
