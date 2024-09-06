@@ -3,6 +3,7 @@ package project.view;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import project.global.UserInputHandler;
 import project.modules.schedule.Schedule;
 import project.modules.user.Admin;
 import project.modules.user.Retailer;
@@ -111,8 +112,7 @@ public class ViewSchedule {
 
             do {
                 System.out.println("Enter Schedule ID: ");
-                int scheduleID = sc.nextInt();
-                sc.nextLine();
+                int scheduleID = UserInputHandler.validateInteger(sc, "Enter Schedule ID: ", 1, Integer.MAX_VALUE);
                 selectedSchedule = Schedule.Get(scheduleID);
                 if (selectedSchedule == null) {
                     System.out.println("Schedule not found. Please try again.");

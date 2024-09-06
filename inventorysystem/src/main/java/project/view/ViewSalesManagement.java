@@ -226,7 +226,7 @@ public class ViewSalesManagement {
             do {
             Item item = viewItem.selectItemFromList();
             SalesOrder salesOrder = new SalesOrder(docNo, item);
-            salesOrder.setQuantity(getValidatedQuantity());
+            salesOrder.setQuantity(UserInputHandler.validateInteger(sc, "Enter Quantity (must be greater than 0): ", 1, 1000000));
             salesOrder.setTransaction_Recipient(user.getUserId());
             salesOrder.setTransaction_Modified_By(user.getUserId());
             salesOrder.setTransaction_Created_By(user.getUserId());
@@ -263,8 +263,7 @@ public class ViewSalesManagement {
             do {
                 do { 
                     System.out.println("Enter Item ID: "); 
-                    int itemId = sc.nextInt(); 
-                    sc.nextLine(); 
+                    int itemId = UserInputHandler.validateInteger(sc, "Enter Item ID: ", 1, 1000000);
 
                     Item item = new Item(itemId);
                     item.Get();
@@ -275,8 +274,7 @@ public class ViewSalesManagement {
                         String choice;
                         do{
                             System.out.println("Enter New Item Quantity: ");
-                            int quantity = sc.nextInt();
-                            sc.nextLine(); // Consume the newline character
+                            int quantity = UserInputHandler.validateInteger(sc, "Enter New Item Quantity: ", 0, 1000000);
                             salesOrder.setQuantity(quantity);
 
                             salesOrder.setTransaction_Modified_By(user.getUserId());
@@ -353,23 +351,6 @@ public class ViewSalesManagement {
     //display design methods
     private static void normalTableLine(){
         System.out.println("-------------------------------------------------------------------------------------------------------------------------------");
-    }
-
-    private int getValidatedQuantity() {
-        int quantity;
-        do {
-            System.out.print("Enter Quantity (must be greater than 0): ");
-            while (!sc.hasNextInt()) {
-                System.out.println("Invalid input. Please enter a valid number.");
-                sc.next(); // Consume the invalid input
-            }
-            quantity = sc.nextInt();
-            sc.nextLine(); // Consume newline
-            if (quantity <= 0) {
-                System.out.println("Quantity must be greater than 0.");
-            }
-        } while (quantity <= 0);
-        return quantity;
     }
 
     

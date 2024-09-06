@@ -11,6 +11,7 @@ import project.global.MailSender;
 import project.global.MailTemplate;
 import project.global.SqlConnector;
 import project.global.SystemRunNo;
+import project.global.UserInputHandler;
 
 public abstract class User {
     //private data field can be only access by the class itself
@@ -330,8 +331,7 @@ public abstract class User {
             System.out.println("2. Forgot Password");
             System.out.println("3. Exit");
             System.out.print("Enter choice: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            int choice = UserInputHandler.validateInteger(scanner, "Enter choice", 1, 3);
 
             switch (choice) {
                 case 1:

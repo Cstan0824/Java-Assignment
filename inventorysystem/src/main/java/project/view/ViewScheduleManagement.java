@@ -295,7 +295,6 @@ public class ViewScheduleManagement {
             System.out.println("5. Exit");
             System.out.print("Choose your actions: ");
             int choice = UserInputHandler.validateInteger(sc, "Choose your actions: ", 1, 5);
-            sc.nextLine();
             switch (choice) {
                 case 1:
                     viewVehicleRecords();
@@ -523,7 +522,6 @@ public class ViewScheduleManagement {
             // User input to select the time slot
             System.out.print("\nEnter the index number of the time slot you choose: ");
             index = UserInputHandler.validateInteger(sc, "Enter the index number of the time slot you choose: ", 1, 5);
-            sc.nextLine(); // Consume the newline character
             
             if (index >= 1 && index <= 5) {
                 LocalTime selectedTimeSlot = timeSlots[index - 1];

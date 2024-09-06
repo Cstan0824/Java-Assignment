@@ -1,15 +1,11 @@
 package project.modules.user;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import project.global.SqlConnector;
+import project.global.UserInputHandler;
 
 
 
@@ -170,8 +166,8 @@ public class Admin extends User {
             System.out.println("2. Admin Password");
             System.out.println("3. Admin Email");
             System.out.print("Enter choice (1-3): ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            int choice = UserInputHandler.validateInteger(scanner, "Enter choice", 1, 3);
+            
     
             String field;
             String value;
@@ -256,8 +252,7 @@ public class Admin extends User {
           System.out.println("7. Notification Retailer");
           System.out.println("8. Exit");
           System.out.print("Enter choice: ");
-          int choice = scanner.nextInt();
-          scanner.nextLine();
+          int choice = UserInputHandler.validateInteger(scanner, "Enter choice", 1, 8);
 
   
           switch (choice) {
@@ -294,7 +289,7 @@ public class Admin extends User {
 
         if (pendingRequests != null && !pendingRequests.isEmpty()) {
             System.out.println("Enter Request ID to further proceed: ");
-            int requestId = scanner.nextInt();
+            int requestId = UserInputHandler.validateInteger(scanner, "Enter Request ID", 1, Integer.MAX_VALUE);
 
             Request selectedRequest = null;
             for (Request req : pendingRequests) {

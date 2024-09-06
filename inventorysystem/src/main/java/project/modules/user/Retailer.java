@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Scanner;
 
 import project.global.SqlConnector;
+import project.global.UserInputHandler;
 
 public class Retailer extends User {
 
@@ -165,8 +166,7 @@ public class Retailer extends User {
                 System.out.println("3. Retailer Email");
                 System.out.println("4. Retailer Address");
                 System.out.print("Enter choice (1-4): ");
-                int choice = scanner.nextInt();
-                scanner.nextLine();
+                int choice = UserInputHandler.validateInteger(scanner, "Enter choice", 1, 4);
 
                 String field;
                 String value;
@@ -226,7 +226,7 @@ public class Retailer extends User {
         System.out.println("2. Update Retailer");
         System.out.println("3. Exit");
         System.out.print("Enter choice: ");
-        int choice = scanner.nextInt();
+        int choice = UserInputHandler.validateInteger(scanner, "Enter choice", 1, 3);
 
         switch (choice) {
             case 1:
