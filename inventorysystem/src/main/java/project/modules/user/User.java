@@ -231,7 +231,7 @@ public abstract class User {
         }
     }
 
-    public boolean handleLogin() // can work
+    public boolean handleLogin()
     {
         final int MAX_ATTEMPTS = 3;
         int attempts = 0;
