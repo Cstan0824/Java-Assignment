@@ -1,6 +1,7 @@
 package project.modules.transaction;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 
 import project.global.CrudOperation;
@@ -211,8 +212,10 @@ public class AutoReplenishment implements CrudOperation {
         purchaseOrder.Add();
 
         //Generate PDF
+        URL resource = AutoReplenishment.class.getClassLoader()
+                    .getResource("project/global/Pdf");
         File file = new File(
-                "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
+                resource.getPath().replace("%20", " "),
                 _PoNo + ".pdf");
 
         PdfConverter pdf = new PdfConverter(file,

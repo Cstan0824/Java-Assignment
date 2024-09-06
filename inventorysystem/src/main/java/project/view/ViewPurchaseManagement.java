@@ -1,6 +1,7 @@
 package project.view;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -140,8 +141,10 @@ public class ViewPurchaseManagement {
 
         // Send email to vendors
         for (Map.Entry<Vendor, ArrayList<Transaction>> entry : orders.entrySet()) {
+            URL resource = getClass().getClassLoader()
+                    .getResource("project/Report");
             file = new File(
-                    "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
+                    resource.getPath().replace("%20", " "),
                     entry.getValue().get(0).getDoc_No() + ".pdf");
             pdf = new PdfConverter(file,
                     new PdfTemplate(entry.getValue(), PdfTemplate.TemplateType.PURCHASE_ORDER));
@@ -295,8 +298,10 @@ public class ViewPurchaseManagement {
         File file;
         PdfConverter pdf;
         for (Map.Entry<Vendor, ArrayList<Transaction>> entry : orders.entrySet()) {
+            URL resource = getClass().getClassLoader()
+                    .getResource("project/Report");
             file = new File(
-                    "C:/Cstan/TARUMT Course/DIPLOMA IN INFORMATION TECHNOLOGY/YEAR2/Y2S1/Object Oriented Programming/Java-Assignment/inventorysystem/src/main/java/project/global/Pdf",
+                    resource.getPath().replace("%20", " "),
                     entry.getValue().get(0).getDoc_No() + ".pdf");
             pdf = new PdfConverter(file,
                     new PdfTemplate(entry.getValue(), PdfTemplate.TemplateType.PURCHASE_ORDER));
