@@ -235,6 +235,8 @@ public class Retailer extends User {
             case 2:
                 UpdateRetailer();
                 break;
+            case 3:
+                return;
             default:
                 System.out.println("Invalid choice.");
                 UserMenu();

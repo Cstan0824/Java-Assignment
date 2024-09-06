@@ -97,8 +97,7 @@ public class ViewSalesManagement {
                     orderCancellation();
                     break;
                 case 5:
-                    System.exit(1);
-                    break;
+                    return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     break;
@@ -125,8 +124,7 @@ public class ViewSalesManagement {
                     viewOrderRecords();
                     break;
                 case 3:
-                    System.exit(1);
-                    break;
+                    return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     break;
@@ -144,8 +142,14 @@ public class ViewSalesManagement {
             do {
                 ArrayList<SalesOrder> salesOrders = viewSalesOrder.selectSalesOrderFromList();
                 if (salesOrders == null || salesOrders.isEmpty()){
-                    System.out.println("No Sales Order found.");
-                    error = true;
+                    if (user.getUserType().equals("Admin")) {
+                        System.out.println("No Sales Order found.");
+                        error = true;
+                    }
+                    if (user.getUserType().equals("Retailer")) {
+                        System.out.println("No Sales Order found.");
+                        return;
+                    }
                 }
             }while (error);
 
@@ -226,6 +230,7 @@ public class ViewSalesManagement {
             salesOrder.setTransaction_Recipient(user.getUserId());
             salesOrder.setTransaction_Modified_By(user.getUserId());
             salesOrder.setTransaction_Created_By(user.getUserId());
+            
 
             newOrders.add(salesOrder);
             
@@ -234,8 +239,14 @@ public class ViewSalesManagement {
                 .equalsIgnoreCase("Y"));
 
         // Add all purchase orders to the database
-        newOrders.forEach(SalesOrder::Add);
+            for (SalesOrder salesOrder : newOrders) {
+                if (salesOrder.Add()) {
+                    System.out.println("Sales Order - " + salesOrder.getDoc_No() +" for " + salesOrder.getQuantity() + " " + salesOrder.getItem().getItem_Name() + " is added.");
+                } else {
+                    System.out.println("Error adding Sales Order.");
+                }
 
+            }
         }
     }
     

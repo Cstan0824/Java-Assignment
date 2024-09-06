@@ -24,6 +24,7 @@ public class SalesOrder extends Transaction {
         this.setDoc_No(_DocNo);
         this.setItem(_item);
         this.setSource_Doc_No(_DocNo);
+        this.setTransaction_Date(new Date(System.currentTimeMillis()));
     }
     
     public SalesOrder(Item _item, String _Doc_No, Date _Transaction_Date, int _Quantity,

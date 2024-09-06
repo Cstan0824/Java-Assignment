@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import project.global.CrudOperation;
 import project.global.SqlConnector;
+import project.modules.item.Item;
 import project.modules.transaction.DeliveryOrder;
 
 
@@ -20,16 +21,18 @@ public class Schedule implements CrudOperation{
     private Vehicle vehicle;
     private LocalDate Schedule_Date;
     private LocalTime Time_Slot;
+    private int Status;
 
     public Schedule() {
     }
 
-    public Schedule(int _Schedule_ID, DeliveryOrder _deliveryOrder, Vehicle _vehicle, LocalDate _Schedule_Date, LocalTime _Time_Slot) {
+    public Schedule(int _Schedule_ID, DeliveryOrder _deliveryOrder, Vehicle _vehicle, LocalDate _Schedule_Date, LocalTime _Time_Slot, int _Status) {
         this.Schedule_ID = _Schedule_ID;
         this.deliveryOrder = _deliveryOrder;
         this.vehicle = _vehicle;
         this.Schedule_Date = _Schedule_Date;
         this.Time_Slot = _Time_Slot;
+        this.Status = _Status;
     }
 
     public Schedule (DeliveryOrder DO){
@@ -77,6 +80,14 @@ public class Schedule implements CrudOperation{
         this.Time_Slot = _Time_Slot;
     }
 
+    public int getStatus(){
+        return this.Status;
+    }
+
+    public void setStatus(int _Status){
+        this.Status = _Status;
+    }
+
 
     @Override
     public boolean Add() {
@@ -86,8 +97,8 @@ public class Schedule implements CrudOperation{
             return false;
         }
 
-        String query = "INSERT INTO Schedule(Doc_No, Vehicle_Plate, Schedule_Date, Time_Slot) VALUES(?, ?, ?, ?)";
-        boolean queryExecuted = connector.PrepareExecuteDML(query, this.getDeliveryOrder().getDoc_No(), this.getVehicle().getVehicle_Plate(), this.getSchedule_Date(), this.getTime_Slot());
+        String query = "INSERT INTO Schedule(Doc_No, Vehicle_Plate, Schedule_Date, Time_Slot, Status) VALUES(?, ?, ?, ?, ?)";
+        boolean queryExecuted = connector.PrepareExecuteDML(query, this.getDeliveryOrder().getDoc_No(), this.getVehicle().getVehicle_Plate(), this.getSchedule_Date(), this.getTime_Slot(), this.getStatus());
 
         if (!queryExecuted) {
             connector.Disconnect();
@@ -106,8 +117,8 @@ public class Schedule implements CrudOperation{
             return false;
         }
 
-        String query = "UPDATE Schedule SET Vehicle_Plate = ?, Schedule_Date = ?, Time_Slot = ? WHERE Schedule_ID = ?";
-        boolean queryExecuted = connector.PrepareExecuteDML(query, this.getVehicle().getVehicle_Plate(), this.getSchedule_Date(), this.getTime_Slot(), this.getSchedule_ID());
+        String query = "UPDATE Schedule SET Vehicle_Plate = ?, Schedule_Date = ?, Time_Slot = ?, Status = ? WHERE Schedule_ID = ?";
+        boolean queryExecuted = connector.PrepareExecuteDML(query, this.getVehicle().getVehicle_Plate(), this.getSchedule_Date(), this.getTime_Slot(), this.getStatus(), this.getSchedule_ID());
 
         if (!queryExecuted) {
             connector.Disconnect();
@@ -213,13 +224,14 @@ public class Schedule implements CrudOperation{
                 String vehiclePlate = resultSet.getString("Vehicle_Plate");
                 LocalTime timeSlot = resultSet.getTime("Time_Slot").toLocalTime();
                 LocalDate scheduleDate = resultSet.getDate("Schedule_Date").toLocalDate();
+                int status = resultSet.getInt("Status");
 
                 // Retrieve the DeliveryOrder and Vehicle objects
                 DeliveryOrder deliveryOrder = DeliveryOrder.Get(docNo);
                 Vehicle vehicle = Vehicle.Get(vehiclePlate);
 
                 // Create a new Schedule object
-                Schedule schedule = new Schedule(scheduleId, deliveryOrder, vehicle, scheduleDate, timeSlot);
+                Schedule schedule = new Schedule(scheduleId, deliveryOrder, vehicle, scheduleDate, timeSlot, status);
 
                 // Add the Schedule object to the list
                 schedules.add(schedule);
@@ -248,7 +260,7 @@ public class Schedule implements CrudOperation{
 
     public static ArrayList<Schedule> GetAll(String recipient) {
 
-        String query = "SELECT * FROM Schedule WHERE Doc_No LIKE 'DO%' AND Doc_No IN (SELECT Doc_No FROM DeliveryOrder WHERE Transaction_Recipient ='" + recipient + "')";
+        String query = "SELECT * FROM Schedule WHERE Doc_No LIKE 'DO%' AND Doc_No IN (SELECT Doc_No FROM transaction WHERE Doc_No LIKE 'DO%' AND Transaction_Recipient ='" + recipient + "')";
 
         return GetScheduleList(query);
        
@@ -256,7 +268,9 @@ public class Schedule implements CrudOperation{
 
     public static ArrayList<Schedule> GetAllPending() {
 
-        String query = "SELECT * FROM schedule WHERE (Schedule_Date > CURDATE()) OR (Schedule_Date = CURDATE() AND Time_Slot > CURTIME())";
+        //String query = "SELECT * FROM schedule WHERE (Schedule_Date > CURDATE()) OR (Schedule_Date = CURDATE() AND Time_Slot > CURTIME())";
+
+        String query = "SELECT * FROM schedule WHERE Status = 0";
 
         return GetScheduleList(query);
         
@@ -270,14 +284,59 @@ public class Schedule implements CrudOperation{
        
     }
 
+    public static void StockOutProcess(){
+
+        ArrayList<Schedule> schedules = Schedule.GetAllPending();
+
+        if (schedules == null || schedules.isEmpty()) {
+            return;
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        for (Schedule schedule : schedules) {
+            boolean process = false;
+
+            if (schedule.getSchedule_Date().isBefore(today)) {
+                // The date is before today, execute the code
+                process = true;
+
+            } 
+            // Check if the schedule date is today
+            else if (schedule.getSchedule_Date().isEqual(today)) {
+                // If the time slot is before the current time, execute the code
+                if (schedule.getTime_Slot().isBefore(now)) {
+                    // The date is before today, execute the code
+                   process = true;
+                }
+            }
+
+            if (process){
+                ArrayList<DeliveryOrder> deliveryOrders = DeliveryOrder.GetAll(schedule.getDeliveryOrder().getDoc_No());
+    
+                for (DeliveryOrder deliveryOrder : deliveryOrders) {
+                    Item item = new Item(deliveryOrder.getItem().getItem_ID());
+                    item.Get();
+                    item.setItem_Quantity(item.getItem_Quantity() - deliveryOrder.getQuantity());
+                    item.Update();
+                }
+                schedule.setStatus(1);
+                schedule.Update();
+
+            }
+        }
+    }
 
     @Override
     public String toString() {
 
-        String format = "| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |%n";
+        String format = "| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |%n";
 
         this.getVehicle().Get();
         this.getDeliveryOrder().Get();
+
+        String status = (this.getStatus() == 0 ? "Pending" : "Delivered");
 
         return String.format(format,
                 this.getSchedule_ID(),
@@ -285,9 +344,12 @@ public class Schedule implements CrudOperation{
                 this.vehicle.getVehicle_Plate(),
                 this.vehicle.getDriver(),
                 this.getTime_Slot(),
-                this.getSchedule_Date()
+                this.getSchedule_Date(),
+                status
                 );
     }
+
+   
 
 
 

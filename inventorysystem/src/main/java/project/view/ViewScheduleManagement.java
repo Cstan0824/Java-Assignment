@@ -17,6 +17,7 @@ public class ViewScheduleManagement {
     private ViewVehicle viewVehicle;
     private static User user;
 
+
     public ViewScheduleManagement(User user) {
         ViewScheduleManagement.user = user;
         this.viewDeliveryOrder = new ViewDeliveryOrder(user);
@@ -195,6 +196,7 @@ public class ViewScheduleManagement {
             schedule.setSchedule_Date(chooseDate(LocalDate.now()));
             schedule.setTime_Slot(chooseTime());
             schedule.setVehicle(viewVehicle.selectVehicleFromList(schedule.getTime_Slot(),schedule.getSchedule_Date()));
+            schedule.setStatus(0);
 
             if (schedule.Add()){
                 System.out.println("Schedule for delivery order "+ schedule.getDeliveryOrder().getDoc_No()+ " created successfully.");
@@ -202,7 +204,7 @@ public class ViewScheduleManagement {
                 //display created schedule
                 System.out.println("Created Schedule Details");
 
-                String[] columnNames = {"ScheduleID", "DocNo", "Vehicle Plate","Driver", "Time Slot", "Date"};
+                String[] columnNames = {"ScheduleID", "DocNo", "Vehicle Plate","Driver", "Time Slot", "Date", "Status"};
                 distinctTableLine();
                 System.out.printf("|");
                 for (String columnName : columnNames) {
@@ -227,7 +229,6 @@ public class ViewScheduleManagement {
             Schedule schedule = viewSchedule.selectPendingSchedule();
 
             if (schedule == null){
-                System.out.println("No Schedule found.");
                 return;
             }
 
@@ -268,7 +269,6 @@ public class ViewScheduleManagement {
         if (user.getUserType().equals("Admin")) {
             Schedule schedule = viewSchedule.selectPendingSchedule();
             if (schedule == null) {
-                System.out.println("No Schedule found.");
                 return;
             }
             if (schedule.Remove()) {
@@ -540,7 +540,7 @@ public class ViewScheduleManagement {
 
     //design
     private static void distinctTableLine(){
-        System.out.println("-------------------------------------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------");
     }
 
     private static void vehicleTableLine(){

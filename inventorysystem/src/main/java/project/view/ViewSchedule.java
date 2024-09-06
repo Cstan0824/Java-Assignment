@@ -13,6 +13,7 @@ public class ViewSchedule {
     private ArrayList<Schedule> scheduleList;
     private ArrayList<Schedule> pendingScheduleList;
     private static User user;
+
     
 
     public ViewSchedule(User user) {
@@ -39,6 +40,7 @@ public class ViewSchedule {
     }
 
     public void displayScheduleList() {
+       
 
         if (user instanceof Admin) {
             this.scheduleList = Schedule.GetAll();
@@ -48,7 +50,7 @@ public class ViewSchedule {
 
         int totalSchedule = 0;
 
-        String[] columnNames = {"ScheduleID", "DocNo", "Vehicle Plate","Driver", "Time Slot", "Date"};
+        String[] columnNames = {"ScheduleID", "DocNo", "Vehicle Plate","Driver", "Time Slot", "Date", "Schedule Status"};
 
         if (scheduleList != null && !scheduleList.isEmpty()) {
             System.out.println("Schedule List");
@@ -83,7 +85,7 @@ public class ViewSchedule {
 
         int totalPendingSchedule = 0;
 
-        String[] columnNames = {"ScheduleID", "DocNo", "Vehicle Plate", "Driver", "Time Slot", "Date"};
+        String[] columnNames = {"ScheduleID", "DocNo", "Vehicle Plate", "Driver", "Time Slot", "Date", "Schedule Status"};
 
         if (pendingScheduleList != null && !pendingScheduleList.isEmpty()) {
             System.out.println("Pending Schedule List");
@@ -96,9 +98,11 @@ public class ViewSchedule {
             System.out.println("");
             distinctTableLine();
             for (Schedule schedule : pendingScheduleList) {
+                
                 System.out.print(schedule.toString());
                 distinctTableLine();
                 totalPendingSchedule++;
+                
             }
 
             System.out.println("Total Pending Schedules available in the database: " + totalPendingSchedule);
@@ -126,6 +130,6 @@ public class ViewSchedule {
     
     
     private static void distinctTableLine(){
-        System.out.println("-------------------------------------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------");
     }
 }

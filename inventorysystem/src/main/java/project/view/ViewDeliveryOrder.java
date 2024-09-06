@@ -160,6 +160,8 @@ public class ViewDeliveryOrder {
                     System.out.println("No Delivery Order found with the given Doc No. Please try again.");
                 }
             } while (selectedDeliveryOrderList == null ||selectedDeliveryOrderList.isEmpty());
+        }else{
+            System.out.println("No pending Delivery Order found.");
         }
 
         return null;

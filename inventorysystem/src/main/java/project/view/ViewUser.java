@@ -48,7 +48,7 @@ public class ViewUser {
             System.out.println("2. Register");
             System.out.println("3. Back");
 
-            switch (UserInputHandler.getInteger("Enter choice", 1, 2)) {
+            switch (UserInputHandler.getInteger("Enter choice", 1, 3)) {
                 case 1:
                     if (user.handleLogin()) {
                         RetailerAccess();
@@ -74,9 +74,10 @@ public class ViewUser {
         while (!logOut) {
             System.out.println("1. Profile Management"); //Retailer
             System.out.println("2. Purchase Management"); // Sales Order
-            System.out.println("3. log out");
+            System.out.println("3. Schedule Management"); // Delivery Order
+            System.out.println("4. log out");
 
-            switch (UserInputHandler.getInteger("Enter choice", 1, 3)) {
+            switch (UserInputHandler.getInteger("Enter choice", 1, 4)) {
                 case 1:
                     user.UserMenu();
                     break;
@@ -85,6 +86,10 @@ public class ViewUser {
                     viewSalesManagement.userMenu();
                     break;
                 case 3:
+                    ViewScheduleManagement viewScheduleManagement = new ViewScheduleManagement(user);
+                    viewScheduleManagement.retailerMenu();
+                    break;
+                case 4:
                     logOut = true;
                     break;
                 default:
@@ -101,9 +106,10 @@ public class ViewUser {
             System.out.println("2. Vendor Management"); //Vendor
             System.out.println("3. Item Management"); //Item，Auto Replenishment
             System.out.println("4. Purchase Management");//PO, GRN
-            System.out.println("5. Schedule Management"); //DO, Schedule, Vehicle Management
-            System.out.println("6. Report Management"); //Report
-            System.out.println("7. log out");
+            System.out.println("5. Sales Management");//SO
+            System.out.println("6. Schedule Management"); //DO, Schedule, Vehicle Management
+            System.out.println("7. Report Management"); //Report
+            System.out.println("8. log out");
 
             switch (UserInputHandler.getInteger("Enter choice", 1, 8)) {
                 case 1: 
@@ -121,14 +127,17 @@ public class ViewUser {
                     viewPurchaseManagement.menu();
                     break;
                 case 5:
+                    ViewSalesManagement viewSalesManagement = new ViewSalesManagement(user);
+                    viewSalesManagement.userMenu();
+                case 6:
                     ViewScheduleManagement viewScheduleManagement = new ViewScheduleManagement(user);
                     viewScheduleManagement.adminMenu();
                     break;
-                case 6:
+                case 7:
                     ViewReport viewReport = new ViewReport(user);
                     viewReport.menu();
                     break;
-                case 7:
+                case 8:
                     logOut = true;
                     break;
             }
