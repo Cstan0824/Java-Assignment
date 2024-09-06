@@ -106,7 +106,7 @@ public class ViewUser {
             System.out.println("7. log out");
 
             switch (UserInputHandler.getInteger("Enter choice", 1, 8)) {
-                case 1:
+                case 1: 
                     user.UserMenu();
                     break;
                 case 2:
