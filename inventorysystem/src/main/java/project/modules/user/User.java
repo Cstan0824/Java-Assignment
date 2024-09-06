@@ -13,7 +13,6 @@ import project.global.SqlConnector;
 import project.global.SystemRunNo;
 
 public abstract class User {
-    //private data field can be only access by the class itself
     private final SqlConnector Connector = new SqlConnector();
     private static Scanner scanner = new Scanner(System.in);
     private String userId;
@@ -273,11 +272,13 @@ public abstract class User {
                         System.out.println("Invalid ID or password.");
                         System.out.println("You have " + (MAX_ATTEMPTS - attempts - 1) + " attempts left.");
                         attempts++;
+                        continue;
+                    }
+    
+                    User users = this.userType.equals("Admin") ? new Admin() : new Retailer();
 
-                        // Fetch Email and Reg Date for OTP if password fails
-                        try (PreparedStatement statement1 = conn.prepareStatement(sql1)) {
-                            statement1.setString(1, this.getUserId());
-                            ResultSet resultSet1 = statement1.executeQuery();
+    
+                    if (users != null) {
 
                             if (resultSet1.next()) {
                                 this.setUserEmail(resultSet1.getString(this.getUserType() + "_Email"));
@@ -286,7 +287,8 @@ public abstract class User {
                             }
                         }
 
-                        continue; // Go for next login attempt
+                        break;
+
                     }
 
                     if (this.userType.equals("Retailer")) {
@@ -310,12 +312,9 @@ public abstract class User {
                     setLoggedInUserId(this.userId);  // Set the logged-in user's ID
                     return true;  // Exit loop on successful login
                 }
-
-            } catch (SQLException e) {
-                System.out.println("SQL Error: " + e.getMessage());
             }
 
-        }
+        
 
         // Case 3: Maximum attempts reached
         if (attempts >= MAX_ATTEMPTS) {
@@ -438,9 +437,10 @@ public abstract class User {
 
         System.out.println("Enter the OTP sent to your email: ");
         String userOTP = scanner.nextLine();
+        scanner.close();
 
     
-        String sql = "SELECT otp_expiry, otp_code, " + this.getUserType() + "_Password FROM " + this.getUserType() + " WHERE " + this.getUserType() + "_Id = ?";
+        String sql= "SELECT otp_expiry, otp_code FROM " + this.getUserType() + " WHERE " + this.getUserType() + "_Id = ?";
 
         try (Connection conn = DriverManager.getConnection(url, user, password)) {
             if (conn == null || conn.isClosed()) {
@@ -457,7 +457,6 @@ public abstract class User {
                 if (resultSet.next()) {
                     this.otpExpiry = resultSet.getTimestamp(1).toLocalDateTime();
                     this.otpCode = resultSet.getString(2);
-                    this.setUserPassword(resultSet.getString(3)); 
                 }
 
             } catch (SQLException e) {
@@ -500,7 +499,6 @@ public abstract class User {
             new MailTemplate(this.otpCode, MailTemplate.TemplateType.OTP));
         mail.Send();
     }
-
 
     public void displayUserDetails() {  // can work
         System.out.println(this.getUserType()+" ID: " + this.getUserId());

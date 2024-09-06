@@ -13,7 +13,7 @@ public class ViewUser {
 
     private final static Scanner scanner = new Scanner(System.in);
 
-    //method
+    //method - menu
     public void menu() {
 
         System.out.println("Are you ...");
