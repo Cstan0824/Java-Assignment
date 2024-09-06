@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 
 import project.global.UserInputHandler;
@@ -14,6 +15,7 @@ import project.modules.transaction.Transaction;
 import project.modules.user.User;
 
 public class ViewGoodReceivedNotes {
+    private static final Scanner sc = new Scanner(System.in);
     private static User user;
 
     private ArrayList<GoodReceivedNotes> goodReceivedNotes = new ArrayList<>();
@@ -98,7 +100,7 @@ public class ViewGoodReceivedNotes {
 
             //Set the GRN details
             goodReceivedNote.setQuantity(
-                    UserInputHandler.getInteger("Enter Quantity", 1,
+                    UserInputHandler.validateInteger(sc, "Enter Quantity", 1,
                             maxQuantity));
             goodReceivedNote.setItem(item);
             goodReceivedNote.setDoc_No(grnNo);
@@ -143,7 +145,7 @@ public class ViewGoodReceivedNotes {
         }
 
         goodReceivedNote.setQuantity(
-                UserInputHandler.getInteger("Enter Quantity", 1,
+                UserInputHandler.validateInteger(sc, "Enter Quantity", 1,
                         purchaseOrder.getQuantity() - (OnHandStock - goodReceivedNote.getQuantity())));
         goodReceivedNote.setTransaction_Modified_By(user.getUserId());
 
@@ -206,7 +208,7 @@ public class ViewGoodReceivedNotes {
         System.out.println(
                 " ===================================================================================================== ");
 
-        return goodReceivedNotes.get(UserInputHandler.getInteger("Select Good Received Notes", 1,
+        return goodReceivedNotes.get(UserInputHandler.validateInteger(sc, "Select Good Received Notes", 1,
                 goodReceivedNotes.size()) - 1);
     }
 }

@@ -11,7 +11,7 @@ public class ViewUser {
 
     private static User user;
 
-    private final static Scanner scanner = new Scanner(System.in);
+    private final static Scanner sc = new Scanner(System.in);
 
     //method - menu
     public void menu() {
@@ -20,7 +20,7 @@ public class ViewUser {
         System.out.println("1. Admin");
         System.out.println("2. Retailer");
         System.out.println("Enter choice (1-2): ");
-        int choice = scanner.nextInt();
+        int choice = UserInputHandler.validateInteger(sc, "Enter choice", 1, 2);
 
         switch (choice) {
             case 1:
@@ -48,7 +48,7 @@ public class ViewUser {
             System.out.println("2. Register");
             System.out.println("3. Back");
 
-            switch (UserInputHandler.getInteger("Enter choice", 1, 3)) {
+            switch (UserInputHandler.validateInteger(sc, "Enter choice", 1, 3)) {
                 case 1:
                     if (user.handleLogin()) {
                         RetailerAccess();
@@ -77,7 +77,7 @@ public class ViewUser {
             System.out.println("3. Schedule Management"); // Delivery Order
             System.out.println("4. log out");
 
-            switch (UserInputHandler.getInteger("Enter choice", 1, 4)) {
+            switch (UserInputHandler.validateInteger(sc, "Enter choice", 1, 4)) {
                 case 1:
                     user.UserMenu();
                     break;
@@ -111,7 +111,7 @@ public class ViewUser {
             System.out.println("7. Report Management"); //Report
             System.out.println("8. log out");
 
-            switch (UserInputHandler.getInteger("Enter choice", 1, 8)) {
+            switch (UserInputHandler.validateInteger(sc, "Enter choice", 1, 8)) {
                 case 1: 
                     user.UserMenu();
                     break;

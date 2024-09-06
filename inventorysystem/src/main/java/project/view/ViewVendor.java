@@ -1,11 +1,13 @@
 package project.view;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import project.global.UserInputHandler;
 import project.modules.user.User;
 import project.modules.vendor.Vendor;
 
 public class ViewVendor {
+    private static final Scanner sc = new Scanner(System.in);
     private ArrayList<Vendor> vendors;
     private static User user;
 
@@ -43,7 +45,7 @@ public class ViewVendor {
             System.out.println("=========================================");
 
             //switch case
-            switch (UserInputHandler.getInteger("Enter choice", 1, 6)) {
+            switch (UserInputHandler.validateInteger(sc, "Enter choice", 1, 6)) {
                 case 1:
                     //call add vendor function
                     addVendor();
@@ -155,7 +157,7 @@ public class ViewVendor {
             //select what to modify including the item they handle? - maybe no need to modify the item they handle
             System.out.println("1. Vendor Name\n2. Vendor Address\n3. Vendor Email");
 
-            switch (UserInputHandler.getInteger("Enter choice ", 1, 3)) {
+            switch (UserInputHandler.validateInteger(sc, "Enter choice ", 1, 3)) {
                 case 1:
                     System.out.println("===Update Vendor Name===");
                     _vendor.setVendor_Name(
@@ -216,7 +218,7 @@ public class ViewVendor {
             System.out.println("3. Back to Vendor Management");
             System.out.println("===============================");
 
-            switch (UserInputHandler.getInteger("Select an option", 1, 3)) {
+            switch (UserInputHandler.validateInteger(sc, "Select an option", 1, 3)) {
                 case 1:
                     this.vendors = Vendor.Get("Vendor_Name",
                             UserInputHandler.getString("Enter Vendor Name", 4,50));

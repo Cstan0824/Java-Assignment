@@ -3,12 +3,14 @@ package project.view;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
 import project.global.UserInputHandler;
 import project.modules.transaction.Report;
 import project.modules.user.User;
 
 public class ViewReport {
+    private static final Scanner sc = new Scanner(System.in);
     private static User user;
     private Report report;
 
@@ -33,7 +35,7 @@ public class ViewReport {
             System.out.println("2. Generate Sales Report");
             System.out.println("3. Exit");
             System.out.println("=========================================");
-            switch (UserInputHandler.getInteger("Enter choice", 1, 3)) {
+            switch (UserInputHandler.validateInteger(sc, "Enter choice", 1, 3)) {
                 case 1:
                     System.out.println("Generating Purchase Report...");
                     report = new Report("Yearly Purchase Report", "This is a report for all purchases made in a year.",

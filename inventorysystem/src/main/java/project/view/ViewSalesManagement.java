@@ -81,8 +81,8 @@ public class ViewSalesManagement {
             System.out.println("3. Modify Sales Order");
             System.out.println("4. Cancel Sales Order");
             System.out.println("5. Exit");
-            System.out.println("Choose your actions: ");
-            int choice = sc.nextInt();
+            System.out.print("Choose your actions: ");
+            int choice = UserInputHandler.validateInteger(sc, "Choose your actions: ", 1, 5);
             switch (choice) {
                 case 1:
                     viewOrderRecords();
@@ -114,8 +114,8 @@ public class ViewSalesManagement {
             System.out.println("1. Order Stock");
             System.out.println("2. View Order Records");
             System.out.println("3. Exit");
-            System.out.println("Choose your actions: ");
-            int choice = sc.nextInt();
+            System.out.print("Choose your actions: ");
+            int choice = UserInputHandler.validateInteger(sc, "Choose your actions: ", 1, 3);
             switch (choice) {
                 case 1:
                     createSalesOrder();

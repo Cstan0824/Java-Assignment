@@ -140,4 +140,23 @@ public class UserInputHandler {
             System.out.println("Pause Error: " + e.getMessage());
         }
     }
+
+    public static int validateInteger(Scanner scanner, String _message, int _min, int _max) {
+        int number;
+        do {
+            while (!scanner.hasNextInt()) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.next();  // Discard the invalid input
+                System.out.print(_message);
+            }
+            number = scanner.nextInt();
+            scanner.nextLine();
+            if (number < _min || number > _max) {
+                System.out.println("Invalid input. Please enter a number between " + _min + " and " + _max + ".");
+                System.out.print(_message);
+            }
+        } while (number < _min || number > _max);
+
+        return number;
+    }
 }
