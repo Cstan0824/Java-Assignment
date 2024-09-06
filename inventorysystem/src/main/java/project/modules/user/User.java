@@ -13,7 +13,6 @@ import project.global.SqlConnector;
 import project.global.SystemRunNo;
 
 public abstract class User {
-    //private data field can be only access by the class itself
     private final SqlConnector Connector = new SqlConnector();
     private static Scanner scanner = new Scanner(System.in);
     private String userId;
@@ -315,7 +314,7 @@ public abstract class User {
                 }
             }
 
-        }
+        
 
         // Case 3: Maximum attempts reached
         if (attempts >= MAX_ATTEMPTS) {
@@ -501,9 +500,6 @@ public abstract class User {
         mail.Send();
     }
 
-
-=======
->>>>>>> Stashed changes
     public void displayUserDetails() {  // can work
         System.out.println(this.getUserType()+" ID: " + this.getUserId());
         System.out.println(this.getUserType()+" Name: " + this.getUserName());
