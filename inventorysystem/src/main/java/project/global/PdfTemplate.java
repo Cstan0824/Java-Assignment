@@ -6,10 +6,12 @@ import java.util.Map;
 import project.modules.item.Item;
 import project.modules.transaction.Report;
 import project.modules.transaction.Transaction;
-
+import project.modules.user.Retailer;
 public class PdfTemplate {
     private String Content;
     private ArrayList<Transaction> purchaseOrders;
+    private ArrayList<Transaction> salesOrders;
+
 
     public String getContent() {
         return this.Content;
@@ -17,6 +19,10 @@ public class PdfTemplate {
 
     public ArrayList<Transaction> getpurchaseOrder() {
         return this.purchaseOrders;
+    }
+
+    public ArrayList<Transaction> getSaleOrder() {
+        return this.salesOrders;
     }
 
     //For Transaction Module
@@ -100,8 +106,89 @@ public class PdfTemplate {
     }
 
     private String SaleOrder() {
-        return "Your Sale Order No is " + this.purchaseOrders.get(0).getDoc_No();
-    }
+        
+        StringBuilder html = new StringBuilder();
+        html.append("<head>");
+        html.append("<style>");
+        html.append("body { font-family: Arial, sans-serif; margin: 20px; padding: 0; }");
+        html.append("h1 { text-align: center; }");
+        html.append("table { width: 100%; border-collapse: collapse; margin-top: 20px; }");
+        html.append("table, th, td { border: 1px solid black; }");
+        html.append("th, td { padding: 10px; text-align: left; }");
+        html.append(".supplier-details, .po-details { margin-top: 20px; }");
+        html.append(".total { text-align: right; margin-top: 20px; font-size: 1.2em; }");
+        html.append("</style>");
+        html.append("</head>");
+        html.append("<body style=\"border: 1px solid black; padding: 20px\">");
+
+        html.append("<h1>Sales Order</h1>");
+
+        html.append("<div class=\"po-details\">");
+        html.append("<p><strong>SO Number:</strong> ").append(this.salesOrders.get(0).getDoc_No()).append("</p>");
+        html.append("<p><strong>Date:</strong> ").append(this.salesOrders.get(0).getTransaction_Date())
+                .append("</p>");
+        html.append("</div>");
+
+        html.append("<div class=\"supplier-details\">");
+        Retailer retailer = new Retailer();
+        retailer.setUserId(this.salesOrders.get(0).getTransaction_Recipient());
+        retailer.Get();
+        html.append("<p><strong>Retailer:</strong> ").append(retailer.getUserName())
+                .append("</p>");
+        html.append("<p><strong>Address:</strong> ").append(retailer.getRetailerAddress())
+                .append("</p>");
+        html.append("<p><strong>Email:</strong> ").append(retailer.getUserEmail())
+                .append("</p>");
+        html.append("</div>");
+
+        html.append("<table>");
+        html.append("<thead>");
+        html.append("<tr>");
+        html.append("<th>Item #</th>");
+        html.append("<th>Description</th>");
+        html.append("<th>Quantity</th>");
+        html.append("<th>Unit Price</th>");
+        html.append("<th>Total</th>");
+        html.append("</tr>");
+        html.append("</thead>");
+        html.append("<tbody>");
+        double totalPrice = 0;
+        for (int i = 0; i < this.salesOrders.size(); i++) {
+            double orderPrice = this.salesOrders.get(i).getItem().getItem_Price()
+                    * this.salesOrders.get(i).getQuantity();
+            totalPrice += orderPrice;
+            html.append("<tr>");
+            html.append("<td>").append(this.salesOrders.get(i).getItem().getItem_Name()).append("</td>");
+            html.append("<td>").append(this.salesOrders.get(i).getItem().getItem_Desc()).append("</td>");
+            html.append("<td>").append(this.salesOrders.get(i).getQuantity()).append("</td>");
+            html.append("<td>$").append(String.format("%.2f", this.salesOrders.get(i).getItem().getItem_Price()))
+                    .append("</td>");
+            html.append("<td>$").append(String.format("%.2f", orderPrice))
+                    .append("</td>");
+            html.append("</tr>");
+        }
+
+        html.append("</tbody>");
+        html.append("</table>");
+
+        html.append("<div class=\"total\">");
+        html.append("<p><strong>Total Amount:</strong> $").append(String.format("%.2f", totalPrice)).append("</p>");
+        html.append("</div>");
+
+        html.append("<p>Thank you for your business!</p>");
+
+        html.append("<div class=\"company-details\">");
+        html.append("<p><strong>Inventory Solution Company</strong></p>");
+        html.append("<p>Jalan Genting Kelang, Setapak, 53300 Kuala Lumpur, Federal Territory of Kuala Lumpur</p>");
+        html.append("<p>Email: tarumtmoviesociety@gmail.com | Phone: +6012-339 6197</p>");
+        html.append("<p><a href='#'>Website: www.InventorySolutionCompany.com</a></p>");
+        html.append("</div>");
+        html.append("</body>");
+
+        return html.toString();
+        }
+        
+    
 
     private String SalesReport(Report _report) {
         StringBuilder html = new StringBuilder();
@@ -247,7 +334,7 @@ public class PdfTemplate {
 
     public PdfTemplate(ArrayList<Transaction> _transaction, TemplateType _templateType) {
         this.purchaseOrders = _transaction;
-
+        this.salesOrders = _transaction;
         switch (_templateType) {
             case PURCHASE_ORDER:
                 this.Content = this.PurchaseOrder();
@@ -259,6 +346,8 @@ public class PdfTemplate {
                 break;
         }
     }
+
+
 
     public PdfTemplate(Transaction _transaction, TemplateType _templateType) {
         this.purchaseOrders.add(_transaction);

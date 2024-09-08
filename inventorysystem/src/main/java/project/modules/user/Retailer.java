@@ -1,5 +1,10 @@
 package project.modules.user;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
@@ -11,6 +16,10 @@ public class Retailer extends User {
     private String retailerAddress;
 
     private final static Scanner scanner = new Scanner(System.in);
+    private final SqlConnector Connector = new SqlConnector();
+    private final String url = Connector.getUrl();
+    private final String user = Connector.getUser();
+    private final String password = ""; 
 
     public Retailer(String userId, String userName, String userPassword, String userEmail) {
         super(userId, userName, userPassword, userEmail, "Retailer");
@@ -39,7 +48,7 @@ public class Retailer extends User {
     public void Add() {
         String sql = "INSERT INTO Retailer (Retailer_Id, Retailer_Name, Retailer_Password, Retailer_Email, Retailer_Reg_Date, Retailer_Address, Retailer_Created_By) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        SqlConnector Connector = new SqlConnector();
+        
         Connector.Connect();
 
         if (!Connector.isConnected()) {
@@ -50,6 +59,48 @@ public class Retailer extends User {
         Connector.PrepareExecuteDML(sql, this.getUserId(), this.getUserName(), this.getUserPassword(),
                 this.getUserEmail(), LocalDateTime.now(), this.getRetailerAddress(), User.getLoggedInUserId());
         System.out.println("Retailer added successfully.");
+    }
+
+    @Override
+    public boolean Get() // can work
+    {
+
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            if (conn == null || conn.isClosed()) {
+                System.out.println("Failed to establish a connection.");
+                return false;
+            }
+
+            String sql = "SELECT Retailer_Name, Retailer_Email, Retailer_Reg_Date, Retailer_Password, Retailer_Address FROM RETAILER WHERE Retailer_Id = ?";
+            
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+
+                statement.setString(1, this.getUserId()); 
+
+                ResultSet result = statement.executeQuery(); 
+                if (result.next()) {
+                
+                    this.setUserName(result.getString(1));
+                    this.setUserEmail(result.getString(2));
+                    this.setUserRegDate(result.getTimestamp(3).toLocalDateTime());
+                    this.setUserPassword(result.getString(4));
+                    this.setRetailerAddress(result.getString(5));
+                    return true;
+                
+                } 
+                else {
+                    return false;
+                }
+
+            } catch (SQLException e) {
+                System.out.println("SQL Error: " + e.getMessage());
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Connection Error: " + e.getMessage());
+            return false;
+        }
     }
 
     public void createRetailer() {
@@ -165,8 +216,7 @@ public class Retailer extends User {
                 System.out.println("2. Retailer Password");
                 System.out.println("3. Retailer Email");
                 System.out.println("4. Retailer Address");
-                System.out.print("Enter choice (1-4): ");
-                int choice = UserInputHandler.validateInteger(scanner, "Enter choice", 1, 4);
+                int choice = UserInputHandler.getInteger("Enter choice (1-4): ", 1, 4);
 
                 String field;
                 String value;
@@ -225,8 +275,7 @@ public class Retailer extends User {
         System.out.println("1. View Retailer");
         System.out.println("2. Update Retailer");
         System.out.println("3. Exit");
-        System.out.print("Enter choice: ");
-        int choice = UserInputHandler.validateInteger(scanner, "Enter choice", 1, 3);
+        int choice = UserInputHandler.getInteger("Enter choice: ", 1, 3);
 
         switch (choice) {
             case 1:
@@ -298,5 +347,6 @@ public class Retailer extends User {
             System.exit(0);
         }
     }
+    
 
 }

@@ -1,13 +1,21 @@
 package project.view;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
+import project.global.MailSender;
+import project.global.MailTemplate;
+import project.global.PdfConverter;
+import project.global.PdfTemplate;
 import project.global.UserInputHandler;
 import project.modules.item.Item;
 import project.modules.transaction.DeliveryOrder;
 import project.modules.transaction.SalesOrder;
+import project.modules.transaction.Transaction;
+import project.modules.user.Retailer;
 import project.modules.user.User;
 
 
@@ -81,8 +89,7 @@ public class ViewSalesManagement {
             System.out.println("3. Modify Sales Order");
             System.out.println("4. Cancel Sales Order");
             System.out.println("5. Exit");
-            System.out.print("Choose your actions: ");
-            int choice = UserInputHandler.validateInteger(sc, "Choose your actions: ", 1, 5);
+            int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 5);
             switch (choice) {
                 case 1:
                     viewOrderRecords();
@@ -115,7 +122,7 @@ public class ViewSalesManagement {
             System.out.println("2. View Order Records");
             System.out.println("3. Exit");
             System.out.print("Choose your actions: ");
-            int choice = UserInputHandler.validateInteger(sc, "Choose your actions: ", 1, 3);
+            int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 3);
             switch (choice) {
                 case 1:
                     createSalesOrder();
@@ -219,14 +226,17 @@ public class ViewSalesManagement {
     //for retailer to order stock
     private void createSalesOrder() {
         if (user.getUserType().equals("Retailer")) {
-            
+            File file;
+            MailSender mail;
+            PdfConverter pdf;
+            ArrayList<Transaction> transactions = new ArrayList<>();
             ArrayList<SalesOrder> newOrders = new ArrayList<>();
             String docNo = new SalesOrder().GenerateDocNo();
 
             do {
             Item item = viewItem.selectItemFromList();
             SalesOrder salesOrder = new SalesOrder(docNo, item);
-            salesOrder.setQuantity(UserInputHandler.validateInteger(sc, "Enter Quantity (must be greater than 0): ", 1, 1000000));
+            salesOrder.setQuantity(UserInputHandler.getInteger("Enter Quantity (must be greater than 0): ", 1, 1000000));
             salesOrder.setTransaction_Recipient(user.getUserId());
             salesOrder.setTransaction_Modified_By(user.getUserId());
             salesOrder.setTransaction_Created_By(user.getUserId());
@@ -245,8 +255,30 @@ public class ViewSalesManagement {
                 } else {
                     System.out.println("Error adding Sales Order.");
                 }
-
+                transactions.add(salesOrder);
             }
+
+            
+            //mail sender
+            URL resource = getClass().getClassLoader()
+            .getResource("project/Report");
+            file = new File(
+            resource.getPath().replace("%20", " "), docNo + ".pdf");
+
+            pdf = new PdfConverter(file,
+                    new PdfTemplate(transactions, PdfTemplate.TemplateType.SALES_ORDER));
+            pdf.Save();
+
+            Retailer retailer = new Retailer();
+            retailer.setUserId(user.getUserId());
+            retailer.Get();
+
+            mail = new MailSender(
+                    retailer.getUserEmail(),
+                    "Sales Order",
+                    new MailTemplate(docNo, MailTemplate.TemplateType.SALES_ORDER));
+            mail.AttachFile(file);
+            mail.Send();
         }
     }
     
@@ -263,7 +295,7 @@ public class ViewSalesManagement {
             do {
                 do { 
                     System.out.println("Enter Item ID: "); 
-                    int itemId = UserInputHandler.validateInteger(sc, "Enter Item ID: ", 1, 1000000);
+                    int itemId = UserInputHandler.getInteger("Enter Item ID: ", 1, 1000000);
 
                     Item item = new Item(itemId);
                     item.Get();
@@ -274,7 +306,7 @@ public class ViewSalesManagement {
                         String choice;
                         do{
                             System.out.println("Enter New Item Quantity: ");
-                            int quantity = UserInputHandler.validateInteger(sc, "Enter New Item Quantity: ", 0, 1000000);
+                            int quantity = UserInputHandler.getInteger("Enter New Item Quantity: ", 0, 1000000);
                             salesOrder.setQuantity(quantity);
 
                             salesOrder.setTransaction_Modified_By(user.getUserId());

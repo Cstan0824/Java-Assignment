@@ -1,7 +1,6 @@
 package project.view;
 
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import project.global.UserInputHandler;
 import project.modules.item.Item;
@@ -9,7 +8,7 @@ import project.modules.item.ItemCategory;
 import project.modules.user.User;
 
 public class ViewItem {
-    private static final Scanner sc = new Scanner(System.in);
+    
     private static User user;
     private ArrayList<Item> items = new ArrayList<>();
     private final ViewVendor viewVendor;
@@ -52,7 +51,7 @@ public class ViewItem {
             System.out.println("7. Back");
             System.out.println("=============================");
 
-            switch (UserInputHandler.validateInteger(sc, "Select an option", 1, 7)) {
+            switch (UserInputHandler.getInteger("Select an option", 1, 7)) {
                 case 1:
                 //only able to add item while adding the vendor
                     Item newItem = addNewItem();
@@ -115,7 +114,7 @@ public class ViewItem {
 
         displayItemDetails();
         Item selectedItem = items
-                .get(UserInputHandler.validateInteger(sc, "Select Item by No", 1, items.size()) - 1);
+                .get(UserInputHandler.getInteger("Select Item by No: ", 1, items.size()) - 1);
         selectedItem.Get();
         return selectedItem;
     }
@@ -142,7 +141,7 @@ public class ViewItem {
         System.out.println("6. Back to Item Management");
         System.out.println("===============================");
 
-        switch (UserInputHandler.validateInteger(sc, "Select an option", 1, 6)) {
+        switch (UserInputHandler.getInteger("Select an option", 1, 6)) {
             case 1:
                 item.getItemCategory().setItem_Category_ID(selectItemCategoryFromList().getItem_Category_ID());
                 break;
@@ -176,7 +175,7 @@ public class ViewItem {
         System.out.println("4. Back to Item Management");
         System.out.println("=============================");
 
-        switch (UserInputHandler.validateInteger(sc, "Select an option", 1, 4)) {
+        switch (UserInputHandler.getInteger("Select an option", 1, 4)) {
             case 1:
                 ;
                 this.items = Item.Get("Item_Name", UserInputHandler.getString("Enter Item Name", 1, ".*"));
@@ -204,7 +203,7 @@ public class ViewItem {
         item.getVendor().setVendor_ID(this.viewVendor.selectVendorFromList().getVendor_ID());
         item.setItem_name(UserInputHandler.getString("Enter Item Name", 1, ".*"));
         item.setItem_Desc(UserInputHandler.getString("Enter Item Description", 1, ".*"));
-        item.setItem_Quantity(UserInputHandler.validateInteger(sc, "Enter Item Quantity", 1, 1000000));
+        item.setItem_Quantity(UserInputHandler.getInteger("Enter Item Quantity", 1, 1000000));
         item.setItem_Price(UserInputHandler.getDouble("Enter Item Price", 0, 1000000));
         item.setItem_Created_By(user.getUserId());
         item.setItem_Modified_By(user.getUserId());
@@ -225,7 +224,7 @@ public class ViewItem {
         System.out.println(" ===================================================== ");
 
         return itemCategories
-                .get(UserInputHandler.validateInteger(sc, "Select Item Category by No", 1, itemCategories.size()) - 1);
+                .get(UserInputHandler.getInteger("Select Item Category by No", 1, itemCategories.size()) - 1);
     }
 }
 

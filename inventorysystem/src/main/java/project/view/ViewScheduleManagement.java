@@ -73,7 +73,7 @@ public class ViewScheduleManagement {
             System.out.println("7. Vehicle Management");
             System.out.println("8. Exit");
             System.out.print("Choose your actions: ");
-            int choice = UserInputHandler.validateInteger(sc, "Choose your actions: ", 1, 8);
+            int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 8);
             switch (choice) {
                 case 1:
                     viewDORecords();
@@ -115,7 +115,7 @@ public class ViewScheduleManagement {
             System.out.println("2. Check Order Schedule");
             System.out.println("3. Exit");
             System.out.print("Choose your actions: ");
-            int choice = UserInputHandler.validateInteger(sc, "Choose your actions: ", 1, 3);
+            int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 3);
             switch (choice) {
                 case 1:
                     viewDORecords();
@@ -294,7 +294,7 @@ public class ViewScheduleManagement {
             System.out.println("4. Remove Vehicle");
             System.out.println("5. Exit");
             System.out.print("Choose your actions: ");
-            int choice = UserInputHandler.validateInteger(sc, "Choose your actions: ", 1, 5);
+            int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 5);
             switch (choice) {
                 case 1:
                     viewVehicleRecords();
@@ -463,7 +463,7 @@ public class ViewScheduleManagement {
         // User input to select the date
         do{
             System.out.print("\nEnter the index number of the date you choose: ");
-            index = UserInputHandler.validateInteger(sc, "Enter the index number of the date you choose: ", 1, 30);
+            index = UserInputHandler.getInteger("Enter the index number of the date you choose: ", 1, 30);
 
             if (index >= 1 && index <= 30) {
                 LocalDate selectedDate = dates[index - 1];
@@ -521,7 +521,7 @@ public class ViewScheduleManagement {
         do{
             // User input to select the time slot
             System.out.print("\nEnter the index number of the time slot you choose: ");
-            index = UserInputHandler.validateInteger(sc, "Enter the index number of the time slot you choose: ", 1, 5);
+            index = UserInputHandler.getInteger("Enter the index number of the time slot you choose: ", 1, 5);
             
             if (index >= 1 && index <= 5) {
                 LocalTime selectedTimeSlot = timeSlots[index - 1];

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 
 import project.global.MailSender;
@@ -23,7 +22,7 @@ import project.modules.vendor.Vendor;
 
 
 public class ViewPurchaseManagement {
-    private static final Scanner sc = new Scanner(System.in);
+    
     private static User user; //Session
 
     private final ViewGoodReceivedNotes viewGoodReceivedNotes;
@@ -74,7 +73,7 @@ public class ViewPurchaseManagement {
             System.out.println("5. Back to Main Menu");
             System.out.println("=============================");
 
-            switch (UserInputHandler.validateInteger(sc, "Enter choice", 1, 5)) {
+            switch (UserInputHandler.getInteger("Enter choice", 1, 5)) {
                 case 1:
                     orderRestock();
                     break;
@@ -113,7 +112,7 @@ public class ViewPurchaseManagement {
             }
             Item item = viewItem.selectItemFromList();
             purchaseOrder.setQuantity(
-                    UserInputHandler.validateInteger(sc, "Enter Quantity", 1, 100000));
+                    UserInputHandler.getInteger("Enter Quantity", 1, 100000));
             purchaseOrder.setItem(item);
             purchaseOrder.setDoc_No(poNo);
             purchaseOrder.setTransaction_Recipient(item.getVendor().getVendor_ID());
@@ -201,7 +200,7 @@ public class ViewPurchaseManagement {
             System.out.println("4. Back to Purchase Management");
             System.out.println("===============================");
 
-            switch (UserInputHandler.validateInteger(sc, "Enter choice", 1, 4)) {
+            switch (UserInputHandler.getInteger("Enter choice", 1, 4)) {
                 case 1:
                     viewItem.setItems(itemsNotInPurchaseOrders);
                     Item item = viewItem.selectItemFromList();
@@ -212,7 +211,7 @@ public class ViewPurchaseManagement {
                     purchaseOrder.setItem(item);
 
                     purchaseOrder.setQuantity(
-                            UserInputHandler.validateInteger(sc, "Enter Quantity", 1,
+                            UserInputHandler.getInteger("Enter Quantity", 1,
                                     100000));
 
                     // Initialize other values
@@ -267,7 +266,7 @@ public class ViewPurchaseManagement {
                     System.out.println("Current Quantity: " + purchaseOrder.getQuantity());
 
                     purchaseOrder.setQuantity(
-                            UserInputHandler.validateInteger(sc, "Enter Quantity", 1,
+                            UserInputHandler.getInteger("Enter Quantity", 1,
                                     100000));
                     purchaseOrder.setTransaction_Modified_By(user.getUserId());
                     System.out.println(purchaseOrder.Update());
@@ -498,7 +497,7 @@ public class ViewPurchaseManagement {
 
             Transaction goodReceivedNotes = new GoodReceivedNotes();
 
-            switch (UserInputHandler.validateInteger(sc, "Enter choice", 1, 5)) {
+            switch (UserInputHandler.getInteger("Enter choice", 1, 5)) {
                 case 1:
                     viewPurchaseOrder.followUpStatus(_purchaseOrders);
                     break;

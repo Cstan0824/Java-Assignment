@@ -1,7 +1,6 @@
 package project.view;
 
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import project.global.UserInputHandler;
 import project.modules.item.Item;
@@ -9,7 +8,7 @@ import project.modules.transaction.AutoReplenishment;
 import project.modules.user.User;
 
 public class ViewAutoReplenishment {
-    private static final Scanner sc = new Scanner(System.in);
+    
     private static User user;
     private ArrayList<AutoReplenishment> autoReplenishments = new ArrayList<>();
     private ViewItem viewItem = null;
@@ -41,7 +40,7 @@ public class ViewAutoReplenishment {
             System.out.println("5. Back");
             System.out.println("=============================");
 
-            switch (UserInputHandler.validateInteger(sc, "Select an option: ", 1, 5)) {
+            switch (UserInputHandler.getInteger("Select an option: ", 1, 5)) {
                 case 1:
                     viewAutoReplenishment();
                     break;
@@ -76,7 +75,7 @@ public class ViewAutoReplenishment {
             return;
         }
         autoReplenishment.setItem(item);
-        autoReplenishment.setItem_Threshold(UserInputHandler.validateInteger(sc, "Enter threshold level", 1, 100000));
+        autoReplenishment.setItem_Threshold(UserInputHandler.getInteger("Enter threshold level", 1, 100000));
         autoReplenishment.Add();
     }
 
@@ -84,7 +83,7 @@ public class ViewAutoReplenishment {
     public void updateAutoReplenishment() {
         AutoReplenishment autoReplenishment = selectAutoReplenishmentFromList();
         //Update Threshold level
-        autoReplenishment.setItem_Threshold(UserInputHandler.validateInteger(sc, "Enter new threshold level", 1, 100000));
+        autoReplenishment.setItem_Threshold(UserInputHandler.getInteger("Enter new threshold level", 1, 100000));
     
         autoReplenishment.Update();
     }
@@ -127,7 +126,7 @@ public class ViewAutoReplenishment {
     
     public AutoReplenishment selectAutoReplenishmentFromList() {
         displayASutoReplenishmentDetails();
-        int index = UserInputHandler.validateInteger(sc, "Select an Auto Replenishment", 1, autoReplenishments.size()) - 1;
+        int index = UserInputHandler.getInteger("Select an Auto Replenishment", 1, autoReplenishments.size()) - 1;
         return autoReplenishments.get(index);
     }
 }
