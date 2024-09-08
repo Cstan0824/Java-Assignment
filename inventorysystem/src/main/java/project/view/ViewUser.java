@@ -11,27 +11,34 @@ public class ViewUser {
 
     //method - menu
     public void menu() {
-
+       
+        while (true){
         System.out.println("Are you ...");
         System.out.println("1. Admin");
         System.out.println("2. Retailer");
-        int choice = UserInputHandler.getInteger("Enter choice (1-2): ", 1, 2);
+        System.out.println("3. Exit");
+        int choice = UserInputHandler.getInteger("Enter choice (1-3): ", 1, 3);
 
-        switch (choice) {
-            case 1:
-                user = new Admin();
-                if (user.handleLogin()) {
-                    System.out.println("Login successful.");
-                    AdminAccess();
-                }
-                break;
-            case 2:
-                user = new Retailer();
-                retailerLog();
-                break;
-            default:
-                System.out.println("Invalid choice.");
-                break;
+            switch (choice) {
+                case 1:
+                    user = new Admin();
+                    if (user.handleLogin()) {
+                        System.out.println("Login successful.");
+                        AdminAccess();
+                    }
+                    break;
+                case 2:
+                    user = new Retailer();
+                    retailerLog();
+                    break;
+                case 3:
+                    System.out.println("Thanks for using our system.");
+                    System.out.println("Goodbye.\n\n");
+                    System.exit(1);
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
         }
 
     }

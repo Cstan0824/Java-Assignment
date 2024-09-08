@@ -216,6 +216,10 @@ public class ViewScheduleManagement {
                 distinctTableLine();
                 System.out.print(schedule.toString());
                 distinctTableLine();
+
+                //implement pdf and email here
+                
+
             }else{
                 System.out.println("Failed to create schedule for delivery order "+ schedule.getDeliveryOrder().getDoc_No());
             }

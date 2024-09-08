@@ -286,6 +286,15 @@ public class MailTemplate {
                 "Inventory Solution Company";
     }
 
+    private String ScheduleCreation(String _DocNo) {
+        return "Dear Customer,<br/><br/>" +
+                "We are happy to inform that the order for " + _DocNo + " is successfully confirmed and scheduled for delivery.<br/>" + "Please refer the attached document for the delivery schedule information.<br/>" +
+                "Please let us know if you need any further assistance.<br/><br/>" +
+                "Best regards,<br/>" +
+                "Inventory Solution Company";
+    }
+
+
     public enum TemplateType {
         OTP,
         PURCHASE_ORDER,
@@ -293,7 +302,8 @@ public class MailTemplate {
         ORDER_CANCELLATION,
         REORDERING,
         ORDER_CONFIRMATION,
-        FOLLOW_ORDER_STATUS
+        FOLLOW_ORDER_STATUS,
+        SHCHEDULE_CREATION
     }
 
     public MailTemplate(String _Content, TemplateType _templateType) {
@@ -318,6 +328,9 @@ public class MailTemplate {
                 break;
             case FOLLOW_ORDER_STATUS:
                 this.Content = this.FollowOrderStatus(_Content);
+                break;
+            case SHCHEDULE_CREATION:
+                this.Content = this.ScheduleCreation(_Content);
                 break;
             default:
                 break;

@@ -1,16 +1,21 @@
 package project.global;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Map;
 
 import project.modules.item.Item;
+import project.modules.schedule.Schedule;
+import project.modules.transaction.DeliveryOrder;
 import project.modules.transaction.Report;
 import project.modules.transaction.Transaction;
 import project.modules.user.Retailer;
+
 public class PdfTemplate {
     private String Content;
     private ArrayList<Transaction> purchaseOrders;
     private ArrayList<Transaction> salesOrders;
+    private Schedule schedule;
 
 
     public String getContent() {
@@ -23,6 +28,10 @@ public class PdfTemplate {
 
     public ArrayList<Transaction> getSaleOrder() {
         return this.salesOrders;
+    }
+
+    public Schedule getSchedule() {
+        return this.schedule;
     }
 
     //For Transaction Module
@@ -322,9 +331,91 @@ public class PdfTemplate {
         return html.toString();
     }
 
+    private String DeliverySchedule() {
+
+        StringBuilder html = new StringBuilder();
+        html.append("<head>");
+        html.append("<style>");
+        html.append("body { font-family: Arial, sans-serif; margin: 20px; padding: 0; }");
+        html.append("h1 { text-align: center; }");
+        html.append("table { width: 100%; border-collapse: collapse; margin-top: 20px; }");
+        html.append("table, th, td { border: 1px solid black; }");
+        html.append("th, td { padding: 10px; text-align: left; }");
+        html.append(".supplier-details, .po-details { margin-top: 20px; }");
+        html.append(".total { text-align: right; margin-top: 20px; font-size: 1.2em; }");
+        html.append("</style>");
+        html.append("</head>");
+        html.append("<body style=\"border: 1px solid black; padding: 20px\">");
+
+        html.append("<h1>Delivery Schedule</h1>");
+
+        html.append("<div class=\"po-details\">");
+        html.append("<p><strong>Schedule Number:</strong> ").append(this.schedule.getSchedule_ID()).append("</p>");
+        html.append("<p><strong>Date:</strong> ").append(LocalDate.now())
+                .append("</p>");
+        html.append("</div>");
+
+        html.append("<div class=\"supplier-details\">");
+        Retailer retailer = new Retailer();
+        ArrayList<DeliveryOrder> deliveryOrders = DeliveryOrder.GetAll(this.schedule.getDeliveryOrder().getDoc_No());
+        if (deliveryOrders != null && !deliveryOrders.isEmpty()){
+            DeliveryOrder deliveryOrder = deliveryOrders.get(0);
+            retailer.setUserId(deliveryOrder.getTransaction_Recipient());
+            retailer.Get();
+        }
+        
+        
+        html.append("<p><strong>Retailer:</strong> ").append(retailer.getUserName())
+                .append("</p>");
+        html.append("<p><strong>Address:</strong> ").append(retailer.getRetailerAddress())
+                .append("</p>");
+        html.append("<p><strong>Email:</strong> ").append(retailer.getUserEmail())
+                .append("</p>");
+        html.append("</div>");
+
+        html.append("<table>");
+        html.append("<thead>");
+        html.append("<tr>");
+        html.append("<th>Doc_No</th>");
+        html.append("<th>Vehicle Plate</th>");
+        html.append("<th>Driver</th>");
+        html.append("<th>Delivery Date</th>");
+        html.append("<th>Time Slot</th>");
+        html.append("</tr>");
+        html.append("</thead>");
+        html.append("<tbody>");
+       
+        html.append("<tr>");
+        html.append("<td>").append(this.schedule.getDeliveryOrder().getDoc_No()).append("</td>");
+        html.append("<td>").append(this.schedule.getVehicle().getVehicle_Plate()).append("</td>");
+        html.append("<td>").append(this.schedule.getVehicle().getDriver()).append("</td>");
+        html.append("<td>").append(this.schedule.getSchedule_Date()).append("</td>");
+        html.append("<td>").append(this.schedule.getTime_Slot()).append("</td>");
+        html.append("</tr>");
+        
+
+        html.append("</tbody>");
+        html.append("</table>");
+
+        html.append("<p>Thank you for your business!</p>");
+
+        html.append("<div class=\"company-details\">");
+        html.append("<p><strong>Inventory Solution Company</strong></p>");
+        html.append("<p>Jalan Genting Kelang, Setapak, 53300 Kuala Lumpur, Federal Territory of Kuala Lumpur</p>");
+        html.append("<p>Email: tarumtmoviesociety@gmail.com | Phone: +6012-339 6197</p>");
+        html.append("<p><a href='#'>Website: www.InventorySolutionCompany.com</a></p>");
+        html.append("</div>");
+        html.append("</body>");
+
+        return html.toString();
+
+
+    }
+
     public enum TemplateType {
         PURCHASE_ORDER,
-        SALES_ORDER
+        SALES_ORDER,
+        DELIVERY_SCHEDULE
     }
 
     public enum ReportType {
@@ -341,6 +432,9 @@ public class PdfTemplate {
                 break;
             case SALES_ORDER:
                 this.Content = this.SaleOrder();
+                break;
+            case DELIVERY_SCHEDULE:
+                this.Content = this.DeliverySchedule();
                 break;
             default:
                 break;

@@ -3,7 +3,6 @@ package project.view;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Scanner;
 
 import project.global.UserInputHandler;
 import project.modules.transaction.Report;
