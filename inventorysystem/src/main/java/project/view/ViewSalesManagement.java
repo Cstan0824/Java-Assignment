@@ -121,7 +121,6 @@ public class ViewSalesManagement {
             System.out.println("1. Order Stock");
             System.out.println("2. View Order Records");
             System.out.println("3. Exit");
-            System.out.print("Choose your actions: ");
             int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 3);
             switch (choice) {
                 case 1:
@@ -190,6 +189,18 @@ public class ViewSalesManagement {
                 deliveryOrder.setTransaction_Modified_By(user.getUserId());  // Customize as needed
                 if (deliveryOrder.Add()) {
                     System.out.println("Delivery Order for " + deliveryOrder.getItem().getItem_Name() + " is added.");
+
+                    //add mail notification here
+                    MailSender mail;
+                    Retailer retailer = new Retailer();
+                    retailer.setUserId(salesOrder.getTransaction_Recipient());
+                    retailer.Get();
+                    mail = new MailSender(
+                    retailer.getUserEmail(),
+                    "Order Confirmed",
+                    new MailTemplate(salesOrder.getDoc_No() + " - Item " + deliveryOrder.getItem().getItem_Name(), MailTemplate.TemplateType.ORDER_CONFIRMATION));
+                    mail.Send();
+
                 } else {
                     System.out.println("Error adding Delivery Order.");
                 }
@@ -293,8 +304,7 @@ public class ViewSalesManagement {
             }
             //modify SO
             do {
-                do { 
-                    System.out.println("Enter Item ID: "); 
+                do {  
                     int itemId = UserInputHandler.getInteger("Enter Item ID: ", 1, 1000000);
 
                     Item item = new Item(itemId);
@@ -305,7 +315,6 @@ public class ViewSalesManagement {
                     if(salesOrder.Get()){
                         String choice;
                         do{
-                            System.out.println("Enter New Item Quantity: ");
                             int quantity = UserInputHandler.getInteger("Enter New Item Quantity: ", 0, 1000000);
                             salesOrder.setQuantity(quantity);
 
@@ -333,13 +342,19 @@ public class ViewSalesManagement {
                             System.out.println("Sales Order " + salesOrders.get(0).getDoc_No() + " with item " + salesOrder.getItem().getItem_Name() + " updated successfully.");
 
                             //add mail notification here
+                            MailSender mail;
+                            Retailer retailer = new Retailer();
+                            retailer.setUserId(salesOrder.getTransaction_Recipient());
+                            retailer.Get();
+                            mail = new MailSender(retailer.getUserEmail(), "Order Modification for " + salesOrder.getDoc_No(),
+                            new MailTemplate(salesOrder.getDoc_No() + " - " + salesOrder.getItem().getItem_Name(), MailTemplate.TemplateType.ORDER_CANCELLATION));
+                            mail.Send();
                         }
 
                     } else {
                         System.out.println("Item with ID " + itemId + " not found in Sales Order " + salesOrders.get(0).getDoc_No() + ".");
                         System.out.println("Please re-enter the item ID.");
                         error = true;
-
                     }
                 } while (error);
             } while (UserInputHandler.getConfirmation("Do you want to continue edit sales order? [Y/N]: ").equalsIgnoreCase("Y"));
@@ -365,6 +380,18 @@ public class ViewSalesManagement {
                 for (SalesOrder salesOrder : salesOrders) {
                     if (salesOrder.Remove()) {
                         System.out.println("Sales Order " + salesOrder.getDoc_No() + " with Item " + salesOrder.getItem().getItem_Name() +" cancelled successfully.");
+
+                        //add mail notification here
+                        MailSender mail;
+                        Retailer retailer = new Retailer();
+                        retailer.setUserId(salesOrder.getTransaction_Recipient());
+                        retailer.Get();
+                        mail = new MailSender(
+                        retailer.getUserEmail(),
+                        "Order Cancelled",
+                        new MailTemplate(salesOrder.getDoc_No(), MailTemplate.TemplateType.ORDER_CANCELLATION));
+                        mail.Send();
+        
                     } else {
                         System.out.println("Failed to cancel Sales Order " + salesOrder.getDoc_No() + ". Please try again.");
                     }

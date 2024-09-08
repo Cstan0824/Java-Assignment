@@ -286,6 +286,15 @@ public class MailTemplate {
                 "Inventory Solution Company";
     }
 
+    private String OrderMofification(String _DocNo) {
+
+        return "Dear Customer,<br/><br/>" +
+                "We are happy to inform that the order for " + _DocNo + " is successfully modified.<br/>"  + "Please let us know if you need any further assistance.<br/><br/>" +
+                "Best regards,<br/>" +
+                "Inventory Solution Company";
+    }
+
+    //For Schedule Module
     private String ScheduleCreation(String _DocNo) {
         return "Dear Customer,<br/><br/>" +
                 "We are happy to inform that the order for " + _DocNo + " is successfully confirmed and scheduled for delivery.<br/>" + "Please refer the attached document for the delivery schedule information.<br/>" +
@@ -294,16 +303,34 @@ public class MailTemplate {
                 "Inventory Solution Company";
     }
 
+    private String ScheduleCancellation(String _DocNo){
+        return "Dear Customer,<br/><br/>" +
+                "We acknowledge the cancellation of your delivery schedule for " + _DocNo + ".<br/>" +
+                "We regret any inconvenience caused.<br/><br/>" +
+                "Best regards,<br/>" +
+                "Inventory Solution Company";
+    }
+
+    private String ScheduleModification(String _DocNo) {
+
+        return "Dear Customer,<br/><br/>" +
+                "We are happy to inform that the delivery schedule for " + _DocNo + " has been modified.<br/>"  + "Please refer the attached document for the new delivery schedule information.<br/>" + "Please let us know if you need any further assistance.<br/><br/>" +
+                "Best regards,<br/>" +
+                "Inventory Solution Company";
+    }
 
     public enum TemplateType {
         OTP,
         PURCHASE_ORDER,
         SALES_ORDER,
         ORDER_CANCELLATION,
+        ORDER_MODIFICATION,
         REORDERING,
         ORDER_CONFIRMATION,
         FOLLOW_ORDER_STATUS,
-        SHCHEDULE_CREATION
+        SCHEDULE_CREATION,
+        SCHEDULE_CANCELLATION,
+        SCHEDULE_MODIFICATION
     }
 
     public MailTemplate(String _Content, TemplateType _templateType) {
@@ -320,6 +347,9 @@ public class MailTemplate {
             case ORDER_CANCELLATION:
                 this.Content = this.OrderCancellation(_Content);
                 break;
+            case ORDER_MODIFICATION:
+                this.Content = this.OrderMofification(_Content);
+                break;
             case REORDERING:
                 this.Content = this.Reordering(_Content);
                 break;
@@ -329,11 +359,19 @@ public class MailTemplate {
             case FOLLOW_ORDER_STATUS:
                 this.Content = this.FollowOrderStatus(_Content);
                 break;
-            case SHCHEDULE_CREATION:
+            case SCHEDULE_CREATION:
                 this.Content = this.ScheduleCreation(_Content);
+                break;
+            case SCHEDULE_CANCELLATION:
+                this.Content = this.ScheduleCancellation(_Content);
+                break;
+            case SCHEDULE_MODIFICATION:
+                this.Content = this.ScheduleModification(_Content);
                 break;
             default:
                 break;
         }
+
+        
     }
 }

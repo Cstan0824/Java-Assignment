@@ -110,7 +110,6 @@ public class ViewSchedule {
             Schedule selectedSchedule = new Schedule();
 
             do {
-                System.out.println("Enter Schedule ID: ");
                 int scheduleID = UserInputHandler.getInteger("Enter Schedule ID: ", 1, Integer.MAX_VALUE);
                 selectedSchedule = Schedule.Get(scheduleID);
                 if (selectedSchedule == null) {

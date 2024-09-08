@@ -331,6 +331,7 @@ public class PdfTemplate {
         return html.toString();
     }
 
+    //For Schedule Module
     private String DeliverySchedule() {
 
         StringBuilder html = new StringBuilder();
@@ -350,12 +351,12 @@ public class PdfTemplate {
         html.append("<h1>Delivery Schedule</h1>");
 
         html.append("<div class=\"po-details\">");
-        html.append("<p><strong>Schedule Number:</strong> ").append(this.schedule.getSchedule_ID()).append("</p>");
         html.append("<p><strong>Date:</strong> ").append(LocalDate.now())
                 .append("</p>");
         html.append("</div>");
 
         html.append("<div class=\"supplier-details\">");
+
         Retailer retailer = new Retailer();
         ArrayList<DeliveryOrder> deliveryOrders = DeliveryOrder.GetAll(this.schedule.getDeliveryOrder().getDoc_No());
         if (deliveryOrders != null && !deliveryOrders.isEmpty()){
@@ -363,16 +364,15 @@ public class PdfTemplate {
             retailer.setUserId(deliveryOrder.getTransaction_Recipient());
             retailer.Get();
         }
-        
-        
+
         html.append("<p><strong>Retailer:</strong> ").append(retailer.getUserName())
                 .append("</p>");
         html.append("<p><strong>Address:</strong> ").append(retailer.getRetailerAddress())
                 .append("</p>");
         html.append("<p><strong>Email:</strong> ").append(retailer.getUserEmail())
                 .append("</p>");
-        html.append("</div>");
 
+        html.append("</div>");
         html.append("<table>");
         html.append("<thead>");
         html.append("<tr>");
@@ -433,15 +433,10 @@ public class PdfTemplate {
             case SALES_ORDER:
                 this.Content = this.SaleOrder();
                 break;
-            case DELIVERY_SCHEDULE:
-                this.Content = this.DeliverySchedule();
-                break;
             default:
                 break;
         }
     }
-
-
 
     public PdfTemplate(Transaction _transaction, TemplateType _templateType) {
         this.purchaseOrders.add(_transaction);
@@ -455,6 +450,11 @@ public class PdfTemplate {
             default:
                 break;
         }
+    }
+
+    public PdfTemplate(Schedule schedule) {
+        this.schedule = schedule;
+        this.Content = this.DeliverySchedule();
     }
 
     public PdfTemplate(Report _report, ReportType _templateType) {

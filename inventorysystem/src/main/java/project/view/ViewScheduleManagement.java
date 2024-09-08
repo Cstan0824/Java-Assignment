@@ -1,14 +1,21 @@
 package project.view;
 
+import java.io.File;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import project.global.MailSender;
+import project.global.MailTemplate;
+import project.global.PdfConverter;
+import project.global.PdfTemplate;
 import project.global.UserInputHandler;
 import project.modules.schedule.Schedule;
 import project.modules.schedule.Vehicle;
 import project.modules.transaction.DeliveryOrder;
+import project.modules.user.Retailer;
 import project.modules.user.User;
 
 public class ViewScheduleManagement {
@@ -72,7 +79,6 @@ public class ViewScheduleManagement {
             System.out.println("6. Cancel Schedule");
             System.out.println("7. Vehicle Management");
             System.out.println("8. Exit");
-            System.out.print("Choose your actions: ");
             int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 8);
             switch (choice) {
                 case 1:
@@ -114,7 +120,6 @@ public class ViewScheduleManagement {
             System.out.println("1. Check Order");
             System.out.println("2. Check Order Schedule");
             System.out.println("3. Exit");
-            System.out.print("Choose your actions: ");
             int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 3);
             switch (choice) {
                 case 1:
@@ -183,7 +188,9 @@ public class ViewScheduleManagement {
     private void createSchedule() {
 
         if (user.getUserType().equals("Admin")) {
-
+            File file;
+            MailSender mail;
+            PdfConverter pdf;
             ArrayList<DeliveryOrder> deliveryOrders = viewDeliveryOrder.selectPendingDeliveryOrder();
 
             if (deliveryOrders == null || deliveryOrders.isEmpty()){
@@ -218,7 +225,25 @@ public class ViewScheduleManagement {
                 distinctTableLine();
 
                 //implement pdf and email here
-                
+                URL resource = getClass().getClassLoader()
+                .getResource("project/Report");
+                file = new File(
+                resource.getPath().replace("%20", " "), schedule.getDeliveryOrder().getDoc_No() + "-Schedule.pdf");
+
+                pdf = new PdfConverter(file,
+                        new PdfTemplate(schedule));
+                pdf.Save();
+
+                Retailer retailer = new Retailer();
+                retailer.setUserId(schedule.getDeliveryOrder().getTransaction_Recipient());
+                retailer.Get();
+
+                mail = new MailSender(
+                        retailer.getUserEmail(),
+                        "Delivery Schedule",
+                        new MailTemplate(schedule.getDeliveryOrder().getDoc_No(), MailTemplate.TemplateType.SCHEDULE_CREATION));
+                mail.AttachFile(file);
+                mail.Send();
 
             }else{
                 System.out.println("Failed to create schedule for delivery order "+ schedule.getDeliveryOrder().getDoc_No());
@@ -230,7 +255,9 @@ public class ViewScheduleManagement {
     private void scheduleModification() {
 
         if (user.getUserType().equals("Admin")) {
-
+            File file;
+            MailSender mail;
+            PdfConverter pdf;
             Schedule schedule = viewSchedule.selectPendingSchedule();
 
             if (schedule == null){
@@ -261,6 +288,28 @@ public class ViewScheduleManagement {
                 distinctTableLine();
                 System.out.print(schedule.toString());
                 distinctTableLine();
+
+                //implement pdf and email here
+                URL resource = getClass().getClassLoader()
+                .getResource("project/Report");
+                file = new File(
+                resource.getPath().replace("%20", " "),"New " + schedule.getDeliveryOrder().getDoc_No() + "-Schedule.pdf");
+
+                pdf = new PdfConverter(file,
+                        new PdfTemplate(schedule));
+                pdf.Save();
+
+                Retailer retailer = new Retailer();
+                retailer.setUserId(schedule.getDeliveryOrder().getTransaction_Recipient());
+                retailer.Get();
+
+                mail = new MailSender(
+                        retailer.getUserEmail(),
+                        "New Delivery Schedule",
+                        new MailTemplate(schedule.getDeliveryOrder().getDoc_No(), MailTemplate.TemplateType.SCHEDULE_MODIFICATION));
+                mail.AttachFile(file);
+                mail.Send();
+
             }else{
                 System.out.println("Failed to update schedule for delivery order "+ schedule.getDeliveryOrder().getDoc_No());
             }
@@ -278,6 +327,19 @@ public class ViewScheduleManagement {
             }
             if (schedule.Remove()) {
                 System.out.println("Schedule for delivery order " + schedule.getDeliveryOrder().getDoc_No() + " cancelled successfully.");
+
+                //add mail notification here
+                MailSender mail;
+                Retailer retailer = new Retailer();
+                DeliveryOrder deliveryOrder = DeliveryOrder.Get(schedule.getDeliveryOrder().getDoc_No());
+                retailer.setUserId(deliveryOrder.getTransaction_Recipient());
+                retailer.Get();
+                mail = new MailSender(
+                retailer.getUserEmail(),
+                "Delivery Schedule Cancelled",
+                new MailTemplate(deliveryOrder.getDoc_No(), MailTemplate.TemplateType.SCHEDULE_CANCELLATION));
+                mail.Send();
+
             } else {
                 System.out.println("Failed to cancel schedule for delivery order " + schedule.getDeliveryOrder().getDoc_No());
             }
@@ -297,7 +359,6 @@ public class ViewScheduleManagement {
             System.out.println("3. Modify Vehicle");
             System.out.println("4. Remove Vehicle");
             System.out.println("5. Exit");
-            System.out.print("Choose your actions: ");
             int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 5);
             switch (choice) {
                 case 1:
@@ -466,7 +527,6 @@ public class ViewScheduleManagement {
         boolean error;
         // User input to select the date
         do{
-            System.out.print("\nEnter the index number of the date you choose: ");
             index = UserInputHandler.getInteger("Enter the index number of the date you choose: ", 1, 30);
 
             if (index >= 1 && index <= 30) {
@@ -524,7 +584,6 @@ public class ViewScheduleManagement {
         boolean error;
         do{
             // User input to select the time slot
-            System.out.print("\nEnter the index number of the time slot you choose: ");
             index = UserInputHandler.getInteger("Enter the index number of the time slot you choose: ", 1, 5);
             
             if (index >= 1 && index <= 5) {

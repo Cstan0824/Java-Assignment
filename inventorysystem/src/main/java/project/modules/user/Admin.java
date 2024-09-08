@@ -278,8 +278,7 @@ public class Admin extends User {
         ArrayList<Request> pendingRequests = Request.viewRequest();
 
         if (pendingRequests != null && !pendingRequests.isEmpty()) {
-            System.out.println("Enter Request ID to further proceed: ");
-            int requestId = UserInputHandler.getInteger("Enter Request ID", 1, Integer.MAX_VALUE);
+            int requestId = UserInputHandler.getInteger("Enter Request ID to further proceed: ", 1, Integer.MAX_VALUE);
 
             Request selectedRequest = null;
             for (Request req : pendingRequests) {
