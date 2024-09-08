@@ -14,18 +14,7 @@ public class Validation {
         }
     }
 
-    public static boolean validateUserName(String userName) {
-        if(userName.matches("^[a-zA-Z0-9]{6,20}$")) 
-        {
-            return true;
-        }
-        else
-        {
-            System.out.println("Invalid User Name. Please enter a valid User Name: ");
-            return false;
-
-        }
-    }
+ 
 
     public static boolean validateUserPassword(String userPassword) {
         if(userPassword.matches("^(?=.*[@#$%^&+=])(?=\\S+$).{5,}$"))

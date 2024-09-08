@@ -111,11 +111,7 @@ public class Retailer extends User {
         System.out.println("Enter Retailer Name: ");
         this.setUserName(scanner.nextLine());
 
-        while (!Validation.validateUserName(this.getUserName())) {
-            System.out.println("Enter Retailer Name: ");
-            this.setUserName(scanner.nextLine());
-        }
-
+      
         System.out.println("Enter Retailer Password: ");
         this.setUserPassword(scanner.nextLine());
 
@@ -225,12 +221,7 @@ public class Retailer extends User {
                     case 1:
                         field = "Retailer_Name";
                         System.out.print("Enter new Retailer Name: ");
-                        value = scanner.nextLine();
-
-                        while (!Validation.validateUserName(value)) {
-                            System.out.print("Enter new Retailer Name: ");
-                            value = scanner.nextLine();
-                        }
+                        value = scanner.nextLine();          
                         break;
                     case 2:
                         field = "Retailer_Password";
@@ -315,10 +306,9 @@ public class Retailer extends User {
             request.setRetailer_ID(scanner.nextLine());
         }
 
-        do {
+        
             System.out.println("Enter Retailer Name: ");
             request.setRetailer_Name(scanner.nextLine());
-        } while (!Validation.validateUserName(request.getRetailer_Name()));
 
         do {
             System.out.println("Enter Retailer Password: ");

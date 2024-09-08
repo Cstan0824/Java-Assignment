@@ -31,11 +31,7 @@ public class Admin extends User {
         System.out.println("Enter Admin Name: ");
         this.setUserName(scanner.nextLine());
 
-        while(!Validation.validateUserName(this.getUserName())) {
-            System.out.println("Format not allowed");
-            System.out.println("Enter Admin Name: ");
-            this.setUserName(scanner.nextLine());
-        }
+       
 
         System.out.println("Enter Admin Password: ");
         this.setUserPassword(scanner.nextLine());
@@ -176,11 +172,6 @@ public class Admin extends User {
                     field = "Admin_Name";
                     System.out.print("Enter new Admin Name: ");
                     value = scanner.nextLine();
-    
-                    while (!Validation.validateUserName(value)) {
-                        System.out.println("Enter new Admin Name: ");
-                        value = scanner.nextLine();
-                    }
                     break;
                 case 2:
                     field = "Admin_Password";
@@ -275,6 +266,7 @@ public class Admin extends User {
                 break;
             case 7:
                 Notification();
+                //implement send notification to retailer
                 break;
             default:
                 System.out.println("Invalid choice.");
