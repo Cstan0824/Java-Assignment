@@ -25,8 +25,7 @@ public class Retailer extends User {
         super(userId, userName, userPassword, userEmail, "Retailer");
     }
 
-    public Retailer(String userId, String userName, String userPassword, String userEmail, String retailerAddress,
-            String retailerCreatedBy) {
+    public Retailer(String userId, String userName, String userPassword, String userEmail, String retailerAddress, String retailerCreatedBy) {
         super(userId, userName, userPassword, userEmail, "Retailer");
         this.retailerAddress = retailerAddress;
 
@@ -129,7 +128,7 @@ public class Retailer extends User {
         Add();
 
         System.out.println("Any more Retailers to add? (Y/N): ");
-        String choice = scanner.next();
+        String choice = scanner.nextLine();
 
         if (choice.equalsIgnoreCase("Y")) {
             createRetailer();
@@ -164,11 +163,15 @@ public class Retailer extends User {
             System.out.println("Retailer ID does not exist.");
             redirectToMenu(scanner);
         } else {
-            displayUserDetails();
+            System.out.println("Retailer Name: " + this.getUserName());
+            System.out.println("Retailer Email: " + this.getUserEmail());
+            System.out.println("Retailer Registration Date: " + this.getUserRegDate().toLocalDate());
+            System.out.println("Retailer Address: " + this.getRetailerAddress());
+
         }
 
         System.out.println("Are you sure you want to delete this Retailer? (Y/N): ");
-        String choice = scanner.next();
+        String choice = scanner.nextLine();
 
         if (choice.equalsIgnoreCase("Y")) {
 

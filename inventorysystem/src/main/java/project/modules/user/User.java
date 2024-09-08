@@ -307,7 +307,6 @@ public abstract class User {
                         
                     }
                     
-                    System.out.println("Login successful.");
                     setLoggedInUserId(this.userId);  // Set the logged-in user's ID
                     return true;  // Exit loop on successful login
                 }

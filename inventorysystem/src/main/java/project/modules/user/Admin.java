@@ -31,8 +31,6 @@ public class Admin extends User {
         System.out.println("Enter Admin Name: ");
         this.setUserName(scanner.nextLine());
 
-       
-
         System.out.println("Enter Admin Password: ");
         this.setUserPassword(scanner.nextLine());
 
@@ -50,14 +48,16 @@ public class Admin extends User {
         System.out.println("Admin created sucessfully ");
 
         System.out.println("Do you want to create another Admin? (Y/N): ");
-        String choice = scanner.next();
+        String choice = scanner.nextLine();
+        
 
         if (choice.equalsIgnoreCase("Y")) {
             createAdmin();
 
         } else {
-            redirectToMenu(scanner);
+            UserMenu();
         }
+
 
 
        
@@ -70,11 +70,8 @@ public class Admin extends User {
         do {
 
             System.out.println("Enter Admin ID to delete: ");
-            //adminID = scanner.nextLine();
             this.setUserId(scanner.nextLine());
-            //User selectedAdmin = new Admin(adminID);
-            //selectedAdmin.Get();
-            //selectedAdmin.Remove();
+            
 
         } while (!Validation.validateUserId(this.getUserId()));
     
@@ -268,6 +265,8 @@ public class Admin extends User {
                 Notification();
                 //implement send notification to retailer
                 break;
+            case 8:
+                return;
             default:
                 System.out.println("Invalid choice.");
                 break;
