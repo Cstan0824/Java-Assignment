@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import project.global.ConsoleUI;
 import project.modules.schedule.Vehicle;
 import project.modules.user.User;
 
@@ -69,6 +70,7 @@ public class ViewVehicle {
 
         } else {
             System.out.println("No vehicle found.");
+            ConsoleUI.pause();
         }
         return null;
     }
@@ -97,7 +99,7 @@ public class ViewVehicle {
             }
     
             System.out.println("Total available vehicle found in the database: " + totalVehicle);
-    
+            
             Vehicle selectedVehicle = null;
     
             do { 
@@ -113,6 +115,7 @@ public class ViewVehicle {
     
         } else {
             System.out.println("No vehicle found.");
+            ConsoleUI.pause();
             return null;
         }
     }
@@ -142,9 +145,12 @@ public class ViewVehicle {
             }
 
             System.out.println("Total Vehicle found in the database: " + totalVehicle);
+
+            ConsoleUI.pause();
+
         } else {
             System.out.println("No vehicle found.");
-          
+            ConsoleUI.pause();
         }
     }
 

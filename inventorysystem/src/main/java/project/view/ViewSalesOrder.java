@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import project.global.ConsoleUI;
 import project.modules.transaction.SalesOrder;
 import project.modules.user.Admin;
 import project.modules.user.Retailer;
@@ -77,7 +78,7 @@ public class ViewSalesOrder {
             ArrayList<SalesOrder> selectedSalesOrderList;
 
             do{
-                System.out.println("Enter Sales Order Doc No: ");
+                System.out.print("Enter Sales Order Doc No: ");
                 String docNo = sc.nextLine();
 
                 selectedSalesOrderList = SalesOrder.GetAll(docNo);
@@ -85,7 +86,7 @@ public class ViewSalesOrder {
                 if (selectedSalesOrderList != null && !selectedSalesOrderList.isEmpty()) {
                     //display and save into array list
                     String[] selectedColumnNames = {"SO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
-                    System.out.println("Sales Order List found for Doc No: " + docNo);
+                    System.out.println("\n\nSales Order List found for Doc No: " + docNo);
                     normalTableLine();
                     System.out.printf("|");
                     for (String columnName : selectedColumnNames) {
@@ -98,6 +99,7 @@ public class ViewSalesOrder {
                         System.out.print(salesOrder.toString());
                         normalTableLine();
                     }
+                    ConsoleUI.pause();
                     return selectedSalesOrderList;
                 } else {
                     System.out.println("No Sales Order found with the given Doc No. Please try again.");
@@ -141,13 +143,13 @@ public class ViewSalesOrder {
             do{
                 switch (mode) {
                     case "createDO":
-                        System.out.println("Enter Pending Sales Order Doc_No to create Delivery Order: ");
+                        System.out.print("\nEnter Pending Sales Order Doc_No to create Delivery Order: ");
                         break;
                     case "Modify":
-                        System.out.println("Enter Pending Sales Order Doc_No to Modify: ");
+                        System.out.print("\nEnter Pending Sales Order Doc_No to Modify: ");
                         break;
                     case "Remove":
-                        System.out.println("Enter Pending Sales Order Doc_No to Cancel: ");
+                        System.out.print("\nEnter Pending Sales Order Doc_No to Cancel: ");
                         break;
                     default:
                         break;
@@ -160,7 +162,7 @@ public class ViewSalesOrder {
                 if (selectedSalesOrderList != null && !selectedSalesOrderList.isEmpty()) {
                     //display and save into array list
                     String[] selectedColumnNames = {"SO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
-                    System.out.println("Sales Order List found for Doc No: " + docNo);
+                    System.out.println("\n\nSales Order List found for Doc No: " + docNo);
                     normalTableLine();
                     System.out.printf("|");
                     for (String columnName : selectedColumnNames) {
@@ -173,12 +175,16 @@ public class ViewSalesOrder {
                         System.out.print(salesOrder.toString());
                         normalTableLine();
                     }
-
+                    ConsoleUI.pause();
                     return selectedSalesOrderList;
                 } else {
                     System.out.println("No Pending Sales Order found with the given Doc_No. Please try again.");
+                    
                 }
             } while (selectedSalesOrderList == null ||selectedSalesOrderList.isEmpty());
+        }else {
+            System.out.println("No Pending Sales Order found.");
+            ConsoleUI.pause();
         }
 
         return null;

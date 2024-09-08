@@ -158,7 +158,7 @@ public class Admin extends User {
             System.out.println("1. Admin Name");
             System.out.println("2. Admin Password");
             System.out.println("3. Admin Email");
-            int choice = UserInputHandler.getInteger("Enter choice: ", 1, 3);
+            int choice = UserInputHandler.getInteger("\nEnter choice: ", 1, 3);
             
     
             String field;
@@ -238,7 +238,7 @@ public class Admin extends User {
           System.out.println("6. Delete Retailer");
           System.out.println("7. Notification Retailer");
           System.out.println("8. Exit");
-          int choice = UserInputHandler.getInteger("Enter choice: ", 1, 8);
+          int choice = UserInputHandler.getInteger("\nEnter choice: ", 1, 8);
 
   
           switch (choice) {

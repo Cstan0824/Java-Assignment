@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import project.global.ConsoleUI;
 import project.global.MailSender;
 import project.global.MailTemplate;
 import project.global.PdfConverter;
@@ -70,7 +71,8 @@ public class ViewScheduleManagement {
     public void adminMenu() {
         boolean exit = false;
         while(!exit) {
-            System.out.println("\n\nSchedule Management");
+            ConsoleUI.clearScreen();
+            System.out.println("Schedule Management");
             System.out.println("1. View Delivery Order Records");
             System.out.println("2. Cancel Delivery Order");
             System.out.println("3. View Schedule Records");
@@ -116,7 +118,8 @@ public class ViewScheduleManagement {
 
         boolean exit = false;
         while(!exit) {
-            System.out.println("\n\nSchedule Management");
+            ConsoleUI.clearScreen();
+            System.out.println("Schedule Management");
             System.out.println("1. Check Order");
             System.out.println("2. Check Order Schedule");
             System.out.println("3. Exit");
@@ -144,6 +147,7 @@ public class ViewScheduleManagement {
 
     //DO management
     private void viewDORecords() {
+        ConsoleUI.clearScreen();
         if (user.getUserType().equals("Admin") || user.getUserType().equals("Retailer")) {
             boolean error = false;
             do {
@@ -160,14 +164,22 @@ public class ViewScheduleManagement {
 
     //cancel DO so that can edit Sales Order
     private void DOCancellation() {
+        ConsoleUI.clearScreen();
         if (user.getUserType().equals("Admin")) {
             ArrayList<DeliveryOrder> deliveryOrders = viewDeliveryOrder.selectPendingDeliveryOrder();
             if (deliveryOrders == null || deliveryOrders.isEmpty()) {
                 System.out.println("No Delivery Order found.");
             }else {
+
+                String choice = UserInputHandler.getConfirmation("Are you sure you want to cancel the selected delivery order? ");
+
+                if (!choice.equalsIgnoreCase("Y")) {
+                    return;
+                }
+
                 for (DeliveryOrder deliveryOrder : deliveryOrders) {
                     if (deliveryOrder.Remove()) {
-                        System.out.println("Delivery Order " + deliveryOrder.getDoc_No() + " cancelled successfully.");
+                        System.out.println("\nDelivery Order " + deliveryOrder.getDoc_No() + " cancelled successfully.");
                     } else {
                         System.out.println("Failed to cancel delivery order " + deliveryOrder.getDoc_No());
                     }
@@ -178,6 +190,7 @@ public class ViewScheduleManagement {
     
     //schedule management
     private void viewScheduleRecords() {
+        ConsoleUI.clearScreen();
         if (user.getUserType().equals("Admin") || user.getUserType().equals("Retailer")) {
             
             viewSchedule.displayScheduleList();
@@ -186,6 +199,7 @@ public class ViewScheduleManagement {
     }
 
     private void createSchedule() {
+        ConsoleUI.clearScreen();
 
         if (user.getUserType().equals("Admin")) {
             File file;
@@ -203,14 +217,15 @@ public class ViewScheduleManagement {
             Schedule schedule = new Schedule(deliveryOrder);
             schedule.setSchedule_Date(chooseDate(LocalDate.now()));
             schedule.setTime_Slot(chooseTime());
+            System.out.println("\nPlease select a vehicle for the delivery schedule: ");
             schedule.setVehicle(viewVehicle.selectVehicleFromList(schedule.getTime_Slot(),schedule.getSchedule_Date()));
             schedule.setStatus(0);
 
             if (schedule.Add()){
-                System.out.println("Schedule for delivery order "+ schedule.getDeliveryOrder().getDoc_No()+ " created successfully.");
+                System.out.println("\n\nSchedule for delivery order "+ schedule.getDeliveryOrder().getDoc_No()+ " created successfully.");
 
                 //display created schedule
-                System.out.println("Created Schedule Details");
+                System.out.println("\n\nCreated Schedule Details");
 
                 String[] columnNames = {"ScheduleID", "DocNo", "Vehicle Plate","Driver", "Time Slot", "Date", "Status"};
                 distinctTableLine();
@@ -223,6 +238,8 @@ public class ViewScheduleManagement {
                 distinctTableLine();
                 System.out.print(schedule.toString());
                 distinctTableLine();
+
+                ConsoleUI.pause();
 
                 //implement pdf and email here
                 URL resource = getClass().getClassLoader()
@@ -253,6 +270,7 @@ public class ViewScheduleManagement {
     }
 
     private void scheduleModification() {
+        ConsoleUI.clearScreen();
 
         if (user.getUserType().equals("Admin")) {
             File file;
@@ -275,9 +293,9 @@ public class ViewScheduleManagement {
                 System.out.println("Schedule for delivery order "+ schedule.getDeliveryOrder().getDoc_No()+ " updated successfully.");
 
                 //display updated schedule
-                System.out.println("Updated Schedule Details");
+                System.out.println("\n\nUpdated Schedule Details");
 
-                String[] columnNames = {"ScheduleID", "DocNo", "Vehicle Plate","Driver", "Time Slot", "Date"};
+                String[] columnNames = {"ScheduleID", "DocNo", "Vehicle Plate","Driver", "Time Slot", "Date", "Status"};
                 distinctTableLine();
                 System.out.printf("|");
                 for (String columnName : columnNames) {
@@ -288,6 +306,8 @@ public class ViewScheduleManagement {
                 distinctTableLine();
                 System.out.print(schedule.toString());
                 distinctTableLine();
+
+                ConsoleUI.pause();
 
                 //implement pdf and email here
                 URL resource = getClass().getClassLoader()
@@ -320,9 +340,15 @@ public class ViewScheduleManagement {
     }
     
     private void scheduleCancellation() {
+        ConsoleUI.clearScreen();
+
         if (user.getUserType().equals("Admin")) {
             Schedule schedule = viewSchedule.selectPendingSchedule();
             if (schedule == null) {
+                return;
+            }
+            String choice = UserInputHandler.getConfirmation("Are you sure you want to cancel the selected schedule?");
+            if (!choice.equalsIgnoreCase("Y")) {
                 return;
             }
             if (schedule.Remove()) {
@@ -350,10 +376,10 @@ public class ViewScheduleManagement {
     //vehicle management
 
     private void vehicleManagementMenu(){
-
         boolean exit = false;
         while(!exit) {
-            System.out.println("\n\nVehicle Management");
+            ConsoleUI.clearScreen();
+            System.out.println("Vehicle Management");
             System.out.println("1. View Vehicle Records");
             System.out.println("2. Add Vehicle");
             System.out.println("3. Modify Vehicle");
@@ -384,6 +410,8 @@ public class ViewScheduleManagement {
     }
 
     private void viewVehicleRecords() {
+        ConsoleUI.clearScreen();
+
         if (user.getUserType().equals("Admin")) {
             
             viewVehicle.displayVehicleList();
@@ -392,6 +420,8 @@ public class ViewScheduleManagement {
     }
 
     private void addVehicle() {
+        ConsoleUI.clearScreen();
+
         if (user.getUserType().equals("Admin")) {
             Vehicle vehicle = new Vehicle();
             
@@ -426,6 +456,9 @@ public class ViewScheduleManagement {
                 vehicleTableLine();
                 System.out.print(vehicle.toString());
                 vehicleTableLine();
+                
+                ConsoleUI.pause();
+                
             } else {
                 System.out.println("Failed to add vehicle.");
             }
@@ -433,6 +466,8 @@ public class ViewScheduleManagement {
     }
 
     private void modifyVehicle() {
+        ConsoleUI.clearScreen();
+
 
         if (user.getUserType().equals("Admin")) {
             Vehicle vehicle = viewVehicle.selectVehicleFromList();
@@ -446,12 +481,12 @@ public class ViewScheduleManagement {
             vehicle.setDriver(driverName);
 
             if (vehicle.Update()) {
-                System.out.println("Vehicle " + vehicle.getVehicle_Plate() + " updated successfully.");
+                System.out.println("\n\nVehicle " + vehicle.getVehicle_Plate() + " updated successfully.");
 
                 //display updated vehicle
                 String[] columnNames = {"Vehicle Plate", "Vehicle Type", "Vehicle Driver"};
 
-                System.out.println("Updated Vehicle Details");
+                System.out.println("\n\nUpdated Vehicle Details");
 
                 vehicleTableLine();
                 System.out.printf("|");
@@ -463,6 +498,8 @@ public class ViewScheduleManagement {
                 vehicleTableLine();
                 System.out.print(vehicle.toString());
                 vehicleTableLine();
+
+                ConsoleUI.pause();
             } else {
                 System.out.println("Failed to update vehicle " + vehicle.getVehicle_Plate());
             }
@@ -473,12 +510,21 @@ public class ViewScheduleManagement {
     }
     
     private void removeVehicle() {
+        ConsoleUI.clearScreen();
+
         if (user.getUserType().equals("Admin")) {
             Vehicle vehicle = viewVehicle.selectVehicleFromList();
             if (vehicle == null) {
                 System.out.println("No Vehicle found.");
                 return;
             }
+            
+            String choice = UserInputHandler.getConfirmation("Are you sure you want to remove the selected vehicle? ");
+
+            if (!choice.equalsIgnoreCase("Y")) {
+                return;
+            }
+
             if (vehicle.Remove()) {
                 System.out.println("Vehicle " + vehicle.getVehicle_Plate() + " removed successfully.");
 
@@ -489,6 +535,8 @@ public class ViewScheduleManagement {
                         schedule.Remove();
                     }
                 }
+
+                ConsoleUI.pause();
             } else {
                 System.out.println("Failed to remove vehicle " + vehicle.getVehicle_Plate());
             }
@@ -507,7 +555,7 @@ public class ViewScheduleManagement {
         }
 
         // Display the header
-        System.out.println("Please choose a date by entering the corresponding index number:");
+        System.out.println("\n\nPlease choose a date by entering the corresponding index number:");
         System.out.println(repeatChar('-', (columnWidth + 3) * 5)); // Add separator line
 
         // Display the index numbers and dates in a table format
@@ -532,6 +580,7 @@ public class ViewScheduleManagement {
             if (index >= 1 && index <= 30) {
                 LocalDate selectedDate = dates[index - 1];
                 System.out.println("You have selected: " + selectedDate);
+                ConsoleUI.pause();
                 return selectedDate;
             } else {
                 System.out.println("Invalid index. Please select a number between 1 and 30.");
@@ -589,6 +638,7 @@ public class ViewScheduleManagement {
             if (index >= 1 && index <= 5) {
                 LocalTime selectedTimeSlot = timeSlots[index - 1];
                 System.out.println("You have selected: " + selectedTimeSlot);
+                ConsoleUI.pause();
                 return selectedTimeSlot;
             } else {
                 System.out.println("Invalid index. Please select a number between 1 and 5.");

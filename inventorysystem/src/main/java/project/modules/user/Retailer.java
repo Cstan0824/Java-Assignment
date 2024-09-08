@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
+import project.global.ConsoleUI;
 import project.global.SqlConnector;
 import project.global.UserInputHandler;
 
@@ -215,7 +216,7 @@ public class Retailer extends User {
                 System.out.println("2. Retailer Password");
                 System.out.println("3. Retailer Email");
                 System.out.println("4. Retailer Address");
-                int choice = UserInputHandler.getInteger("Enter choice (1-4): ", 1, 4);
+                int choice = UserInputHandler.getInteger("\nEnter choice (1-4): ", 1, 4);
 
                 String field;
                 String value;
@@ -264,12 +265,12 @@ public class Retailer extends User {
 
     @Override
     public void UserMenu() {
-
+        ConsoleUI.clearScreen();
         System.out.println("Retailer User Management System");
         System.out.println("1. View Retailer");
         System.out.println("2. Update Retailer");
         System.out.println("3. Exit");
-        int choice = UserInputHandler.getInteger("Enter choice: ", 1, 3);
+        int choice = UserInputHandler.getInteger("\nEnter choice: ", 1, 3);
 
         switch (choice) {
             case 1:

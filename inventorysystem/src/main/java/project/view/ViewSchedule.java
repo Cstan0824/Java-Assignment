@@ -2,6 +2,7 @@ package project.view;
 
 import java.util.ArrayList;
 
+import project.global.ConsoleUI;
 import project.global.UserInputHandler;
 import project.modules.schedule.Schedule;
 import project.modules.user.Admin;
@@ -69,10 +70,11 @@ public class ViewSchedule {
             }
 
             System.out.println("Total Schedule found in the database: " + totalSchedule);
-
+            ConsoleUI.pause();
             
         } else {
             System.out.println("No schedule found.");
+            ConsoleUI.pause();
         }
     }
 
@@ -121,6 +123,7 @@ public class ViewSchedule {
 
         } else {
             System.out.println("No pending schedule found.");
+            ConsoleUI.pause();
             return null;
         }
     }

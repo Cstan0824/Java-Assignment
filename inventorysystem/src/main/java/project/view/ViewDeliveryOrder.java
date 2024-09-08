@@ -3,6 +3,7 @@ package project.view;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import project.global.ConsoleUI;
 import project.modules.transaction.DeliveryOrder;
 import project.modules.user.Admin;
 import project.modules.user.Retailer;
@@ -51,7 +52,7 @@ public class ViewDeliveryOrder {
 
         if (deliveryOrderList != null && !deliveryOrderList.isEmpty() ){
 
-            System.out.println("Distinct Delivery Order List");
+            System.out.println("Delivery Order List");
             distinctTableLine();
             System.out.printf("|");
             for (String columnName : columnNames) {
@@ -71,15 +72,15 @@ public class ViewDeliveryOrder {
             ArrayList<DeliveryOrder> selectedDeliveryOrderList;
 
             do{
-                System.out.println("Enter Delivery Order Doc No: ");
+                System.out.print("Enter Delivery Order Doc No: ");
                 String docNo = sc.nextLine();
 
                 selectedDeliveryOrderList = DeliveryOrder.GetAll(docNo);
 
                 if (selectedDeliveryOrderList != null && !selectedDeliveryOrderList.isEmpty()) {
                     //display and save into array list
-                    String[] selectedColumnNames = {"SO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
-                    System.out.println("Sales Order List found for Doc No: " + docNo);
+                    String[] selectedColumnNames = {"DO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
+                    System.out.println("\n\nSales Order List found for Doc No: " + docNo);
                     normalTableLine();
                     System.out.printf("|");
                     for (String columnName : selectedColumnNames) {
@@ -92,10 +93,11 @@ public class ViewDeliveryOrder {
                         System.out.print(DO.toString());
                         normalTableLine();
                     }
-
+                    ConsoleUI.pause();
                     return selectedDeliveryOrderList;
                 } else {
                     System.out.println("No Delivery Order found with the given Doc No. Please try again.");
+                    
                 }
             } while (selectedDeliveryOrderList == null ||selectedDeliveryOrderList.isEmpty());
         }
@@ -133,7 +135,7 @@ public class ViewDeliveryOrder {
             ArrayList<DeliveryOrder> selectedDeliveryOrderList;
 
             do{
-                System.out.println("Enter Delivery Order Doc No: ");
+                System.out.print("Enter Delivery Order Doc No: ");
                 String docNo = sc.nextLine();
 
                 selectedDeliveryOrderList = DeliveryOrder.GetAll(docNo);
@@ -141,7 +143,7 @@ public class ViewDeliveryOrder {
                 if (selectedDeliveryOrderList != null && !selectedDeliveryOrderList.isEmpty()) {
                     //display and save into array list
                     String[] selectedColumnNames = {"DO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
-                    System.out.println("Delivery Order List found for Doc No: " + docNo);
+                    System.out.println("\n\nDelivery Order List found for Doc No: " + docNo);
                     normalTableLine();
                     System.out.printf("|");
                     for (String columnName : selectedColumnNames) {
@@ -154,7 +156,7 @@ public class ViewDeliveryOrder {
                         System.out.print(DO.toString());
                         normalTableLine();
                     }
-
+                    ConsoleUI.pause();
                     return selectedDeliveryOrderList;
                 } else {
                     System.out.println("No Delivery Order found with the given Doc No. Please try again.");
@@ -162,6 +164,7 @@ public class ViewDeliveryOrder {
             } while (selectedDeliveryOrderList == null ||selectedDeliveryOrderList.isEmpty());
         }else{
             System.out.println("No pending Delivery Order found.");
+            ConsoleUI.pause();
         }
 
         return null;

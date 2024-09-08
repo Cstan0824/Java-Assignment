@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import project.global.ConsoleUI;
 import project.global.MailSender;
 import project.global.MailTemplate;
 import project.global.PdfConverter;
@@ -63,6 +64,7 @@ public class ViewPurchaseManagement {
     public void menu() {
         boolean exit = false;
         while (!exit) {
+            ConsoleUI.clearScreen();
             System.out.println("\n=============================");
             System.out.println("       Purchase Management       ");
             System.out.println("=============================");
@@ -191,6 +193,7 @@ public class ViewPurchaseManagement {
 
         // Menu for order modification
         while (!backToPurchaseManagement) {
+            ConsoleUI.clearScreen();
             System.out.println("\n===============================");
             System.out.println("Order Modification");
             System.out.println("===============================");
@@ -410,6 +413,7 @@ public class ViewPurchaseManagement {
 
     // Helper method to display order details
     private void displayOrderDetails(ArrayList<PurchaseOrder> purchaseOrders) {
+        ConsoleUI.clearScreen();
         if (purchaseOrders.isEmpty()) {
             System.out.println("No purchase orders to display.");
             return;
@@ -485,6 +489,7 @@ public class ViewPurchaseManagement {
         boolean orderManaged = false;
 
         while (!backToPurchaseManagement) {
+            ConsoleUI.clearScreen();
             System.out.println("\n===============================");
             System.out.println("       Stock Status");
             System.out.println("===============================");

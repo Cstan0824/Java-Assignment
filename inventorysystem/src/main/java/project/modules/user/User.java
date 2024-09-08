@@ -1,4 +1,5 @@
 package project.modules.user;
+import java.io.Console;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -240,16 +241,16 @@ public abstract class User {
         while (attempts < MAX_ATTEMPTS) {
 
             //input user id and password
-            System.out.println("Enter " + this.getUserType() + " ID: ");
+            System.out.print("\n\nEnter " + this.getUserType() + " ID: ");
             this.setUserId(scanner.nextLine());
 
             while (!Validation.validateUserId(this.getUserId())) {
-                System.out.println("Enter " + this.getUserType() + " ID: ");
+                System.out.print("Enter " + this.getUserType() + " ID: ");
                 this.setUserId(scanner.nextLine());
             }
 
-            System.out.println("Enter " + this.getUserType() + " Password: ");
-            this.setUserPassword(scanner.nextLine());
+            System.out.print("Enter " + this.getUserType() + " Password: ");
+            this.setUserPassword(getPassword());
 
             //connect to database and check existence of user
             try (Connection conn = DriverManager.getConnection(url, user, password)) {
@@ -329,7 +330,7 @@ public abstract class User {
             System.out.println("1. Try again");
             System.out.println("2. Forgot Password");
             System.out.println("3. Exit");
-            int choice = UserInputHandler.getInteger("Enter choice: ", 1, 3);
+            int choice = UserInputHandler.getInteger("\nEnter choice: ", 1, 3);
 
             switch (choice) {
                 case 1:
@@ -516,7 +517,20 @@ public abstract class User {
         return _prefix + String.format("%05d", SystemRunNo.Get(_prefix));
     }
 
+    public static String getPassword() {
+        Console console = System.console();
 
+        if (console == null) {
+            System.out.println("No console available");
+            return null;
+        }
+
+        // Prompt for password input
+        char[] passwordChars = console.readPassword();
+
+        // Convert char array to String
+        return new String(passwordChars);
+    }
 
 
 

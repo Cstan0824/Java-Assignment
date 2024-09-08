@@ -1,5 +1,6 @@
 package project.view;
 
+import project.global.ConsoleUI;
 import project.global.UserInputHandler;
 import project.modules.user.Admin;
 import project.modules.user.Retailer;
@@ -11,13 +12,14 @@ public class ViewUser {
 
     //method - menu
     public void menu() {
-       
+        
         while (true){
+        ConsoleUI.clearScreen();    
         System.out.println("Are you ...");
         System.out.println("1. Admin");
         System.out.println("2. Retailer");
         System.out.println("3. Exit");
-        int choice = UserInputHandler.getInteger("Enter choice (1-3): ", 1, 3);
+        int choice = UserInputHandler.getInteger("\nEnter choice (1-3): ", 1, 3);
 
             switch (choice) {
                 case 1:
@@ -32,8 +34,7 @@ public class ViewUser {
                     retailerLog();
                     break;
                 case 3:
-                    System.out.println("Thanks for using our system.");
-                    System.out.println("Goodbye.\n\n");
+                    ConsoleUI.exitScreen();
                     System.exit(1);
                 default:
                     System.out.println("Invalid choice.");
@@ -46,16 +47,15 @@ public class ViewUser {
     private void retailerLog() {
         boolean back = false;
         while (!back) {
+            ConsoleUI.clearScreen();
             System.out.println("1. Login");
             System.out.println("2. Register");
             System.out.println("3. Back");
 
-            switch (UserInputHandler.getInteger("Enter choice: ", 1, 3)) {
+            switch (UserInputHandler.getInteger("\nEnter choice: ", 1, 3)) {
                 case 1:
                     if (user.handleLogin()) {
                         RetailerAccess();
-                        user.UserMenu();
-                        System.out.println("Login successful.");
                     }
                     break;
                 case 2:
@@ -74,12 +74,13 @@ public class ViewUser {
     private void RetailerAccess() {
         boolean logOut = false;
         while (!logOut) {
+            ConsoleUI.clearScreen();
             System.out.println("1. Profile Management"); //Retailer
             System.out.println("2. Purchase Management"); // Sales Order
             System.out.println("3. Schedule Management"); // Delivery Order
             System.out.println("4. log out");
 
-            switch (UserInputHandler.getInteger("Enter choice: ", 1, 4)) {
+            switch (UserInputHandler.getInteger("\nEnter choice: ", 1, 4)) {
                 case 1:
                     user.UserMenu();
                     break;
@@ -104,6 +105,7 @@ public class ViewUser {
     private void AdminAccess() {
         boolean logOut = false;
         while (!logOut) {
+            ConsoleUI.clearScreen();
             System.out.println("1. Admin & Retailer Management"); //Admin and Retailer
             System.out.println("2. Vendor Management"); //Vendor
             System.out.println("3. Item Management"); //Item，Auto Replenishment
@@ -113,7 +115,7 @@ public class ViewUser {
             System.out.println("7. Report Management"); //Report
             System.out.println("8. log out");
 
-            switch (UserInputHandler.getInteger("Enter choice: ", 1, 8)) {
+            switch (UserInputHandler.getInteger("\nEnter choice: ", 1, 8)) {
                 case 1: 
                     user.UserMenu();
                     break;

@@ -4,8 +4,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Scanner;
 
+import project.global.ConsoleUI;
 import project.global.MailSender;
 import project.global.MailTemplate;
 import project.global.PdfConverter;
@@ -23,8 +23,6 @@ import project.modules.user.User;
 //use by retailer to order stock, check their order records
 //use by admin to view SO list, receive SO and Create DO
 public class ViewSalesManagement {
-
-    private static final Scanner sc = new Scanner(System.in);
     private ViewSalesOrder viewSalesOrder;
     private ViewItem viewItem;
     private static User user;
@@ -83,7 +81,8 @@ public class ViewSalesManagement {
     public void adminMenu() {
         boolean exit = false;
         while(!exit) {
-            System.out.println("\n\nSales Management");
+            ConsoleUI.clearScreen();
+            System.out.println("Sales Management");
             System.out.println("1. View Sales Order Records");
             System.out.println("2. Create Delivery Order");
             System.out.println("3. Modify Sales Order");
@@ -104,7 +103,8 @@ public class ViewSalesManagement {
                     orderCancellation();
                     break;
                 case 5:
-                    return;
+                    exit = true;
+                    break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     break;
@@ -117,7 +117,8 @@ public class ViewSalesManagement {
 
         boolean exit = false;
         while(!exit) {
-            System.out.println("\n\nOrder Management");
+            ConsoleUI.clearScreen();
+            System.out.println("Order Management");
             System.out.println("1. Order Stock");
             System.out.println("2. View Order Records");
             System.out.println("3. Exit");
@@ -143,9 +144,11 @@ public class ViewSalesManagement {
     }
 
     private void viewOrderRecords() {
+        
         if (user.getUserType().equals("Admin") || user.getUserType().equals("Retailer")) {
             boolean error = false;
             do {
+                ConsoleUI.clearScreen();
                 ArrayList<SalesOrder> salesOrders = viewSalesOrder.selectSalesOrderFromList();
                 if (salesOrders == null || salesOrders.isEmpty()){
                     if (user.getUserType().equals("Admin")) {
@@ -166,7 +169,7 @@ public class ViewSalesManagement {
 
     //for admin to create DO
     private void createDeliveryOrder() {
-
+        ConsoleUI.clearScreen();
         if (user.getUserType().equals("Admin")) {
             ArrayList<SalesOrder> salesOrders = viewSalesOrder.selectPendingSalesOrder("createDO");
 
@@ -188,7 +191,7 @@ public class ViewSalesManagement {
                 deliveryOrder.setTransaction_Created_By(user.getUserId());  // Customize as needed
                 deliveryOrder.setTransaction_Modified_By(user.getUserId());  // Customize as needed
                 if (deliveryOrder.Add()) {
-                    System.out.println("Delivery Order for " + deliveryOrder.getItem().getItem_Name() + " is added.");
+                    System.out.println("Delivery Order for " + deliveryOrder.getQuantity() + " " + deliveryOrder.getItem().getItem_Name() + " is added.");
 
                     //add mail notification here
                     MailSender mail;
@@ -198,7 +201,7 @@ public class ViewSalesManagement {
                     mail = new MailSender(
                     retailer.getUserEmail(),
                     "Order Confirmed",
-                    new MailTemplate(salesOrder.getDoc_No() + " - Item " + deliveryOrder.getItem().getItem_Name(), MailTemplate.TemplateType.ORDER_CONFIRMATION));
+                    new MailTemplate(salesOrder.getDoc_No() + " - " + deliveryOrder.getQuantity() + " " + deliveryOrder.getItem().getItem_Name(), MailTemplate.TemplateType.ORDER_CONFIRMATION));
                     mail.Send();
 
                 } else {
@@ -213,7 +216,7 @@ public class ViewSalesManagement {
 
             String[] columnNames = {"DO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
             if (deliveryOrders != null && !deliveryOrders.isEmpty()) {
-                System.out.println("Delivery Order List for Doc No: " + docNo);
+                System.out.println("\n\nDelivery Order List for Doc No: " + docNo);
                 normalTableLine();
                 System.out.printf("|");
                 for (String columnName : columnNames) {
@@ -227,6 +230,8 @@ public class ViewSalesManagement {
                     normalTableLine();
                 }
             }
+
+            ConsoleUI.pause();
 
         }
 
@@ -245,31 +250,46 @@ public class ViewSalesManagement {
             String docNo = new SalesOrder().GenerateDocNo();
 
             do {
+            ConsoleUI.clearScreen();
             Item item = viewItem.selectItemFromList();
             SalesOrder salesOrder = new SalesOrder(docNo, item);
             salesOrder.setQuantity(UserInputHandler.getInteger("Enter Quantity (must be greater than 0): ", 1, 1000000));
             salesOrder.setTransaction_Recipient(user.getUserId());
             salesOrder.setTransaction_Modified_By(user.getUserId());
             salesOrder.setTransaction_Created_By(user.getUserId());
-            
-
             newOrders.add(salesOrder);
             
-
-            } while (UserInputHandler.getConfirmation("Do you want to continue adding item? [Y/N]: ")
+            } while (UserInputHandler.getConfirmation("Do you want to continue adding item? ")
                 .equalsIgnoreCase("Y"));
 
-        // Add all purchase orders to the database
+                
+                //display created SO
+                String[] columnNames = {"SO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
+                System.out.println("\n\nPurchase Order List for Doc No: " + docNo);
+                normalTableLine();
+                System.out.printf("|");
+                for (String columnName : columnNames) {
+                    System.out.printf(" %-15s ", columnName);
+                    System.out.printf("|");
+                }
+                System.out.println("");
+                normalTableLine();
+                for (SalesOrder salesOrder : newOrders) {
+                    System.out.print(salesOrder.toString());
+                    normalTableLine();
+                }
+            ConsoleUI.pause();    
+            System.out.println();
+            // Add all purchase orders to the database
             for (SalesOrder salesOrder : newOrders) {
                 if (salesOrder.Add()) {
-                    System.out.println("Sales Order - " + salesOrder.getDoc_No() +" for " + salesOrder.getQuantity() + " " + salesOrder.getItem().getItem_Name() + " is added.");
+                    System.out.println("Your Order - " + salesOrder.getDoc_No() +" for " + salesOrder.getQuantity() + " " + salesOrder.getItem().getItem_Name() + " is added.");
                 } else {
                     System.out.println("Error adding Sales Order.");
                 }
                 transactions.add(salesOrder);
             }
 
-            
             //mail sender
             URL resource = getClass().getClassLoader()
             .getResource("project/Report");
@@ -295,6 +315,7 @@ public class ViewSalesManagement {
     
     //for admin to modify pending SO
     private void orderModification() {
+        ConsoleUI.clearScreen();
         if (user.getUserType().equals("Admin")) {
             boolean error = false;
             ArrayList<SalesOrder> salesOrders = viewSalesOrder.selectPendingSalesOrder("Modify");
@@ -305,7 +326,7 @@ public class ViewSalesManagement {
             //modify SO
             do {
                 do {  
-                    int itemId = UserInputHandler.getInteger("Enter Item ID: ", 1, 1000000);
+                    int itemId = UserInputHandler.getInteger("\nEnter Item ID: ", 1, 1000000);
 
                     Item item = new Item(itemId);
                     item.Get();
@@ -321,9 +342,8 @@ public class ViewSalesManagement {
                             salesOrder.setTransaction_Modified_By(user.getUserId());
 
                             if (salesOrder.getQuantity() <= 0) {
-                                System.out.println("Quantity is zero or negative. Do you want to delete this item from the Sales Order? (Y/N)");
 
-                                choice = sc.nextLine();
+                                choice = UserInputHandler.getConfirmation("Quantity is zero or negative. Do you want to delete this item from the Sales Order? ");
 
                                 if (choice.equalsIgnoreCase("Y")) {
                                     if (salesOrder.Remove()) {
@@ -339,7 +359,7 @@ public class ViewSalesManagement {
 
                         if(salesOrder.Update()){
 
-                            System.out.println("Sales Order " + salesOrders.get(0).getDoc_No() + " with item " + salesOrder.getItem().getItem_Name() + " updated successfully.");
+                            System.out.println("\nSales Order " + salesOrders.get(0).getDoc_No() + " with item " + salesOrder.getItem().getItem_Name() + " updated successfully.");
 
                             //add mail notification here
                             MailSender mail;
@@ -347,7 +367,7 @@ public class ViewSalesManagement {
                             retailer.setUserId(salesOrder.getTransaction_Recipient());
                             retailer.Get();
                             mail = new MailSender(retailer.getUserEmail(), "Order Modification for " + salesOrder.getDoc_No(),
-                            new MailTemplate(salesOrder.getDoc_No() + " - " + salesOrder.getItem().getItem_Name(), MailTemplate.TemplateType.ORDER_CANCELLATION));
+                            new MailTemplate(salesOrder.getDoc_No() + " - " + salesOrder.getItem().getItem_Name(), MailTemplate.TemplateType.ORDER_MODIFICATION));
                             mail.Send();
                         }
 
@@ -357,13 +377,13 @@ public class ViewSalesManagement {
                         error = true;
                     }
                 } while (error);
-            } while (UserInputHandler.getConfirmation("Do you want to continue edit sales order? [Y/N]: ").equalsIgnoreCase("Y"));
+            } while (UserInputHandler.getConfirmation("\nDo you want to continue edit sales order? ").equalsIgnoreCase("Y"));
         }
     }
 
     //for admin to cancel pending SO
     private void orderCancellation() {
-
+        ConsoleUI.clearScreen();
         if (user.getUserType().equals("Admin")) {
             
             ArrayList<SalesOrder> salesOrders = viewSalesOrder.selectPendingSalesOrder("Remove");
@@ -372,39 +392,32 @@ public class ViewSalesManagement {
                 return;
             }
 
-            System.out.println("Do you want to cancel the Sales Order? [Y/N]: ");
-            sc.nextLine();
-            String choice = sc.nextLine();
+            String choice = UserInputHandler.getConfirmation("Do you want to cancel the Sales Order? ");
 
-            if (choice.equalsIgnoreCase("Y")) {
-                for (SalesOrder salesOrder : salesOrders) {
-                    if (salesOrder.Remove()) {
-                        System.out.println("Sales Order " + salesOrder.getDoc_No() + " with Item " + salesOrder.getItem().getItem_Name() +" cancelled successfully.");
-
-                        //add mail notification here
-                        MailSender mail;
-                        Retailer retailer = new Retailer();
-                        retailer.setUserId(salesOrder.getTransaction_Recipient());
-                        retailer.Get();
-                        mail = new MailSender(
-                        retailer.getUserEmail(),
-                        "Order Cancelled",
-                        new MailTemplate(salesOrder.getDoc_No(), MailTemplate.TemplateType.ORDER_CANCELLATION));
-                        mail.Send();
-        
-                    } else {
-                        System.out.println("Failed to cancel Sales Order " + salesOrder.getDoc_No() + ". Please try again.");
-                    }
-                }
-            } else {
-                System.out.println("Sales Order " + salesOrders.get(0).getDoc_No() + " not cancelled.");
+            if (!choice.equalsIgnoreCase("Y")) {
+                return;
             }
-
-
+            System.out.println();
+            for (SalesOrder salesOrder : salesOrders) {
+                if (salesOrder.Remove()) {
+                    System.out.println("Sales Order " + salesOrder.getDoc_No() + " with Item " + salesOrder.getItem().getItem_Name() +" cancelled successfully.");
+                    //add mail notification here
+                    MailSender mail;
+                    Retailer retailer = new Retailer();
+                    retailer.setUserId(salesOrder.getTransaction_Recipient());
+                    retailer.Get();
+                    mail = new MailSender(
+                    retailer.getUserEmail(),
+                    "Order Cancelled",
+                    new MailTemplate(salesOrder.getItem().getItem_Name() + "in " + salesOrder.getDoc_No(), MailTemplate.TemplateType.SALES_ORDER_CANCELLATION));
+                    mail.Send();
+                } else {
+                    System.out.println("Failed to cancel Sales Order " + salesOrder.getDoc_No() + ". Please try again.");
+                }
+                
+            }
+            ConsoleUI.pause();
         }
-
-
-
     }
 
     //display design methods

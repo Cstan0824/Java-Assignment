@@ -262,6 +262,14 @@ public class MailTemplate {
                 "Inventory Solution Company";
     }
 
+    private String SalesOrderCancellation(String _DocNo) {
+        return "Dear Customer,<br/>" +
+                "We acknowledge the cancellation of your order. Your order for " + _DocNo + " has been cancelled.<br/>" +
+                "We regret any inconvenience caused.<br/><br/>" +
+                "Best regards,<br/>" +
+                "Inventory Solution Company";
+    }
+
     private String Reordering(String _DocNo) {
         return "Dear Customer,<br/><br/>" +
                 "We have processed your reorder request. The Reordering No is " + _DocNo + ".<br/>" +
@@ -324,6 +332,7 @@ public class MailTemplate {
         PURCHASE_ORDER,
         SALES_ORDER,
         ORDER_CANCELLATION,
+        SALES_ORDER_CANCELLATION,
         ORDER_MODIFICATION,
         REORDERING,
         ORDER_CONFIRMATION,
@@ -346,6 +355,9 @@ public class MailTemplate {
                 break;
             case ORDER_CANCELLATION:
                 this.Content = this.OrderCancellation(_Content);
+                break;
+            case SALES_ORDER_CANCELLATION:
+                this.Content = this.SalesOrderCancellation(_Content);
                 break;
             case ORDER_MODIFICATION:
                 this.Content = this.OrderMofification(_Content);
