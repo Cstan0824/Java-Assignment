@@ -114,7 +114,7 @@ public class ViewPurchaseManagement {
             }
             Item item = viewItem.selectItemFromList();
             purchaseOrder.setQuantity(
-                    UserInputHandler.getInteger("Enter Quantity", 1, 100000));
+                    UserInputHandler.getInteger("Enter Quantity: ", 1, 100000));
             purchaseOrder.setItem(item);
             purchaseOrder.setDoc_No(poNo);
             purchaseOrder.setTransaction_Recipient(item.getVendor().getVendor_ID());
@@ -145,7 +145,7 @@ public class ViewPurchaseManagement {
         // Send email to vendors
         for (Map.Entry<Vendor, ArrayList<Transaction>> entry : orders.entrySet()) {
             URL resource = getClass().getClassLoader()
-                    .getResource("project/Report");
+                    .getResource("project/global/Pdf");
             file = new File(
                     resource.getPath().replace("%20", " "),
                     entry.getValue().get(0).getDoc_No() + ".pdf");
@@ -203,7 +203,7 @@ public class ViewPurchaseManagement {
             System.out.println("4. Back to Purchase Management");
             System.out.println("===============================");
 
-            switch (UserInputHandler.getInteger("Enter choice", 1, 4)) {
+            switch (UserInputHandler.getInteger("Enter choice: ", 1, 4)) {
                 case 1:
                     viewItem.setItems(itemsNotInPurchaseOrders);
                     Item item = viewItem.selectItemFromList();
@@ -214,7 +214,7 @@ public class ViewPurchaseManagement {
                     purchaseOrder.setItem(item);
 
                     purchaseOrder.setQuantity(
-                            UserInputHandler.getInteger("Enter Quantity", 1,
+                            UserInputHandler.getInteger("Enter Quantity: ", 1,
                                     100000));
 
                     // Initialize other values
@@ -269,7 +269,7 @@ public class ViewPurchaseManagement {
                     System.out.println("Current Quantity: " + purchaseOrder.getQuantity());
 
                     purchaseOrder.setQuantity(
-                            UserInputHandler.getInteger("Enter Quantity", 1,
+                            UserInputHandler.getInteger("Enter Quantity: ", 1,
                                     100000));
                     purchaseOrder.setTransaction_Modified_By(user.getUserId());
                     System.out.println(purchaseOrder.Update());
@@ -303,7 +303,7 @@ public class ViewPurchaseManagement {
         PdfConverter pdf;
         for (Map.Entry<Vendor, ArrayList<Transaction>> entry : orders.entrySet()) {
             URL resource = getClass().getClassLoader()
-                    .getResource("project/Report");
+                    .getResource("project/global/Pdf");
             file = new File(
                     resource.getPath().replace("%20", " "),
                     entry.getValue().get(0).getDoc_No() + ".pdf");
@@ -502,7 +502,7 @@ public class ViewPurchaseManagement {
 
             Transaction goodReceivedNotes = new GoodReceivedNotes();
 
-            switch (UserInputHandler.getInteger("Enter choice", 1, 5)) {
+            switch (UserInputHandler.getInteger("Enter choice: ", 1, 5)) {
                 case 1:
                     viewPurchaseOrder.followUpStatus(_purchaseOrders);
                     break;

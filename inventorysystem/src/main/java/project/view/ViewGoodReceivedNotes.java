@@ -99,7 +99,7 @@ public class ViewGoodReceivedNotes {
 
             //Set the GRN details
             goodReceivedNote.setQuantity(
-                    UserInputHandler.getInteger("Enter Quantity", 1,
+                    UserInputHandler.getInteger("Enter Quantity: ", 1,
                             maxQuantity));
             goodReceivedNote.setItem(item);
             goodReceivedNote.setDoc_No(grnNo);
@@ -144,7 +144,7 @@ public class ViewGoodReceivedNotes {
         }
 
         goodReceivedNote.setQuantity(
-                UserInputHandler.getInteger("Enter Quantity", 1,
+                UserInputHandler.getInteger("Enter Quantity: ", 1,
                         purchaseOrder.getQuantity() - (OnHandStock - goodReceivedNote.getQuantity())));
         goodReceivedNote.setTransaction_Modified_By(user.getUserId());
 
@@ -207,7 +207,7 @@ public class ViewGoodReceivedNotes {
         System.out.println(
                 " ===================================================================================================== ");
 
-        return goodReceivedNotes.get(UserInputHandler.getInteger("Select Good Received Notes", 1,
+        return goodReceivedNotes.get(UserInputHandler.getInteger("Select Good Received Notes: ", 1,
                 goodReceivedNotes.size()) - 1);
     }
 }

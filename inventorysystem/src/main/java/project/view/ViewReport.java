@@ -34,7 +34,7 @@ public class ViewReport {
             System.out.println("2. Generate Sales Report");
             System.out.println("3. Exit");
             System.out.println("=========================================");
-            switch (UserInputHandler.getInteger("Enter choice", 1, 3)) {
+            switch (UserInputHandler.getInteger("Enter choice: ", 1, 3)) {
                 case 1:
                     System.out.println("Generating Purchase Report...");
                     report = new Report("Yearly Purchase Report", "This is a report for all purchases made in a year.",

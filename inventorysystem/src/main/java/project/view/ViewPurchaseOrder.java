@@ -84,7 +84,7 @@ public class ViewPurchaseOrder {
 
 
         // Select a purchase order by ID
-        String selectedOrderID = UserInputHandler.getString("Select Purchase Order by Order ID"
+        String selectedOrderID = UserInputHandler.getString("Select Purchase Order by Order ID: "
                 , 7, "^PO[0-9]{5}$");
 
         // Filter selected order(s)
@@ -139,7 +139,7 @@ public class ViewPurchaseOrder {
                 " ===================================================================================================================== ");
 
         // Select a purchase order by ID
-        String selectedOrderID = UserInputHandler.getString("Select Purchase Order by Order ID", 7, "^PO[0-9]{5}$");
+        String selectedOrderID = UserInputHandler.getString("Select Purchase Order by Order ID: ", 7, "^PO[0-9]{5}$");
 
         selectedOrders = PurchaseOrder.Get(selectedOrderID);
         if (selectedOrders == null || selectedOrders.isEmpty()) {

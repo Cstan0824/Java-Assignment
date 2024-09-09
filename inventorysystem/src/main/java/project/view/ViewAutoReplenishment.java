@@ -75,7 +75,7 @@ public class ViewAutoReplenishment {
             return;
         }
         autoReplenishment.setItem(item);
-        autoReplenishment.setItem_Threshold(UserInputHandler.getInteger("Enter threshold level", 1, 100000));
+        autoReplenishment.setItem_Threshold(UserInputHandler.getInteger("Enter threshold level: ", 1, 100000));
         autoReplenishment.Add();
     }
 
@@ -83,7 +83,7 @@ public class ViewAutoReplenishment {
     public void updateAutoReplenishment() {
         AutoReplenishment autoReplenishment = selectAutoReplenishmentFromList();
         //Update Threshold level
-        autoReplenishment.setItem_Threshold(UserInputHandler.getInteger("Enter new threshold level", 1, 100000));
+        autoReplenishment.setItem_Threshold(UserInputHandler.getInteger("Enter new threshold level: ", 1, 100000));
     
         autoReplenishment.Update();
     }
@@ -126,7 +126,7 @@ public class ViewAutoReplenishment {
     
     public AutoReplenishment selectAutoReplenishmentFromList() {
         displayASutoReplenishmentDetails();
-        int index = UserInputHandler.getInteger("Select an Auto Replenishment", 1, autoReplenishments.size()) - 1;
+        int index = UserInputHandler.getInteger("Select an Auto Replenishment: ", 1, autoReplenishments.size()) - 1;
         return autoReplenishments.get(index);
     }
 }
