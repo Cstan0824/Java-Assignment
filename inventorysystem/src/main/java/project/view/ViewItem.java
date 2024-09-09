@@ -51,7 +51,7 @@ public class ViewItem {
             System.out.println("7. Back");
             System.out.println("=============================");
 
-            switch (UserInputHandler.getInteger("Select an option", 1, 7)) {
+            switch (UserInputHandler.getInteger("Select an option: ", 1, 7)) {
                 case 1:
                 //only able to add item while adding the vendor
                     Item newItem = addNewItem();
@@ -91,17 +91,17 @@ public class ViewItem {
     private void displayItemDetails() {
         // Display the list of items
         System.out.println(
-                " ===================================================== Items =========================================================== ");
+                " ========================================================== Items ================================================================ ");
         System.out.println(
-                String.format("| %-5s | %-15s | %-15s | %-20s | %-50s |", "No.", "Item Category", "Vendor", "Item Name",
+                String.format("| %-5s | %-20s | %-20s | %-20s | %-50s |", "No.", "Item Category", "Vendor", "Item Name",
                         "Item Description"));
         System.out.println(
-                " ======================================================================================================================= ");
+                " ================================================================================================================================= ");
         for (int i = 0; i < items.size(); i++) {
-            System.out.println(String.format("| %-5s %-100s", (i + 1) + ". ", items.get(i))); // Display items with index
+            System.out.println(String.format("| %-5s %-110s", (i + 1) + ". ", items.get(i))); // Display items with index
         }
         System.out.println(
-                " ======================================================================================================================= ");
+                " ================================================================================================================================= ");
     }
 
     // Method to select an item from the list
@@ -175,7 +175,7 @@ public class ViewItem {
         System.out.println("4. Back to Item Management");
         System.out.println("=============================");
 
-        switch (UserInputHandler.getInteger("Select an option", 1, 4)) {
+        switch (UserInputHandler.getInteger("Select an option: ", 1, 4)) {
             case 1:
                 ;
                 this.items = Item.Get("Item_Name", UserInputHandler.getString("Enter Item Name: ", 1, ".*"));
