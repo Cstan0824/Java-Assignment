@@ -173,5 +173,6 @@ public class MailSender {
         Session session = this.MailServerConfiguration();
         this.MailInitialization(session);
     }
-
 }
+
+

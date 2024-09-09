@@ -134,12 +134,17 @@ public class Request {
 
                 boolean retailerInserted = connector.PrepareExecuteDML(insertRetailerSQL,this.Retailer_ID, this.Retailer_name, this.Retailer_Password, this.Retailer_Email, this.Retailer_Address, adminId, LocalDateTime.now());
 
-
-
-
             if (retailerInserted) {
-                System.out.println("Request approved and retailer added successfully.");
-            } 
+                System.out.println("Request approved ");
+
+                MailSender mail = new MailSender(
+                    this.getRetailer_Email(),
+                    "Retailer Registration Approved",
+                    new MailTemplate(this.Retailer_ID, MailTemplate.TemplateType.REGISTRATION_APPROVAL));
+                mail.Send();            
+
+                System.out.println("Email sent to retailer.");
+            }
             else {
                 System.out.println("Failed to add retailer after approving request.");
             }
@@ -166,6 +171,12 @@ public class Request {
         if(checking)
         {
             System.out.println("Request rejected successfully.");
+
+            MailSender mail = new MailSender(
+                this.getRetailer_Email(),
+                "Retailer Registration Rejected",
+                new MailTemplate(this.Retailer_ID, MailTemplate.TemplateType.REGISTRATION_REJECTION));
+            mail.Send();
         }
         else
         {

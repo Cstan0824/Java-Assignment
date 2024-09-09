@@ -492,7 +492,7 @@ public abstract class User {
 
     private void handleOTP()
     {
-        System.out.println(this.otpCode);
+        
         MailSender mail = new MailSender(
             this.userEmail,
             "OTP Recovery",

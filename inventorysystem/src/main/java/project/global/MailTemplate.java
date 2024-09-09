@@ -327,6 +327,25 @@ public class MailTemplate {
                 "Inventory Solution Company";
     }
 
+    private String REGISTRATION_APPROVAL(String RetailerID) {
+
+        return "Dear Customer,<br/><br/>" +
+                "We are happy to inform that your registration request has been approved.<br/>"  + "This is your Retailer ID : " + RetailerID + " <br> Please let us know if you need any further assistance.<br/><br/>" +
+                "Best regards,<br/>" +
+                "Inventory Solution Company";
+    }
+
+    private String REGISTRATION_REJECTION(){
+        return "Dear Customer,<br/><br/>" +
+                "We regret to inform that your registration request has been rejected.<br/>" +
+                "Please let us know if you need any further assistance.<br/><br/>" +
+                "Best regards,<br/>" +
+                "Inventory Solution Company";
+    }
+
+
+
+
     public enum TemplateType {
         OTP,
         PURCHASE_ORDER,
@@ -337,6 +356,8 @@ public class MailTemplate {
         REORDERING,
         ORDER_CONFIRMATION,
         FOLLOW_ORDER_STATUS,
+        REGISTRATION_APPROVAL,
+        REGISTRATION_REJECTION,
         SCHEDULE_CREATION,
         SCHEDULE_CANCELLATION,
         SCHEDULE_MODIFICATION
@@ -379,6 +400,12 @@ public class MailTemplate {
                 break;
             case SCHEDULE_MODIFICATION:
                 this.Content = this.ScheduleModification(_Content);
+                break;
+            case REGISTRATION_APPROVAL:
+                this.Content = this.REGISTRATION_APPROVAL(_Content);
+                break;
+            case REGISTRATION_REJECTION:
+                this.Content = this.REGISTRATION_REJECTION();
                 break;
             default:
                 break;
