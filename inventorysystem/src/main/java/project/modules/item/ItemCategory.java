@@ -61,9 +61,15 @@ public class ItemCategory {
 
         String query = "SELECT * FROM item_category WHERE Item_Category_ID = ?";
 
-        connector.PrepareExecuteRead(query, ItemCategory.class, this.Item_Category_ID);
+        ArrayList<ItemCategory> itemCategories = connector.PrepareExecuteRead(query, ItemCategory.class,
+                this.Item_Category_ID);
 
         connector.Disconnect();
+
+        ItemCategory itemCategory = itemCategories.get(0);
+
+        this.Item_Category_ID = itemCategory.getItem_Category_ID();
+        this.Item_Type = itemCategory.getItem_Type();
 
         return true;
     }
