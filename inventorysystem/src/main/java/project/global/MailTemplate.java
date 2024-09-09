@@ -16,223 +16,223 @@ public class MailTemplate {
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String currDate = dateFormat.format(date);
-        String html = "<!DOCTYPE html><br/>" +
-                "<html lang=\"en\"><br/>" +
-                "  <head><br/>" +
-                "    <link<br/>" +
-                "      href=\"https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap\"<br/>" +
-                "      rel=\"stylesheet\"<br/>" +
-                "    /><br/>" +
-                "  </head><br/>" +
-                "  <body<br/>" +
-                "    style=\"<br/>" +
-                "      margin: 0;<br/>" +
-                "      font-family: 'Poppins', sans-serif;<br/>" +
-                "      background: #ffffff;<br/>" +
-                "      font-size: 14px;<br/>" +
-                "    \"<br/>" +
-                "  ><br/>" +
-                "    <div<br/>" +
-                "      style=\"<br/>" +
-                "        max-width: 680px;<br/>" +
-                "        margin: 0 auto;<br/>" +
-                "        padding: 45px 30px 60px;<br/>" +
-                "        background: #f4f7ff;<br/>" +
-                "        background-image: url(https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661497957196_595865/email-template-background-banner);<br/>"
+        String html = "<!DOCTYPE html>" +
+                "<html lang=\"en\">" +
+                "  <head>" +
+                "    <link" +
+                "      href=\"https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap\"" +
+                "      rel=\"stylesheet\"" +
+                "    />" +
+                "  </head>" +
+                "  <body" +
+                "    style=\"" +
+                "      margin: 0;" +
+                "      font-family: 'Poppins', sans-serif;" +
+                "      background: #ffffff;" +
+                "      font-size: 14px;" +
+                "    \"" +
+                "  >" +
+                "    <div" +
+                "      style=\"" +
+                "        max-width: 680px;" +
+                "        margin: 0 auto;" +
+                "        padding: 45px 30px 60px;" +
+                "        background: #f4f7ff;" +
+                "        background-image: url(https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661497957196_595865/email-template-background-banner);"
                 +
-                "        background-repeat: no-repeat;<br/>" +
-                "        background-size: 800px 452px;<br/>" +
-                "        background-position: top center;<br/>" +
-                "        font-size: 14px;<br/>" +
-                "        color: #434343;<br/>" +
-                "      \"<br/>" +
-                "    ><br/>" +
-                "      <header><br/>" +
-                "        <table style=\"width: 100%;\"><br/>" +
-                "          <tbody><br/>" +
-                "            <tr style=\"height: 0;\"><br/>" +
-                "              <td><br/>" +
-                "                <img<br/>" +
-                "                  alt=\"\"<br/>" +
-                "                  src=\"https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1663574980688_114990/archisketch-logo\"<br/>"
+                "        background-repeat: no-repeat;" +
+                "        background-size: 800px 452px;" +
+                "        background-position: top center;" +
+                "        font-size: 14px;" +
+                "        color: #434343;" +
+                "      \"" +
+                "    >" +
+                "      <header>" +
+                "        <table style=\"width: 100%;\">" +
+                "          <tbody>" +
+                "            <tr style=\"height: 0;\">" +
+                "              <td>" +
+                "                <img" +
+                "                  alt=\"\"" +
+                "                  src=\"https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1663574980688_114990/archisketch-logo\""
                 +
-                "                  height=\"30px\"<br/>" +
-                "                /><br/>" +
-                "              </td><br/>" +
-                "              <td style=\"text-align: right;\"><br/>" +
-                "                <span<br/>" +
-                "                  style=\"font-size: 16px; line-height: 30px; color: #ffffff;\"<br/>" +
-                "                  ><br/>" +
+                "                  height=\"30px\"" +
+                "                />" +
+                "              </td>" +
+                "              <td style=\"text-align: right;\">" +
+                "                <span" +
+                "                  style=\"font-size: 16px; line-height: 30px; color: #ffffff;\"" +
+                "                  >" +
                 currDate +
-                "</span<br/>" +
-                "                ><br/>" +
-                "              </td><br/>" +
-                "            </tr><br/>" +
-                "          </tbody><br/>" +
-                "        </table><br/>" +
-                "      </header><br/>" +
-                "<br/>" +
-                "      <main><br/>" +
-                "        <div<br/>" +
-                "          style=\"<br/>" +
-                "            margin: 0;<br/>" +
-                "            margin-top: 70px;<br/>" +
-                "            padding: 92px 30px 115px;<br/>" +
-                "            background: #ffffff;<br/>" +
-                "            border-radius: 30px;<br/>" +
-                "            text-align: center;<br/>" +
-                "          \"<br/>" +
-                "        ><br/>" +
-                "          <div style=\"width: 100%; max-width: 489px; margin: 0 auto;\"><br/>" +
-                "            <h1<br/>" +
-                "              style=\"<br/>" +
-                "                margin: 0;<br/>" +
-                "                font-size: 24px;<br/>" +
-                "                font-weight: 500;<br/>" +
-                "                color: #1f1f1f;<br/>" +
-                "              \"<br/>" +
-                "            ><br/>" +
-                "OTP<br/>" +
-                "            </h1><br/>" +
-                "            <p<br/>" +
-                "              style=\"<br/>" +
-                "                margin: 0;<br/>" +
-                "                margin-top: 17px;<br/>" +
-                "                font-size: 16px;<br/>" +
-                "                font-weight: 500;<br/>" +
-                "              \"<br/>" +
-                "            ><br/>" +
-                "              Hey Tomy,<br/>" +
-                "            </p><br/>" +
-                "            <p<br/>" +
-                "              style=\"<br/>" +
-                "                margin: 0;<br/>" +
-                "                margin-top: 17px;<br/>" +
-                "                font-weight: 500;<br/>" +
-                "                letter-spacing: 0.56px;<br/>" +
-                "              \"<br/>" +
-                "            ><br/>" +
-                "              Thank you for choosing Inventory Solution Company. Use the following OTP<br/>" +
-                "              to complete the procedure to change your email address. OTP is <br/>" +
-                "              valid for<br/>" +
-                "              <span style=\"font-weight: 600; color: #1f1f1f;\">5 minutes</span>.<br/>" +
-                "              Do not share this code with others, including Inventory Solution<br/>" +
-                "              employees.<br/>" +
-                "            </p><br/>" +
-                "            <p<br/>" +
-                "              style=\"<br/>" +
-                "                margin: 0;<br/>" +
-                "                margin-top: 60px;<br/>" +
-                "                font-size: 40px;<br/>" +
-                "                font-weight: 600;<br/>" +
-                "                letter-spacing: 25px;<br/>" +
-                "                color: #ba3d4f;<br/>" +
-                "              \"<br/>" +
-                "            ><br/>" +
+                "</span" +
+                "                >" +
+                "              </td>" +
+                "            </tr>" +
+                "          </tbody>" +
+                "        </table>" +
+                "      </header>" +
+                "" +
+                "      <main>" +
+                "        <div" +
+                "          style=\"" +
+                "            margin: 0;" +
+                "            margin-top: 70px;" +
+                "            padding: 92px 30px 115px;" +
+                "            background: #ffffff;" +
+                "            border-radius: 30px;" +
+                "            text-align: center;" +
+                "          \"" +
+                "        >" +
+                "          <div style=\"width: 100%; max-width: 489px; margin: 0 auto;\">" +
+                "            <h1" +
+                "              style=\"" +
+                "                margin: 0;" +
+                "                font-size: 24px;" +
+                "                font-weight: 500;" +
+                "                color: #1f1f1f;" +
+                "              \"" +
+                "            >" +
+                "OTP" +
+                "            </h1>" +
+                "            <p" +
+                "              style=\"" +
+                "                margin: 0;" +
+                "                margin-top: 17px;" +
+                "                font-size: 16px;" +
+                "                font-weight: 500;" +
+                "              \"" +
+                "            >" +
+                "              Hey Tomy," +
+                "            </p>" +
+                "            <p" +
+                "              style=\"" +
+                "                margin: 0;" +
+                "                margin-top: 17px;" +
+                "                font-weight: 500;" +
+                "                letter-spacing: 0.56px;" +
+                "              \"" +
+                "            >" +
+                "              Thank you for choosing Inventory Solution Company. Use the following OTP" +
+                "              to complete the procedure to change your email address. OTP is " +
+                "              valid for" +
+                "              <span style=\"font-weight: 600; color: #1f1f1f;\">5 minutes</span>." +
+                "              Do not share this code with others, including Inventory Solution" +
+                "              employees." +
+                "            </p>" +
+                "            <p" +
+                "              style=\"" +
+                "                margin: 0;" +
+                "                margin-top: 60px;" +
+                "                font-size: 40px;" +
+                "                font-weight: 600;" +
+                "                letter-spacing: 25px;" +
+                "                color: #ba3d4f;" +
+                "              \"" +
+                "            >" +
                 _OTP +
-                "            </p><br/>" +
-                "          </div><br/>" +
-                "        </div><br/>" +
-                "<br/>" +
-                "        <p<br/>" +
-                "          style=\"<br/>" +
-                "            max-width: 400px;<br/>" +
-                "            margin: 0 auto;<br/>" +
-                "            margin-top: 90px;<br/>" +
-                "            text-align: center;<br/>" +
-                "            font-weight: 500;<br/>" +
-                "            color: #8c8c8c;<br/>" +
-                "          \"<br/>" +
-                "        ><br/>" +
-                "          Need help? Ask at<br/>" +
-                "          <a<br/>" +
-                "            href=\"mailto:archisketch@gmail.com\"<br/>" +
-                "            style=\"color: #499fb6; text-decoration: none;\"<br/>" +
-                "            >tarumtmoviesociety@gmail.com</a<br/>" +
-                "          ><br/>" +
-                "          or visit our<br/>" +
-                "          <a<br/>" +
-                "            href=\"\"<br/>" +
-                "            target=\"_blank\"<br/>" +
-                "            style=\"color: #499fb6; text-decoration: none;\"<br/>" +
-                "            >Help Center</a<br/>" +
-                "          ><br/>" +
-                "        </p><br/>" +
-                "      </main><br/>" +
-                "<br/>" +
-                "      <footer<br/>" +
-                "        style=\"<br/>" +
-                "          width: 100%;<br/>" +
-                "          max-width: 490px;<br/>" +
-                "          margin: 20px auto 0;<br/>" +
-                "          text-align: center;<br/>" +
-                "          border-top: 1px solid #e6ebf1;<br/>" +
-                "        \"<br/>" +
-                "      ><br/>" +
-                "        <p<br/>" +
-                "          style=\"<br/>" +
-                "            margin: 0;<br/>" +
-                "            margin-top: 40px;<br/>" +
-                "            font-size: 16px;<br/>" +
-                "            font-weight: 600;<br/>" +
-                "            color: #434343;<br/>" +
-                "          \"<br/>" +
-                "        ><br/>" +
-                "          Inventory Solution Company<br/>" +
-                "        </p><br/>" +
-                "        <p style=\"margin: 0; margin-top: 8px; color: #434343;\"><br/>" +
-                "          Address 540, City, State.<br/>" +
-                "        </p><br/>" +
-                "        <div style=\"margin: 0; margin-top: 16px;\"><br/>" +
-                "          <a href=\"\" target=\"_blank\" style=\"display: inline-block;\"><br/>" +
-                "            <img<br/>" +
-                "              width=\"36px\"<br/>" +
-                "              alt=\"Facebook\"<br/>" +
-                "              src=\"https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661502815169_682499/email-template-icon-facebook\"<br/>"
+                "            </p>" +
+                "          </div>" +
+                "        </div>" +
+                "" +
+                "        <p" +
+                "          style=\"" +
+                "            max-width: 400px;" +
+                "            margin: 0 auto;" +
+                "            margin-top: 90px;" +
+                "            text-align: center;" +
+                "            font-weight: 500;" +
+                "            color: #8c8c8c;" +
+                "          \"" +
+                "        >" +
+                "          Need help? Ask at" +
+                "          <a" +
+                "            href=\"mailto:archisketch@gmail.com\"" +
+                "            style=\"color: #499fb6; text-decoration: none;\"" +
+                "            >tarumtmoviesociety@gmail.com</a" +
+                "          >" +
+                "          or visit our" +
+                "          <a" +
+                "            href=\"\"" +
+                "            target=\"_blank\"" +
+                "            style=\"color: #499fb6; text-decoration: none;\"" +
+                "            >Help Center</a" +
+                "          >" +
+                "        </p>" +
+                "      </main>" +
+                "" +
+                "      <footer" +
+                "        style=\"" +
+                "          width: 100%;" +
+                "          max-width: 490px;" +
+                "          margin: 20px auto 0;" +
+                "          text-align: center;" +
+                "          border-top: 1px solid #e6ebf1;" +
+                "        \"" +
+                "      >" +
+                "        <p" +
+                "          style=\"" +
+                "            margin: 0;" +
+                "            margin-top: 40px;" +
+                "            font-size: 16px;" +
+                "            font-weight: 600;" +
+                "            color: #434343;" +
+                "          \"" +
+                "        >" +
+                "          Inventory Solution Company" +
+                "        </p>" +
+                "        <p style=\"margin: 0; margin-top: 8px; color: #434343;\">" +
+                "          Address 540, City, State." +
+                "        </p>" +
+                "        <div style=\"margin: 0; margin-top: 16px;\">" +
+                "          <a href=\"\" target=\"_blank\" style=\"display: inline-block;\">" +
+                "            <img" +
+                "              width=\"36px\"" +
+                "              alt=\"Facebook\"" +
+                "              src=\"https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661502815169_682499/email-template-icon-facebook\""
                 +
-                "            /><br/>" +
-                "          </a><br/>" +
-                "          <a<br/>" +
-                "            href=\"\"<br/>" +
-                "            target=\"_blank\"<br/>" +
-                "            style=\"display: inline-block; margin-left: 8px;\"<br/>" +
-                "          ><br/>" +
-                "            <img<br/>" +
-                "              width=\"36px\"<br/>" +
-                "              alt=\"Instagram\"<br/>" +
-                "              src=\"https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661504218208_684135/email-template-icon-instagram\"<br/>"
+                "            />" +
+                "          </a>" +
+                "          <a" +
+                "            href=\"\"" +
+                "            target=\"_blank\"" +
+                "            style=\"display: inline-block; margin-left: 8px;\"" +
+                "          >" +
+                "            <img" +
+                "              width=\"36px\"" +
+                "              alt=\"Instagram\"" +
+                "              src=\"https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661504218208_684135/email-template-icon-instagram\""
                 +
-                "          /></a><br/>" +
-                "          <a<br/>" +
-                "            href=\"\"<br/>" +
-                "            target=\"_blank\"<br/>" +
-                "            style=\"display: inline-block; margin-left: 8px;\"<br/>" +
-                "          ><br/>" +
-                "            <img<br/>" +
-                "              width=\"36px\"<br/>" +
-                "              alt=\"Twitter\"<br/>" +
-                "              src=\"https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661503043040_372004/email-template-icon-twitter\"<br/>"
+                "          /></a>" +
+                "          <a" +
+                "            href=\"\"" +
+                "            target=\"_blank\"" +
+                "            style=\"display: inline-block; margin-left: 8px;\"" +
+                "          >" +
+                "            <img" +
+                "              width=\"36px\"" +
+                "              alt=\"Twitter\"" +
+                "              src=\"https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661503043040_372004/email-template-icon-twitter\""
                 +
-                "            /><br/>" +
-                "          </a><br/>" +
-                "          <a<br/>" +
-                "            href=\"\"<br/>" +
-                "            target=\"_blank\"<br/>" +
-                "            style=\"display: inline-block; margin-left: 8px;\"<br/>" +
-                "          ><br/>" +
-                "            <img<br/>" +
-                "              width=\"36px\"<br/>" +
-                "              alt=\"Youtube\"<br/>" +
-                "              src=\"https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661503195931_210869/email-template-icon-youtube\"<br/>"
+                "            />" +
+                "          </a>" +
+                "          <a" +
+                "            href=\"\"" +
+                "            target=\"_blank\"" +
+                "            style=\"display: inline-block; margin-left: 8px;\"" +
+                "          >" +
+                "            <img" +
+                "              width=\"36px\"" +
+                "              alt=\"Youtube\"" +
+                "              src=\"https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661503195931_210869/email-template-icon-youtube\""
                 +
-                "          /></a><br/>" +
-                "        </div><br/>" +
-                "        <p style=\"margin: 0; margin-top: 16px; color: #434343;\"><br/>" +
-                "          Copyright © 2024 Inventory System. All rights reserved.<br/>" +
-                "        </p><br/>" +
-                "      </footer><br/>" +
-                "    </div><br/>" +
-                "  </body><br/>" +
+                "          /></a>" +
+                "        </div>" +
+                "        <p style=\"margin: 0; margin-top: 16px; color: #434343;\">" +
+                "          Copyright © 2024 Inventory System. All rights reserved." +
+                "        </p>" +
+                "      </footer>" +
+                "    </div>" +
+                "  </body>" +
                 "</html>";
         return html;
     }
