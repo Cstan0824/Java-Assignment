@@ -339,7 +339,7 @@ public class Admin extends User {
 
     private void redirectToMenu(Scanner scanner) {
         System.out.println("Do you want to return to the main menu? (Y/N): ");
-        String choice = scanner.next();
+        String choice = scanner.nextLine();
         if (choice.equalsIgnoreCase("Y")) {
             UserMenu();
         } else {
