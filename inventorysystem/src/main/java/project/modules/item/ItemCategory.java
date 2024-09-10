@@ -37,7 +37,7 @@ public class ItemCategory {
     
     @Override
     public String toString() {
-        return String.format("| %-10s | %-20s |", this.Item_Category_ID, this.Item_Type);
+        return String.format("| %-15s |", this.Item_Type);
     }
 
     public static ArrayList<ItemCategory> GetAll() {

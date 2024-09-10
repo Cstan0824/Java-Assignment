@@ -120,6 +120,7 @@ public class ViewItem {
         Item selectedItem = items
                 .get(UserInputHandler.getInteger("Select Item by No: ", 1, items.size()) - 1);
         selectedItem.Get();
+        selectedItem.getItemCategory().Get();
         return selectedItem;
     }
 
@@ -131,6 +132,16 @@ public class ViewItem {
         if (item == null) {
             return;
         }
+
+        //display current item details - in format
+        System.out.println(" =================== Current Item Details =================== ");
+        System.out.println(" Item Category: " + item.getItemCategory().getItem_Type());
+        System.out.println(" Vendor: " + item.getVendor().getVendor_Name());
+        System.out.println(" Item Name: " + item.getItem_Name());
+        System.out.println(" Item Description: " + item.getItem_Desc());
+        System.out.println(" Item Price: " + item.getItem_Price());
+        System.out.println(" ============================================================ \n");
+        
 
         //Select details to edit from menu
         System.out.println("========== Edit Item ==========");
@@ -151,10 +162,10 @@ public class ViewItem {
                 item.getVendor().setVendor_ID(this.viewVendor.selectVendorFromList().getVendor_ID());
                 break;
             case 3:
-                item.setItem_name(UserInputHandler.getString("Enter Item Name: ", 1, ".*"));
+                item.setItem_name(UserInputHandler.getString("Enter Item Name: ", 1, 50));
                 break;
             case 4:
-                item.setItem_Desc(UserInputHandler.getString("Enter Item Description: ", 1, ".*"));
+                item.setItem_Desc(UserInputHandler.getString("Enter Item Description: ", 1, 100));
                 break;
             case 5:
                 item.setItem_Price(UserInputHandler.getDouble("Enter Item Price: ", 0, 1000000));
@@ -179,7 +190,7 @@ public class ViewItem {
 
         switch (UserInputHandler.getInteger("Select an option: ", 1, 4)) {
             case 1:
-                this.items = Item.Get("Item_Name", UserInputHandler.getString("\nEnter Item Name: ",  ".*"));
+                this.items = Item.Get("Item_Name", UserInputHandler.getString("\nEnter Item Name: ",  1,50));
                 break;
             case 2:
                 this.items = Item.Get("Item_Category_ID", selectItemCategoryFromList().getItem_Category_ID() + "");
@@ -201,8 +212,8 @@ public class ViewItem {
         //display Item category on menu
         item.getItemCategory().setItem_Category_ID(selectItemCategoryFromList().getItem_Category_ID());
         item.getVendor().setVendor_ID(this.viewVendor.selectVendorFromList().getVendor_ID());
-        item.setItem_name(UserInputHandler.getString("Enter Item Name: ", 1, ".*"));
-        item.setItem_Desc(UserInputHandler.getString("Enter Item Description: ", 1, ".*"));
+        item.setItem_name(UserInputHandler.getString("Enter Item Name: ", 1, 50));
+        item.setItem_Desc(UserInputHandler.getString("Enter Item Description: ", 1, 100));
         item.setItem_Quantity(UserInputHandler.getInteger("Enter Item Quantity: ", 1, 1000000));
         item.setItem_Price(UserInputHandler.getDouble("Enter Item Price: ", 0, 1000000));
         item.setItem_Created_By(user.getUserId());
