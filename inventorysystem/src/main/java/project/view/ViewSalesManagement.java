@@ -82,12 +82,13 @@ public class ViewSalesManagement {
         boolean exit = false;
         while(!exit) {
             ConsoleUI.clearScreen();
-            System.out.println("Sales Management");
+            System.out.println("======= Sales Management =======");
             System.out.println("1. View Sales Order Records");
             System.out.println("2. Create Delivery Order");
             System.out.println("3. Modify Sales Order");
             System.out.println("4. Cancel Sales Order");
             System.out.println("5. Exit");
+            System.out.println("================================");
             int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 5);
             switch (choice) {
                 case 1:
@@ -118,10 +119,11 @@ public class ViewSalesManagement {
         boolean exit = false;
         while(!exit) {
             ConsoleUI.clearScreen();
-            System.out.println("Order Management");
+            System.out.println("===== Order Management ======");
             System.out.println("1. Order Stock");
             System.out.println("2. View Order Records");
             System.out.println("3. Exit");
+            System.out.println("=============================");
             int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 3);
             switch (choice) {
                 case 1:

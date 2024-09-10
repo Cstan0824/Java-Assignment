@@ -193,7 +193,7 @@ public class Admin extends User {
         boolean exit = false;
         while(!exit){
             ConsoleUI.clearScreen();
-            System.out.println("Admin and Retailer Management");
+            System.out.println("======= Admin & Retailer Management =======");
             System.out.println("1. Create Admin");
             System.out.println("2. View Admin");
             System.out.println("3. Update Admin");
@@ -202,7 +202,8 @@ public class Admin extends User {
             System.out.println("6. Delete Retailer");
             System.out.println("7. Notification Retailer");
             System.out.println("8. Exit");
-            int choice = UserInputHandler.getInteger("\nEnter choice: ", 1, 8);
+            System.out.println("===========================================");
+            int choice = UserInputHandler.getInteger("Enter choice: ", 1, 8);
 
             switch (choice) {
                 case 1:

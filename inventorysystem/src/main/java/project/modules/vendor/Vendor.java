@@ -230,7 +230,7 @@ public class Vendor {
 
     @Override
     public String toString() {
-        return String.format("| %-10s | %-20s | %-20s | %-20s |", this.getVendor_ID(), this.getVendor_Name(),
+        return String.format("| %-10s | %-20s | %-30s | %-35s |", this.getVendor_ID(), this.getVendor_Name(),
                 this.getVendor_Address(), this.getVendor_Email());
     }
 }

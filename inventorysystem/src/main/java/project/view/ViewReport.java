@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import project.global.ConsoleUI;
 import project.global.UserInputHandler;
 import project.modules.transaction.Report;
 import project.modules.user.User;
@@ -28,6 +29,7 @@ public class ViewReport {
 
         boolean exit = false;
         while (!exit) {
+            ConsoleUI.clearScreen();
             boolean reportGenerated = false;
             System.out.println("============== Report Menu ==============");
             System.out.println("1. Generate Purchase Report");

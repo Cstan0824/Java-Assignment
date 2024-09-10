@@ -72,7 +72,7 @@ public class ViewScheduleManagement {
         boolean exit = false;
         while(!exit) {
             ConsoleUI.clearScreen();
-            System.out.println("Schedule Management");
+            System.out.println("======= Schedule Management ========");
             System.out.println("1. View Delivery Order Records");
             System.out.println("2. Cancel Delivery Order");
             System.out.println("3. View Schedule Records");
@@ -81,6 +81,7 @@ public class ViewScheduleManagement {
             System.out.println("6. Cancel Schedule");
             System.out.println("7. Vehicle Management");
             System.out.println("8. Exit");
+            System.out.println("====================================");
             int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 8);
             switch (choice) {
                 case 1:
@@ -119,10 +120,11 @@ public class ViewScheduleManagement {
         boolean exit = false;
         while(!exit) {
             ConsoleUI.clearScreen();
-            System.out.println("Schedule Management");
+            System.out.println("======= Schedule Management =======");
             System.out.println("1. Check Order");
             System.out.println("2. Check Order Schedule");
             System.out.println("3. Exit");
+            System.out.println("====================================");
             int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 3);
             switch (choice) {
                 case 1:
@@ -379,12 +381,13 @@ public class ViewScheduleManagement {
         boolean exit = false;
         while(!exit) {
             ConsoleUI.clearScreen();
-            System.out.println("Vehicle Management");
+            System.out.println("======= Vehicle Management ========");
             System.out.println("1. View Vehicle Records");
             System.out.println("2. Add Vehicle");
             System.out.println("3. Modify Vehicle");
             System.out.println("4. Remove Vehicle");
             System.out.println("5. Exit");
+            System.out.println("===================================");
             int choice = UserInputHandler.getInteger("Choose your actions: ", 1, 5);
             switch (choice) {
                 case 1:

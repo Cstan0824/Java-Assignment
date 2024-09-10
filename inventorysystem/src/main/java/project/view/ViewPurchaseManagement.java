@@ -65,9 +65,8 @@ public class ViewPurchaseManagement {
         boolean exit = false;
         while (!exit) {
             ConsoleUI.clearScreen();
-            System.out.println("\n=============================");
-            System.out.println("       Purchase Management       ");
-            System.out.println("=============================");
+
+            System.out.println("==== Purchase Management ====");
             System.out.println("1. Order Restock");
             System.out.println("2. Order Modification");
             System.out.println("3. Order Cancellation");
@@ -420,14 +419,12 @@ public class ViewPurchaseManagement {
         }
 
         PurchaseOrder purchaseOrder = purchaseOrders.get(0);
-        System.out.println(" ========================================= ");
-        System.out.println("| Purchase Order Details                  |");
-        System.out.println(" ========================================= ");
+        System.out.println("========== Purchase Order Details ==========");
         System.out.println(String.format("| %-20s : %-16s |", "Order ID", purchaseOrder.getDoc_No()));
         System.out.println(String.format("| %-20s : %-16s |", "Order Date", purchaseOrder.getTransaction_Date()));
         System.out.println(
                 String.format("| %-20s : %-16s |", "Order Recipient", purchaseOrder.getTransaction_Recipient()));
-        System.out.println(" ========================================= \n");
+        System.out.println("============================================\n");
 
         // Display item details
         System.out.println("\n ==================== Items in Purchase Order ======================= ");
@@ -490,15 +487,13 @@ public class ViewPurchaseManagement {
 
         while (!backToPurchaseManagement) {
             ConsoleUI.clearScreen();
-            System.out.println("\n===============================");
-            System.out.println("       Stock Status");
-            System.out.println("===============================");
+            System.out.println("========= Stock Status =========");
             System.out.println("1. Follow Up Status");
             System.out.println("2. Add Goods Received Notes");
             System.out.println("3. Edit Goods Received Notes");
             System.out.println("4. Remove Goods Received Notes");
             System.out.println("5. Back to Purchase Management");
-            System.out.println("===============================");
+            System.out.println("================================");
 
             Transaction goodReceivedNotes = new GoodReceivedNotes();
 

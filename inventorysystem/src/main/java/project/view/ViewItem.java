@@ -2,6 +2,7 @@ package project.view;
 
 import java.util.ArrayList;
 
+import project.global.ConsoleUI;
 import project.global.UserInputHandler;
 import project.modules.item.Item;
 import project.modules.item.ItemCategory;
@@ -41,7 +42,8 @@ public class ViewItem {
     public void menu() {
         boolean exit = true;
         while (exit) {
-            System.out.println("=== Item Management ===");
+            ConsoleUI.clearScreen();
+            System.out.println("========= Item Management =========");
             System.out.println("1. Add Item");
             System.out.println("2. View Item");
             System.out.println("3. Update Item");
@@ -49,7 +51,7 @@ public class ViewItem {
             System.out.println("5. View All Items");
             System.out.println("6. Auto Replenishment Management");
             System.out.println("7. Back");
-            System.out.println("=============================");
+            System.out.println("===================================");
 
             switch (UserInputHandler.getInteger("Select an option: ", 1, 7)) {
                 case 1:
@@ -60,6 +62,7 @@ public class ViewItem {
                 case 2:
                     searchItem();
                     displayItemDetails();
+                    ConsoleUI.pause();
                     break;
                 case 3:
                     editItemDetails();
@@ -109,6 +112,7 @@ public class ViewItem {
         // Fetch all items
         if (this.items.isEmpty()) {
             System.out.println("No items available.");
+            ConsoleUI.pause();
             return null; // Return null if no items are available
         }
 
@@ -121,15 +125,12 @@ public class ViewItem {
 
     // Method to edit item details (implementation placeholder)
     private void editItemDetails() {
+        ConsoleUI.clearScreen();
         // Select an item from the list
         Item item = selectItemFromList();
         if (item == null) {
             return;
         }
-
-        // Display the item details
-        System.out.println("Item Details:");
-        System.out.println(item);
 
         //Select details to edit from menu
         System.out.println("========== Edit Item ==========");
@@ -168,20 +169,19 @@ public class ViewItem {
 
     private void searchItem() {
         // Search for items based on the search field and value with a menu
-        System.out.println("======== Search Item ========");
+        ConsoleUI.clearScreen();
+        System.out.println("========== Search Item ==========");
         System.out.println("1. Search by Item Name");
         System.out.println("2. Search by Item Category");
         System.out.println("3. Search by Vendor");
         System.out.println("4. Back to Item Management");
-        System.out.println("=============================");
+        System.out.println("=================================");
 
         switch (UserInputHandler.getInteger("Select an option: ", 1, 4)) {
             case 1:
-                ;
-                this.items = Item.Get("Item_Name", UserInputHandler.getString("Enter Item Name: ", 1, ".*"));
+                this.items = Item.Get("Item_Name", UserInputHandler.getString("\nEnter Item Name: ",  ".*"));
                 break;
             case 2:
-                ;
                 this.items = Item.Get("Item_Category_ID", selectItemCategoryFromList().getItem_Category_ID() + "");
                 break;
             case 3:

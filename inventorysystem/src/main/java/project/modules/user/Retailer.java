@@ -232,11 +232,12 @@ public class Retailer extends User {
         boolean exit = false;
         while(!exit){
             ConsoleUI.clearScreen();
-            System.out.println("Retailer User Management System");
-            System.out.println("1. View Retailer");
-            System.out.println("2. Update Retailer");
+            System.out.println("====== Profile Management ======");
+            System.out.println("1. View Profile");
+            System.out.println("2. Update Profile");
             System.out.println("3. Exit");
-            int choice = UserInputHandler.getInteger("\nEnter choice: ", 1, 3);
+            System.out.println("================================");
+            int choice = UserInputHandler.getInteger("Enter choice: ", 1, 3);
             switch (choice) {
                 case 1:
                     viewRetailer();

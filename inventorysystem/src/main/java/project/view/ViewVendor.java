@@ -1,9 +1,11 @@
 package project.view;
 import java.util.ArrayList;
 
+import project.global.ConsoleUI;
 import project.global.UserInputHandler;
 import project.modules.user.User;
 import project.modules.vendor.Vendor;
+
 
 public class ViewVendor {
     private ArrayList<Vendor> vendors;
@@ -36,14 +38,14 @@ public class ViewVendor {
     public void menu() {
         boolean exit = false;
         while (!exit) {
-            System.out.println("\n============= Vendor Menu===============");
+            ConsoleUI.clearScreen();
+            System.out.println("\n============= Vendor Menu =============");
             System.out.println(
                     "1. Add Vendor\n2. Modify Vendor\n3. Delete Vendor\n4. Display Vendor\n5. Search Vendor\n6. Exit");
-
             System.out.println("=========================================");
 
             //switch case
-            switch (UserInputHandler.getInteger("Enter choice", 1, 6)) {
+            switch (UserInputHandler.getInteger("Enter choice: ", 1, 6)) {
                 case 1:
                     //call add vendor function
                     addVendor();
@@ -66,19 +68,17 @@ public class ViewVendor {
                     //call display vendor fucntion
                     this.setVendors();
                     displayVendors();
-                    UserInputHandler.systemPause("Press any key to continue...");
+                    ConsoleUI.pause();
                     break;
                 case 5:
                     //call search vendor function
                     searchVendor();
-                    displayVendors();
-                    UserInputHandler.systemPause("Press any key to continue...");
                     break;
                 case 6:
                     exit = true;
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try Vagain.");
+                    System.out.println("Invalid choice. Please try again.");
                     break;
             }
         }
@@ -86,19 +86,22 @@ public class ViewVendor {
 
     private void displayVendors() {
         //display headers
-        System.out.println(" ================= Vendor List ==================== ");
-        System.out.println(String.format("| %-10s | %-20s | %-20s | %-20s |", "Vendor ID", "Vendor Name",
+        ConsoleUI.clearScreen();
+        System.out.println(" ============================================== Vendor List =============================================== ");
+        System.out.println(String.format("| %-10s | %-20s | %-30s | %-35s |", "Vendor ID", "Vendor Name",
                 "Vendor Address", "Vendor Email"));
-        System.out.println(" ================================================== ");
-
+        System.out.println(" ========================================================================================================== ");
+        
         //display vendors and item they handled
         for (Vendor vendor : this.vendors) {
             System.out.println(vendor.toString());
         }
+        System.out.println(" ========================================================================================================== ");
     }
 
     //add multiple item while adding particular vendor
     private void addVendor() {
+        ConsoleUI.clearScreen();
         //display
         System.out.println(
                 "\n\n\n=================================================================================\nADD VENDOR\n");
@@ -107,11 +110,11 @@ public class ViewVendor {
             Vendor vendor = new Vendor();
             //able to input multiple item
             vendor.setVendor_Name(
-                    UserInputHandler.getString(String.format("%-40s", "Please enter vendor name: "), 4, 50));
+                    UserInputHandler.getString(String.format("%-30s", "Please enter vendor name: "), 4, 50));
             vendor.setVendor_Address(
-                    UserInputHandler.getString(String.format("%-40s", "Please enter vendor address: "), 4, 100));
+                    UserInputHandler.getString(String.format("%-30s", "Please enter vendor address: "), 4, 100));
             vendor.setVendorEmail(
-                    UserInputHandler.getString(String.format("%-40s", "Please enter vendor email: "),
+                    UserInputHandler.getString(String.format("%-30s", "Please enter vendor email: "),
                             "^[a-zA-Z0-9]{4,24}@gmail.com"));
             vendor.setVendor_Created_By(user.getUserId());
             vendor.setVendor_Modified_By(user.getUserId());
@@ -125,22 +128,24 @@ public class ViewVendor {
             }
         } while (UserInputHandler
                 .getConfirmation(
-                        String.format("%-40s", "\nContinue to add vendor?"))
+                        String.format("%-30s", "\nContinue to add vendor?"))
                 .equalsIgnoreCase("Y"));
     }
 
     private void deleteVendor(Vendor _vendor) {
         if (!UserInputHandler
                 .getConfirmation(
-                        String.format("%-40s",
+                        String.format("%40s",
                                 "Are you sure you want to delete vendor " + _vendor.getVendor_ID() + "?"))
                 .equalsIgnoreCase("Y")) {
             return;
         }
         if (_vendor.Remove()) {
             System.out.println("Vendor " + _vendor.getVendor_ID() + " has been removed successfully.");
+            ConsoleUI.pause();
         } else {
             System.out.println("Unable to remove vendor: " + _vendor.getVendor_ID());
+            ConsoleUI.pause();
         }
     }
 
@@ -149,17 +154,18 @@ public class ViewVendor {
         String value;
         //display
         System.out.println(
-                "\n\n\n=================================================================================\nMODIFY VENDOR\n");
+                "\n\n\n=================================================================================\nMODIFY VENDOR - " + _vendor.getVendor_ID() + "\n");
 
         do {
             //select what to modify including the item they handle? - maybe no need to modify the item they handle
             System.out.println("1. Vendor Name\n2. Vendor Address\n3. Vendor Email");
 
-            switch (UserInputHandler.getInteger("Enter choice ", 1, 3)) {
+            switch (UserInputHandler.getInteger("Enter choice: ", 1, 3)) {
                 case 1:
+                    ConsoleUI.clearScreen();
                     System.out.println("===Update Vendor Name===");
                     _vendor.setVendor_Name(
-                            UserInputHandler.getString(String.format("%-40s", "Please enter vendor name: "), 4, 50));
+                            UserInputHandler.getString(String.format("%-30s", "Please enter vendor name"), 4, 50));
 
                     column = ("Vendor_Name");
                     value = _vendor.getVendor_Name();
@@ -167,9 +173,10 @@ public class ViewVendor {
                     break;
 
                 case 2:
+                    ConsoleUI.clearScreen();
                     System.out.println("===Update Vendor Address===");
                     _vendor.setVendor_Address(
-                            UserInputHandler.getString(String.format("%-40s", "Please enter vendor address: "), 4,
+                            UserInputHandler.getString(String.format("%-30s", "Please enter vendor address"), 4,
                                     100));
 
                     column = "Vendor_Address";
@@ -177,9 +184,10 @@ public class ViewVendor {
                     break;
 
                 default:
+                    ConsoleUI.clearScreen();
                     System.out.println("===Update Vendor Email===");
                     _vendor.setVendorEmail(
-                            UserInputHandler.getString(String.format("%-40s", "Please enter vendor email: "), ""));
+                            UserInputHandler.getString(String.format("%-30s", "Please enter vendor email"), ""));
 
                     column = "Vendor_Email";
                     value = _vendor.getVendor_Email();
@@ -187,56 +195,80 @@ public class ViewVendor {
             }
             //add to database
 
-            _vendor.Update(column, value);
-        } while (UserInputHandler.getConfirmation(String.format("%-40s", "\nContinue to edit vendor?"))
+            if(_vendor.Update(column, value)){
+                System.out.println("Vendor " + _vendor.getVendor_ID() + " has been updated successfully.");
+            } else {
+                System.out.println("Unable to update vendor: " + _vendor.getVendor_ID());
+            }
+        } while (UserInputHandler.getConfirmation(String.format("%-30s", "\nContinue to edit vendor?"))
                 .equalsIgnoreCase("Y"));
     }
 
     public Vendor selectVendorFromList() {
         //get vendor id
-        String vendorId = UserInputHandler.getString("Enter Vendor ID", "V[0-9]{5}");
+        do{
+            String vendorId = UserInputHandler.getString("\nEnter Vendor ID", "V[0-9]{5}");
 
-        //search for vendor
-        for (Vendor vendor : vendors) {
-            if (vendor.getVendor_ID().equals(vendorId)) {
-                return vendor;
+            //search for vendor
+            for (Vendor vendor : vendors) {
+                if (vendor.getVendor_ID().equals(vendorId)) {
+                    return vendor;
+                }
             }
-        }
-        //if no vendor are founded in the list
+
+            //if no vendor are founded in the list
+            System.out.println("Vendor not found.");
+        }while(UserInputHandler.getConfirmation("Try again?").equalsIgnoreCase("Y"));
+        
         return null;
     }
 
     private void searchVendor() {
         boolean backToVendorManagement = false;
         while (!backToVendorManagement) {
-            //search for vendor
-            System.out.println("======== Search Vendor ========");
-            System.out.println("1. Search by Vendor Name");
-            System.out.println("2. Search by Vendor ID");
-            System.out.println("3. Back to Vendor Management");
-            System.out.println("===============================");
+            do{
+                ConsoleUI.clearScreen();
+                //search for vendor
+                System.out.println("======== Search Vendor ========");
+                System.out.println("1. Search by Vendor Name");
+                System.out.println("2. Search by Vendor ID");
+                System.out.println("3. Back to Vendor Management");
+                System.out.println("===============================");
 
-            switch (UserInputHandler.getInteger("Select an option", 1, 3)) {
-                case 1:
-                    this.vendors = Vendor.Get("Vendor_Name",
-                            UserInputHandler.getString("Enter Vendor Name", 4,50));
-                    break;
-                case 2:
-                    this.vendors = Vendor.Get("Vendor_ID",
-                            UserInputHandler.getString("Enter Vendor ID", 6, "^V[0-9]{5}"));
-                    break;
-                case 3:
-                    backToVendorManagement = true;
-                    break;
-                default:
-                    break;
-
-            }
-            if (backToVendorManagement != true) {
-                displayVendors();
-            }
+                switch (UserInputHandler.getInteger("Select an option: ", 1, 3)) {
+                    case 1:
+                        this.vendors = Vendor.Get("Vendor_Name",
+                                UserInputHandler.getString("\nPlease Enter Exact Vendor Name", 4,50));
+                        if (this.vendors == null || this.vendors.isEmpty()) {
+                            System.out.println("Vendor not found.");
+                            ConsoleUI.pause();
+                            break;
+                        }
+                        displayVendors();
+                        ConsoleUI.pause();
+                        break;
+                    case 2:
+                        this.vendors = Vendor.Get("Vendor_ID",
+                                UserInputHandler.getString("\nPlease Enter Exact Vendor ID", 6, "^V[0-9]{5}"));
+                        if (this.vendors == null || this.vendors.isEmpty()) {
+                            System.out.println("Vendor not found.");
+                            ConsoleUI.pause();
+                            break;
+                        }
+                        displayVendors();
+                        ConsoleUI.pause();
+                        break;
+                    case 3:
+                        backToVendorManagement = true;
+                        break;
+                    default:
+                        break;
+                }
+            }while(this.vendors == null || this.vendors.isEmpty());
         }
     }
+
+
 }
 
      

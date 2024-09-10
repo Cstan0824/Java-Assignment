@@ -312,11 +312,12 @@ public abstract class User {
             } catch (InterruptedException e) {
                 System.out.println("Thread interrupted.");
             }
-
+            System.out.println("====================");
             System.out.println("1. Try again");
             System.out.println("2. Forgot Password");
             System.out.println("3. Exit");
-            int choice = UserInputHandler.getInteger("\nEnter choice: ", 1, 3);
+            System.out.println("====================");
+            int choice = UserInputHandler.getInteger("Enter choice: ", 1, 3);
 
             switch (choice) {
                 case 1:

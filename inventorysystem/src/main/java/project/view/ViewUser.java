@@ -15,11 +15,12 @@ public class ViewUser {
         
         while (true){
         ConsoleUI.clearScreen();    
-        System.out.println("Are you ...");
+        System.out.println("====== Choose Your Role ======");
         System.out.println("1. Admin");
         System.out.println("2. Retailer");
         System.out.println("3. Exit");
-        int choice = UserInputHandler.getInteger("\nEnter choice (1-3): ", 1, 3);
+        System.out.println("==============================");
+        int choice = UserInputHandler.getInteger("Enter choice (1-3): ", 1, 3);
 
             switch (choice) {
                 case 1:
@@ -48,11 +49,12 @@ public class ViewUser {
         boolean back = false;
         while (!back) {
             ConsoleUI.clearScreen();
+            System.out.println("====== Retailer Login ======");
             System.out.println("1. Login");
             System.out.println("2. Register");
             System.out.println("3. Back");
-
-            switch (UserInputHandler.getInteger("\nEnter choice: ", 1, 3)) {
+            System.out.println("============================");
+            switch (UserInputHandler.getInteger("Enter choice: ", 1, 3)) {
                 case 1:
                     if (user.handleLogin()) {
                         RetailerAccess();
@@ -75,10 +77,12 @@ public class ViewUser {
         boolean logOut = false;
         while (!logOut) {
             ConsoleUI.clearScreen();
+            System.out.println("============= Retailer Menu ==============");
             System.out.println("1. Profile Management"); //Retailer
             System.out.println("2. Purchase Management"); // Sales Order
             System.out.println("3. Schedule Management"); // Delivery Order
             System.out.println("4. log out");
+            System.out.println("=========================================");
 
             switch (UserInputHandler.getInteger("\nEnter choice: ", 1, 4)) {
                 case 1:
@@ -106,7 +110,7 @@ public class ViewUser {
         boolean logOut = false;
         while (!logOut) {
             ConsoleUI.clearScreen();
-            System.out.println("Admin Menu");
+            System.out.println("============= Admin Menu ==============");
             System.out.println("1. Admin & Retailer Management"); //Admin and Retailer
             System.out.println("2. Vendor Management"); //Vendor
             System.out.println("3. Item Management"); //Item，Auto Replenishment
@@ -115,8 +119,9 @@ public class ViewUser {
             System.out.println("6. Schedule Management"); //DO, Schedule, Vehicle Management
             System.out.println("7. Report Management"); //Report
             System.out.println("8. log out");
+            System.out.println("======================================");
 
-            switch (UserInputHandler.getInteger("\nEnter choice: ", 1, 8)) {
+            switch (UserInputHandler.getInteger("Enter choice: ", 1, 8)) {
                 case 1: 
                     user.UserMenu();
                     break;
@@ -134,6 +139,7 @@ public class ViewUser {
                 case 5:
                     ViewSalesManagement viewSalesManagement = new ViewSalesManagement(user);
                     viewSalesManagement.userMenu();
+                    break;
                 case 6:
                     ViewScheduleManagement viewScheduleManagement = new ViewScheduleManagement(user);
                     viewScheduleManagement.adminMenu();
