@@ -45,7 +45,7 @@ public class Retailer extends User {
     }
 
     @Override
-    public void Add() {
+    public boolean Add() {
         String sql = "INSERT INTO Retailer (Retailer_Id, Retailer_Name, Retailer_Password, Retailer_Email, Retailer_Reg_Date, Retailer_Address, Retailer_Created_By) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         
@@ -53,12 +53,11 @@ public class Retailer extends User {
 
         if (!Connector.isConnected()) {
             System.out.println("Connection failed");
-            return;
+            return false;
         }
 
-        Connector.PrepareExecuteDML(sql, this.getUserId(), this.getUserName(), this.getUserPassword(),
+        return Connector.PrepareExecuteDML(sql, this.getUserId(), this.getUserName(), this.getUserPassword(),
                 this.getUserEmail(), LocalDateTime.now(), this.getRetailerAddress(), User.getLoggedInUserId());
-        System.out.println("Retailer added successfully.");
     }
 
     @Override
@@ -82,7 +81,7 @@ public class Retailer extends User {
                 
                     this.setUserName(result.getString(1));
                     this.setUserEmail(result.getString(2));
-                    this.setUserRegDate(result.getTimestamp(3).toLocalDateTime());
+                    this.setUserRegDate(result.getDate(3).toLocalDate());
                     this.setUserPassword(result.getString(4));
                     this.setRetailerAddress(result.getString(5));
                     return true;
@@ -104,242 +103,181 @@ public class Retailer extends User {
     }
 
     public void createRetailer() {
-        Admin admin = new Admin();
+
+        ConsoleUI.clearScreen();
 
         this.setUserId(super.generateUserId("R"));
 
-        System.out.println("Enter Retailer Name: ");
-        this.setUserName(scanner.nextLine());
+        this.setUserName(UserInputHandler.getString("Enter Retailer Name", 3));
 
-      
-        System.out.println("Enter Retailer Password: ");
-        this.setUserPassword(scanner.nextLine());
+        this.setUserPassword(UserInputHandler.getString("Enter Retailer Password", "^(?=.*[@#$%^&+=])(?=\\S+$).{5,}$"));
 
-        while (!Validation.validateUserPassword(this.getUserPassword())) {
-            System.out.println("Enter Retailer Password: ");
-            this.setUserPassword(scanner.nextLine());
-        }
-
-        System.out.println("Enter Retailer Email: ");
+        System.out.print("Enter Retailer Email: ");
         this.setUserEmail(scanner.nextLine());
 
-        System.out.println("Enter Retailer Address: ");
+        System.out.print("Enter Retailer Address: ");
         this.setRetailerAddress(scanner.nextLine());
 
-        Add();
+        if(Add()){
+            System.out.println("Retailer added successfully.");
+            String choice = UserInputHandler.getConfirmation("Any more Retailers to add?");
 
-        System.out.println("Any more Retailers to add? (Y/N): ");
-        String choice = scanner.nextLine();
-
-        if (choice.equalsIgnoreCase("Y")) {
-            createRetailer();
+            if (choice.equalsIgnoreCase("Y")) {
+                createRetailer();
+            } 
         } else {
-            System.out.println("Returning to main menu...");
-            try {
-                Thread.sleep(1000);
-                admin.UserMenu();
-            } catch (InterruptedException e) {
-                System.out.println("Returning to main menu...");
-
-            }
+            System.out.println("Retailer not added.");
+            ConsoleUI.pause();
         }
-
     }
 
     public void viewRetailer() {
+        ConsoleUI.clearScreen();
         System.out.println("This is your Retailer Details: ");
         displayUserDetails();
-        redirectToMenu(new Scanner(System.in));
         
     }
 
     public void deleteRetailer() { //can work
-
-        Admin admin = new Admin();
-
-        System.out.println("Enter Retailer ID: ");
-        this.setUserId(scanner.nextLine());
+        ConsoleUI.clearScreen();
+        displayAllUsers();
+        this.setUserId(UserInputHandler.getString("Enter Retailer ID to delete", "^[ARV][0-9]{5}$"));
 
         if (!Get()) {
             System.out.println("Retailer ID does not exist.");
-            redirectToMenu(scanner);
+            ConsoleUI.pause();
+            
         } else {
-            System.out.println("Retailer Name: " + this.getUserName());
+            System.out.println("\n\nRetailer Name: " + this.getUserName());
             System.out.println("Retailer Email: " + this.getUserEmail());
-            System.out.println("Retailer Registration Date: " + this.getUserRegDate().toLocalDate());
+            System.out.println("Retailer Registration Date: " + this.getUserRegDate());
             System.out.println("Retailer Address: " + this.getRetailerAddress());
 
         }
 
-        System.out.println("Are you sure you want to delete this Retailer? (Y/N): ");
-        String choice = scanner.nextLine();
+        String choice = UserInputHandler.getConfirmation("\nAre you sure you want to delete this Retailer?");
 
         if (choice.equalsIgnoreCase("Y")) {
 
-            this.Remove();
-
-            System.out.println("Retailer deleted successfully.");
-
-            try {
-                Thread.sleep(1000);
-                admin.UserMenu();
-            } catch (InterruptedException e) {
-                System.out.println("Returning to main menu...");
+            if (this.Remove()){
+                System.out.println("\nRetailer deleted successfully.");
+                String choice1 = UserInputHandler.getConfirmation("\nDo you want to delete more Retailer?");
+                if (choice1.equalsIgnoreCase("Y")) {
+                    deleteRetailer();
+                }
+            }else{
+                System.out.println("Retailer not deleted.");
             }
-        
-
         } else {
             System.out.println("Retailer not deleted.");
-            System.out.println("Returning to main menu...");
-
-            try {
-                Thread.sleep(1000);
-                admin.UserMenu();
-            } catch (InterruptedException e) {
-                System.out.println("Returning to main menu...");
-            }
-
+            ConsoleUI.pause();
         }
     }
 
     
     public void UpdateRetailer() {
+        ConsoleUI.clearScreen();
+        super.displayUserDetails();
 
-            super.displayUserDetails();
+        boolean continueEditing = true;
 
+        while (continueEditing) {
+            System.out.println("Which field would you like to update?");
+            System.out.println("1. Retailer Name");
+            System.out.println("2. Retailer Password");
+            System.out.println("3. Retailer Email");
+            System.out.println("4. Retailer Address");
+            int choice = UserInputHandler.getInteger("\nEnter choice (1-4): ", 1, 4);
 
-            boolean continueEditing = true;
+            String field;
+            String value;
 
-            while (continueEditing) {
-                System.out.println("Which field would you like to update?");
-                System.out.println("1. Retailer Name");
-                System.out.println("2. Retailer Password");
-                System.out.println("3. Retailer Email");
-                System.out.println("4. Retailer Address");
-                int choice = UserInputHandler.getInteger("\nEnter choice (1-4): ", 1, 4);
+            switch (choice) {
+                case 1:
+                    field = "Retailer_Name";
+                    System.out.print("Enter new Retailer Name: ");
+                    value = scanner.nextLine();          
+                    break;
+                case 2:
+                    field = "Retailer_Password";
+                    value = UserInputHandler.getString("Enter new Retailer Password", "^(?=.*[@#$%^&+=])(?=\\S+$).{5,}$");
+                    break;
+                case 3:
+                    field = "Retailer_Email";
+                    System.out.print("Enter new Retailer Email: ");
+                    value = scanner.nextLine();
 
-                String field;
-                String value;
-
-                switch (choice) {
-                    case 1:
-                        field = "Retailer_Name";
-                        System.out.print("Enter new Retailer Name: ");
-                        value = scanner.nextLine();          
-                        break;
-                    case 2:
-                        field = "Retailer_Password";
-                        System.out.print("Enter new Retailer Password: ");
-                        value = scanner.nextLine();
-
-                        while (!Validation.validateUserPassword(value)) {
-                            System.out.print("Enter new Retailer Password: ");
-                            value = scanner.nextLine();
-                        }
-                        break;
-                    case 3:
-                        field = "Retailer_Email";
-                        System.out.print("Enter new Retailer Email: ");
-                        value = scanner.nextLine();
-
-                        break;
-                    case 4:
-                        field = "Retailer_Address";
-                        System.out.print("Enter new Retailer Address: ");
-                        value = scanner.nextLine();
-                        break;
-                    default:
-                        System.out.println("Invalid choice.");
-                        continue; // Go back to the field selection menu
-                }
-
-                this.Update(field, value);
-
-                System.out.println("Would you like to update another field? (Y/N): ");
-                String anotherFieldChoice = scanner.nextLine();
-                continueEditing = anotherFieldChoice.equalsIgnoreCase("Y");
+                    break;
+                case 4:
+                    field = "Retailer_Address";
+                    System.out.print("Enter new Retailer Address: ");
+                    value = scanner.nextLine();
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    continue; // Go back to the field selection menu
             }
 
-            redirectToMenu(scanner); // After all updates, redirect to menu
+            this.Update(field, value);
+
+            String anotherFieldChoice = UserInputHandler.getConfirmation("Would you like to update another field?");
+            continueEditing = anotherFieldChoice.equalsIgnoreCase("Y");
+        }
+
+         // After all updates, redirect to menu
     }
 
     @Override
     public void UserMenu() {
-        ConsoleUI.clearScreen();
-        System.out.println("Retailer User Management System");
-        System.out.println("1. View Retailer");
-        System.out.println("2. Update Retailer");
-        System.out.println("3. Exit");
-        int choice = UserInputHandler.getInteger("\nEnter choice: ", 1, 3);
-
-        switch (choice) {
-            case 1:
-                viewRetailer();
-                break;
-            case 2:
-                UpdateRetailer();
-                break;
-            case 3:
-                return;
-            default:
-                System.out.println("Invalid choice.");
-                UserMenu();
-                break;
+        boolean exit = false;
+        while(!exit){
+            ConsoleUI.clearScreen();
+            System.out.println("Retailer User Management System");
+            System.out.println("1. View Retailer");
+            System.out.println("2. Update Retailer");
+            System.out.println("3. Exit");
+            int choice = UserInputHandler.getInteger("\nEnter choice: ", 1, 3);
+            switch (choice) {
+                case 1:
+                    viewRetailer();
+                    break;
+                case 2:
+                    UpdateRetailer();
+                    break;
+                case 3:
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    break;
+            }
         }
     }
 
     public void Register() // can work
     {
-
+        ConsoleUI.clearScreen();
         Request request = new Request();
 
-        do {
-            System.out.println("Enter Retailer ID: ");
-            request.setRetailer_ID(scanner.nextLine());
-            this.setUserId(request.getRetailer_ID());
+        System.out.print("Enter Retailer Name: ");
+        request.setRetailer_Name(scanner.nextLine());
 
-            if (Get()) {
-                System.out.println("Retailer ID already exists. Please enter a different ID.");
-            } else {
-                break;
-            }
-        } while (true);
-
-        while (Validation.validateUserId(request.getRetailer_ID()) == false) {
-            System.out.println("Enter Retailer ID: ");
-            request.setRetailer_ID(scanner.nextLine());
-        }
-
+        request.setRetailer_Password(UserInputHandler.getString("Enter Retailer Password", "^(?=.*[@#$%^&+=])(?=\\S+$).{5,}$"));
         
-            System.out.println("Enter Retailer Name: ");
-            request.setRetailer_Name(scanner.nextLine());
-
-        do {
-            System.out.println("Enter Retailer Password: ");
-            request.setRetailer_Password(scanner.nextLine());
-        } while (!Validation.validateUserPassword(request.getRetailer_Password()));
-
-        System.out.println("Enter Retailer Email: ");
+        System.out.print("Enter Retailer Email: ");
         request.setRetailer_Email(scanner.nextLine());
 
-        System.out.println("Enter Retailer Address: ");
+        System.out.print("Enter Retailer Address: ");
         request.setRetailer_Address(scanner.nextLine());
 
-        request.saveRequest();
-
-        System.out.println("Request submitted successfully. Please wait for approval.");
-
-    }
-
-    private void redirectToMenu(Scanner scanner) {
-        System.out.println("Do you want to return to the main menu? (Y/N): ");
-        String choice = scanner.next();
-        if (choice.equalsIgnoreCase("Y")) {
-            UserMenu();
+        if(request.saveRequest()){
+            System.out.println("Request submitted successfully. Please wait for approval.");
+            ConsoleUI.pause();
         } else {
-            System.out.println("Exiting...");
-            System.exit(0);
+            System.out.println("Request not submitted.");
+            ConsoleUI.pause();
         }
+
     }
     
 

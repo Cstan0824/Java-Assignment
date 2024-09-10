@@ -98,6 +98,21 @@ public class UserInputHandler {
         }
     }
 
+    public static String getString(String _message, int _min_Length){
+        String input;
+        while (true) {
+            System.out.print(_message + ": ");
+            input = scanner.nextLine().trim();
+
+            // Check if the input matches the required length and pattern
+            if (input.length() < _min_Length) {
+                System.out.println("Invalid input length. Please enter at least " + _min_Length + " characters.");
+                continue;
+            }
+            return input;
+        }
+    }
+
     public static String getString(String _message, int _requiredLength, String _regexPattern) {
         String input;
         Pattern pattern = Pattern.compile(_regexPattern);

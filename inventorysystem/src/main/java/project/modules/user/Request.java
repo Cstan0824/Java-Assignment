@@ -1,10 +1,11 @@
 package project.modules.user;
-import project.global.*;
-
-
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
+import project.global.ConsoleUI;
+import project.global.MailSender;
+import project.global.MailTemplate;
+import project.global.SqlConnector;
 
 public class Request {
     private  int Request_ID;
@@ -88,7 +89,7 @@ public class Request {
 
 
     
-    public void saveRequest() // retailer use , so far ok 
+    public boolean saveRequest() // retailer use , so far ok 
     {
         String sql = "INSERT INTO Request (Request_Id, Retailer_Id, Retailer_Name, Retailer_Email, Retailer_Password, Retailer_Address, Status, Retailer_Entry_Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -97,20 +98,10 @@ public class Request {
 
         if(!Connector.isConnected()) {
             System.out.println("Connection failed");
-            return;
+            return false;
         }
 
-        boolean checking = Connector.PrepareExecuteDML(sql, this.getRequest_ID(), this.getRetailer_ID(), this.getRetailer_Name(), this.getRetailer_Email(), this.getRetailer_Password(), this.getRetailer_Address(), this.Status, this.getRetailer_Entry_Id());
-
-        if(checking)
-        {
-            System.out.println("Request added successfully.");
-        }
-        else
-        {
-            System.out.println("Request failed.");
-        }
-
+        return Connector.PrepareExecuteDML(sql, this.getRequest_ID(), this.getRetailer_ID(), this.getRetailer_Name(), this.getRetailer_Email(), this.getRetailer_Password(), this.getRetailer_Address(), this.Status, this.getRetailer_Entry_Id());
 
     }
 
@@ -198,9 +189,11 @@ public class Request {
         ArrayList<Request> requests = connector.PrepareExecuteRead(sql, Request.class);
 
         if (requests == null || requests.isEmpty()) {
+            System.out.println("No pending requests found.");
             return null;
         }
 
+        ConsoleUI.clearScreen();
         System.out.println("================================================================================================================");
         System.out.println(" Request ID | Retailer ID | Retailer Name        | Retailer Email            | Retailer Address   | Status   ");
         System.out.println("================================================================================================================");
@@ -222,11 +215,4 @@ public class Request {
     }
 
 
-    
-
-
-    
-    
-     
-   
 }

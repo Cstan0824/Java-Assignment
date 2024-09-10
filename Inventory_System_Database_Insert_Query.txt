@@ -55,6 +55,6 @@ INSERT INTO AutoReplenishment (Item_ID, Item_Threshold) VALUES
 (2, 200),
 (3, 150);
 
-INSERT INTO `request` (`Request_ID`, `Retailer_ID`, `Retailer_Name`, `Retailer_Email`, `Retailer_Password`, `Retailer_Address`, `Status`, `Retailer_Entry_Id`) VALUES
-(1, 'R007', 'djvbjkad', 'dbvkja', 'aaaAAA@123', 'dkjabv', 'Approved', NULL),
-(2, 'R008', 'hfjasjv', 'dkjsnvld', 'Password@123', 'vndklsnv', 'Approved', NULL);
+INSERT INTO `request` (`Retailer_ID`, `Retailer_Name`, `Retailer_Email`, `Retailer_Password`, `Retailer_Address`, `Status`) VALUES
+('R00007', 'djvbjkad', 'dbvkja', 'aaaAAA@123', 'dkjabv', 'Approved'),
+('R00008', 'hfjasjv', 'dkjsnvld', 'Password@123', 'vndklsnv', 'Approved');

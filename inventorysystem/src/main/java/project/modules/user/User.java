@@ -5,9 +5,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
+import project.global.ConsoleUI;
 import project.global.MailSender;
 import project.global.MailTemplate;
 import project.global.SqlConnector;
@@ -23,7 +25,7 @@ public abstract class User {
     private String userPassword;
     private String userEmail;
     private String otpCode;
-    private LocalDateTime userRegDate;
+    private LocalDate userRegDate;
     private LocalDateTime otpExpiry;
     private String userType;
     private static String loggedInUserId;
@@ -37,7 +39,7 @@ public abstract class User {
         this.userName = userName;
         this.userPassword = userPassword;
         this.userEmail = userEmail;
-        this.userRegDate = LocalDateTime.now(); 
+        this.userRegDate = LocalDate.now(); 
         this.userType = usertype;
     }
 
@@ -99,11 +101,11 @@ public abstract class User {
         this.otpExpiry = otpExpiry;
     }
 
-    public LocalDateTime getUserRegDate() {
+    public LocalDate getUserRegDate() {
         return userRegDate;
     }
 
-    public void setUserRegDate(LocalDateTime userRegDate) {
+    public void setUserRegDate(LocalDate userRegDate) {
         this.userRegDate = userRegDate;
     }
 
@@ -131,7 +133,7 @@ public abstract class User {
         this.userAddress = userAddress;
     }
 
-    public abstract void Add(); 
+    public abstract boolean Add(); 
     public abstract void UserMenu(); 
    
     public boolean Get() // can work
@@ -158,7 +160,7 @@ public abstract class User {
                 
                     this.setUserName(result.getString(1));
                     this.setUserEmail(result.getString(2));
-                    this.setUserRegDate(result.getTimestamp(3).toLocalDateTime());
+                    this.setUserRegDate(result.getDate(3).toLocalDate());
                     this.setUserPassword(result.getString(4));
 
 
@@ -207,7 +209,7 @@ public abstract class User {
         }
     }
     
-    public void Remove() // can work
+    public boolean Remove() // can work
     {
         String sql = "DELETE FROM " + this.userType + " WHERE " + this.getUserType() + "_Id = ?";
 
@@ -216,21 +218,10 @@ public abstract class User {
         if(!this.Connector.isConnected())
         {
             System.out.println("Connection failed");
-            return;
+            return false;
         }
 
-        Boolean checking = this.Connector.PrepareExecuteDML(sql, this.getUserId());
-
-        this.Connector.Disconnect();
-
-        if(checking)
-        {
-            System.out.println("Delete successful");
-        }
-        else
-        {
-            System.out.println("Delete failed");
-        }
+        return this.Connector.PrepareExecuteDML(sql, this.getUserId());
     }
 
     public boolean handleLogin() // can work
@@ -241,13 +232,8 @@ public abstract class User {
         while (attempts < MAX_ATTEMPTS) {
 
             //input user id and password
-            System.out.print("\n\nEnter " + this.getUserType() + " ID: ");
-            this.setUserId(scanner.nextLine());
+            this.setUserId(UserInputHandler.getString("\nEnter " + this.getUserType() + " ID", "^[ARV][0-9]{5}$"));
 
-            while (!Validation.validateUserId(this.getUserId())) {
-                System.out.print("Enter " + this.getUserType() + " ID: ");
-                this.setUserId(scanner.nextLine());
-            }
 
             System.out.print("Enter " + this.getUserType() + " Password: ");
             this.setUserPassword(getPassword());
@@ -283,8 +269,8 @@ public abstract class User {
 
                             if (resultSet1.next()) {
                                 this.setUserEmail(resultSet1.getString(this.getUserType() + "_Email"));
-                                this.setUserRegDate(resultSet1.getTimestamp(this.getUserType() + "_Reg_Date")
-                                        .toLocalDateTime());
+                                this.setUserRegDate(resultSet1.getDate(this.getUserType() + "_Reg_Date")
+                                        .toLocalDate());
                             }
                         }
 
@@ -296,7 +282,7 @@ public abstract class User {
                         this.setUserName(resultSet.getString("Retailer_Name"));
                         this.setUserPassword(resultSet.getString("Retailer_Password"));
                         this.setUserEmail(resultSet.getString("Retailer_Email"));
-                        this.setUserRegDate(resultSet.getTimestamp("Retailer_Reg_Date").toLocalDateTime());
+                        this.setUserRegDate(resultSet.getDate("Retailer_Reg_Date").toLocalDate());
                         this.setUserAddress(resultSet.getString("Retailer_Address"));  // Only Retailer has this field
 
                     } else if (this.userType.equals("Admin")) {
@@ -304,7 +290,7 @@ public abstract class User {
                         this.setUserName(resultSet.getString("Admin_Name"));
                         this.setUserPassword(resultSet.getString("Admin_Password"));
                         this.setUserEmail(resultSet.getString("Admin_Email"));
-                        this.setUserRegDate(resultSet.getTimestamp("Admin_Reg_Date").toLocalDateTime());
+                        this.setUserRegDate(resultSet.getDate("Admin_Reg_Date").toLocalDate());
                         
                     }
                     
@@ -371,24 +357,34 @@ public abstract class User {
                 
                 if (!result.isBeforeFirst()) {
                     System.out.println("No users found.");
+                    ConsoleUI.pause();
                     return;
                 }
 
-                System.out.printf("%-10s | %-20s | %-30s | %-25s | %-10s%n", this.userType + " ID",this.userType + " Name", this.userType + " Email", this.userType + " Registration Date", this.userType + " Password");
-                System.out.println("--------------------------------------------------------------------------------------------------------------");
+                System.out.println("List of " + this.userType + "s");
+
+                System.out.printf("%-15s | %-20s | %-45s | %-25s | %-10s%n", this.userType + " ID",this.userType + " Name", this.userType + " Email", this.userType + " Password", this.userType + " Registration Date");
+                if(this.userType.equals("Admin")) {
+                    System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
+                }
+                else {
+                    System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------");
+                }
+                
                 
                 while (result.next()) {
     
-                    String userId = result.getString(1);
-                    String userName = result.getString(2);
-                    String userPassword = result.getString(3);
-                    String userEmail = result.getString(4);
-                    LocalDateTime userRegDate = result.getTimestamp(5).toLocalDateTime();
+                    this.userId = result.getString(1);
+                    this.userName = result.getString(2);
+                    this.userPassword = result.getString(3);
+                    this.userEmail = result.getString(4);
+                    this.userRegDate = result.getDate(5).toLocalDate();
     
                     // Display the user details
-                    System.out.printf("%-10s | %-20s | %-30s | %-25s | %-10s%n", userId, userName, userEmail, userPassword , userRegDate);
+                    System.out.printf("%-15s | %-20s | %-45s | %-25s | %-10s%n", userId, userName, userEmail, userPassword , userRegDate);
 
                 }
+                ConsoleUI.pause();
                 
             } catch (SQLException e) {
                 System.out.println("SQL Error: " + e.getMessage());
@@ -435,7 +431,7 @@ public abstract class User {
     {  
         
 
-        System.out.println("Enter the OTP sent to your email: ");
+        System.out.print("Enter the OTP sent to your email: ");
         String userOTP = scanner.nextLine();
 
     
@@ -511,6 +507,7 @@ public abstract class User {
         if(this.getUserType().equals("Retailer")) {
             System.out.println("Retailer Address: " + this.getUserAddress());
         }
+        ConsoleUI.pause();
     }
     
     public String generateUserId(String _prefix) {

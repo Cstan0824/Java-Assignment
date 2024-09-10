@@ -1,6 +1,5 @@
 package project.start;
 
-import project.global.ConsoleUI;
 import project.modules.schedule.Schedule;
 import project.view.ViewUser;
 
@@ -9,7 +8,7 @@ public class App extends Thread{
 
     public static void main(String[] args) {
 
-        ConsoleUI.welcomeScreen();
+        //ConsoleUI.welcomeScreen();
 
         App appThread = new App();  // Create an instance of App (Thread)
         appThread.start();         // Start the thread

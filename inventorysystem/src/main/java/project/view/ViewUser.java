@@ -106,6 +106,7 @@ public class ViewUser {
         boolean logOut = false;
         while (!logOut) {
             ConsoleUI.clearScreen();
+            System.out.println("Admin Menu");
             System.out.println("1. Admin & Retailer Management"); //Admin and Retailer
             System.out.println("2. Vendor Management"); //Vendor
             System.out.println("3. Item Management"); //Item，Auto Replenishment

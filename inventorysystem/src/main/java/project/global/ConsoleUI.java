@@ -133,6 +133,7 @@ public class ConsoleUI {
     }
 
     @SuppressWarnings("BusyWait")
+    //1. Countdown Exit
     public static void countdownExit() {
         try {
             System.out.print("\n\nExiting the Inventory System in:    ");
@@ -147,6 +148,7 @@ public class ConsoleUI {
     }
 
     @SuppressWarnings("BusyWait")
+    //2. Scrolling Text Exit
     public static void scrollingTextExit() {
         String message = "\n\nThank you for using Inventory System! ";
         try {
@@ -164,6 +166,7 @@ public class ConsoleUI {
     
     
     @SuppressWarnings("BusyWait")
+    //3. Spiral Fade-Out
     public static void spiralFadeOut() {
         char[] spinner = {'|', '/', '-', '\\'}; // Characters for a spinning effect
         try {
