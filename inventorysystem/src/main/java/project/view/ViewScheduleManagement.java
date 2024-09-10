@@ -245,7 +245,7 @@ public class ViewScheduleManagement {
 
                 //implement pdf and email here
                 URL resource = getClass().getClassLoader()
-                .getResource("project/Report");
+                    .getResource("project/global/Pdf");
                 file = new File(
                 resource.getPath().replace("%20", " "), schedule.getDeliveryOrder().getDoc_No() + "-Schedule.pdf");
 
@@ -313,7 +313,7 @@ public class ViewScheduleManagement {
 
                 //implement pdf and email here
                 URL resource = getClass().getClassLoader()
-                .getResource("project/Report");
+                    .getResource("project/global/Pdf");
                 file = new File(
                 resource.getPath().replace("%20", " "),"New " + schedule.getDeliveryOrder().getDoc_No() + "-Schedule.pdf");
 

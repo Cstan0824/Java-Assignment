@@ -293,8 +293,8 @@ public class ViewSalesManagement {
             }
 
             //mail sender
-            URL resource = getClass().getClassLoader()
-            .getResource("project/Report");
+             URL resource = getClass().getClassLoader()
+                    .getResource("project/global/Pdf");
             file = new File(
             resource.getPath().replace("%20", " "), docNo + ".pdf");
 

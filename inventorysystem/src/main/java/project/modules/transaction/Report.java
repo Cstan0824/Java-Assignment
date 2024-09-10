@@ -107,9 +107,7 @@ public class Report {
         }
         this.pdf = new PdfConverter(this.file, new PdfTemplate(this, PdfTemplate.ReportType.SALES_REPORT));
 
-        System.out.println("PDF created and stored temporarily at: " + this.file.getAbsolutePath());
-
-        return true;
+        return this.pdf.Save();
     }
 
     private boolean PurchaseReport() {

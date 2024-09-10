@@ -37,7 +37,7 @@ public class ItemCategory {
     
     @Override
     public String toString() {
-        return String.format("| %-15s |", this.Item_Type);
+        return String.format("%-40s", this.Item_Type);
     }
 
     public static ArrayList<ItemCategory> GetAll() {
@@ -48,7 +48,7 @@ public class ItemCategory {
         }
         String query = "SELECT * FROM item_category";
 
-        ArrayList<ItemCategory> result = connector.ExecuteRead(query);
+        ArrayList<ItemCategory> result = connector.ExecuteRead(query, ItemCategory.class);
         return result;
     }
 

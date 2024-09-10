@@ -206,7 +206,7 @@ public class Item implements CrudOperation{
         return items;
     }
 
-    public static ArrayList<Item> Get(String _field, String _value) {
+    public static ArrayList<Item> GetAllForNewReplenishment() {
 
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -214,9 +214,8 @@ public class Item implements CrudOperation{
             return null;
         }
 
-        String query = "SELECT * FROM item WHERE " + _field + " = ? ;";
-        ArrayList<Item> items = connector.PrepareExecuteRead(query, Item.class, _value);
-
+        String query = "SELECT * FROM item WHERE Item_ID NOT IN (SELECT Item_ID FROM autoreplenishment);";
+        ArrayList<Item> items = connector.ExecuteRead(query, Item.class);
         connector.Disconnect();
 
         if (items == null || items.isEmpty()) {
@@ -228,7 +227,34 @@ public class Item implements CrudOperation{
             item.getItemCategory().Get();
         });
 
+
         return items;
+    }
+
+    public static ArrayList<Item> Get(String _field, String _value) {
+
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return null;
+        }
+
+        String query = "SELECT * FROM item WHERE " + _field + "= ? ;";
+        ArrayList<Item> items = connector.PrepareExecuteRead(query, Item.class, _value);
+
+        connector.Disconnect();
+
+        if (items == null || items.isEmpty()) {
+            return null;
+        }
+
+       
+        items.forEach(item -> {
+            item.getVendor().Get();
+            item.getItemCategory().Get();
+        });
+        return items;
+        
     }
 
     @Override

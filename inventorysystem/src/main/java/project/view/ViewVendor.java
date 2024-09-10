@@ -207,6 +207,7 @@ public class ViewVendor {
     public Vendor selectVendorFromList() {
         //get vendor id
         do{
+            displayVendors();
             String vendorId = UserInputHandler.getString("\nEnter Vendor ID", "V[0-9]{5}");
 
             //search for vendor

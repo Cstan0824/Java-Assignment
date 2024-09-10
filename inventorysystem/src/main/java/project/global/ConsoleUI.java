@@ -8,15 +8,15 @@ public class ConsoleUI {
     private static final Scanner scanner = new Scanner(System.in);
     
     public static void clearScreen() {
-    try {
-        if (System.getProperty("os.name").contains("Windows")) {
-            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-        } else {
-            new ProcessBuilder("clear").inheritIO().start().waitFor();
+        try {
+            if (System.getProperty("os.name").contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                new ProcessBuilder("clear").inheritIO().start().waitFor();
+            }
+        } catch (IOException | InterruptedException ex) {
+            System.out.println("Screen clearing error: " + ex.getMessage());
         }
-    } catch (IOException | InterruptedException ex) {
-        System.out.println("Screen clearing error: " + ex.getMessage());
-    }
     }
 
 
