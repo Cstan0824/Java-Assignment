@@ -107,19 +107,10 @@ public class ViewAutoReplenishment {
     //Method to delete Auto Replenishment
     public void deleteAutoReplenishment() {
         ConsoleUI.clearScreen();
-        this.autoReplenishments = AutoReplenishment.GetAll();
-        ArrayList<Item> items = new ArrayList<>();
-        autoReplenishments.forEach(autoReplenishment -> {
-            items.add(autoReplenishment.getItem());
-        });
-        
-        this.viewItem.setItems(items);
-        Item item = viewItem.selectItemFromList();
+        AutoReplenishment autoReplenishment = selectAutoReplenishmentFromList();
 
-        AutoReplenishment ar = new AutoReplenishment();
-        ar.setItem(item);
-        if(ar.Remove()){
-            System.out.println("Auto Replenishment for " + item.getItem_Name() + " has been deleted successfully.");
+        if(autoReplenishment.Remove()){
+            System.out.println("Auto Replenishment for " + autoReplenishment.getItem().getItem_Name() + " has been deleted successfully.");
             ConsoleUI.pause();
         }else{
             System.out.println("Error deleting Auto Replenishment.");

@@ -114,8 +114,7 @@ public class ViewVendor {
             vendor.setVendor_Address(
                     UserInputHandler.getString(String.format("%-30s", "Please enter vendor address: "), 4, 100));
             vendor.setVendorEmail(
-                    UserInputHandler.getString(String.format("%-30s", "Please enter vendor email: "),
-                            "^[a-zA-Z0-9]{4,24}@gmail.com"));
+                    UserInputHandler.getString(String.format("%-30s", "Please enter vendor email: "), 10));
             vendor.setVendor_Created_By(user.getUserId());
             vendor.setVendor_Modified_By(user.getUserId());
             vendor.setVendor_ID(vendor.GenerateVendorID());
@@ -227,45 +226,41 @@ public class ViewVendor {
     private void searchVendor() {
         boolean backToVendorManagement = false;
         while (!backToVendorManagement) {
-            do{
-                ConsoleUI.clearScreen();
-                //search for vendor
-                System.out.println("======== Search Vendor ========");
-                System.out.println("1. Search by Vendor Name");
-                System.out.println("2. Search by Vendor ID");
-                System.out.println("3. Back to Vendor Management");
-                System.out.println("===============================");
+            ConsoleUI.clearScreen();
+            //search for vendor
+            System.out.println("======== Search Vendor ========");
+            System.out.println("1. Search by Vendor Name");
+            System.out.println("2. Search by Vendor ID");
+            System.out.println("3. Back to Vendor Management");
+            System.out.println("===============================");
 
-                switch (UserInputHandler.getInteger("Select an option: ", 1, 3)) {
-                    case 1:
-                        this.vendors = Vendor.Get("Vendor_Name",
-                                UserInputHandler.getString("\nPlease Enter Exact Vendor Name", 4,50));
-                        if (this.vendors == null || this.vendors.isEmpty()) {
-                            System.out.println("Vendor not found.");
-                            ConsoleUI.pause();
-                            break;
-                        }
-                        displayVendors();
+            switch (UserInputHandler.getInteger("Select an option: ", 1, 3)) {
+                case 1:
+                    this.vendors = Vendor.Get("Vendor_Name",
+                            UserInputHandler.getString("\nPlease Enter Exact Vendor Name", 4,50));
+                    if (this.vendors == null || this.vendors.isEmpty()) {
+                        System.out.println("Vendor not found.");
                         ConsoleUI.pause();
                         break;
-                    case 2:
-                        this.vendors = Vendor.Get("Vendor_ID",
-                                UserInputHandler.getString("\nPlease Enter Exact Vendor ID", 6, "^V[0-9]{5}"));
-                        if (this.vendors == null || this.vendors.isEmpty()) {
-                            System.out.println("Vendor not found.");
-                            ConsoleUI.pause();
-                            break;
-                        }
-                        displayVendors();
+                    }
+                    displayVendors();
+                    ConsoleUI.pause();
+                    break;
+                case 2:
+                    this.vendors = Vendor.Get("Vendor_ID",
+                            UserInputHandler.getString("\nPlease Enter Exact Vendor ID", 6, "^V[0-9]{5}"));
+                    if (this.vendors == null || this.vendors.isEmpty()) {
+                        System.out.println("Vendor not found.");
                         ConsoleUI.pause();
                         break;
-                    case 3:
-                        backToVendorManagement = true;
-                        break;
-                    default:
-                        break;
-                }
-            }while(this.vendors == null || this.vendors.isEmpty());
+                    }
+                    displayVendors();
+                    ConsoleUI.pause();
+                    break;
+                case 3:
+                    backToVendorManagement = true;
+                    break;
+            }
         }
     }
 

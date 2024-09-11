@@ -187,7 +187,7 @@ public class PurchaseOrder extends Transaction {
 
 
         // Define a format string with placeholders for the important column values
-        String format = "| %-20s | %-20s | %-15s | %-15s | %-15s | %-15s |\n";
+        String format = "| %-20s | %-20s | %-40s | %-15s | %-15s | %-15s |\n";
         String value = String.format(format,
                 this.getDoc_No(),
                 this.getTransaction_Date(),

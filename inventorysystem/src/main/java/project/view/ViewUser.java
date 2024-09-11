@@ -128,6 +128,7 @@ public class ViewUser {
                 case 2:
                     ViewVendor viewVendor = new ViewVendor(user);
                     viewVendor.menu();
+                    break;
                 case 3:
                     ViewItem viewItem = new ViewItem(user);
                     viewItem.menu();

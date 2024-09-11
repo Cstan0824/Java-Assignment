@@ -58,10 +58,10 @@ public class ViewPurchaseOrder {
         Set<String> displayedOrders = new HashSet<>();
 
         // Print header
-        System.out.println(" =============================================== Purchase Orders ===================================================== ");
-        System.out.println(String.format("| %-20s | %-20s | %-15s | %-15s | %-15s | %-15s |",
+        System.out.println(" =========================================================== Purchase Orders ================================================================== ");
+        System.out.println(String.format("| %-20s | %-20s | %-40s | %-15s | %-15s | %-15s |",
                 "Order ID","Order Date", "Item Name", "Order Quantity", "Order Recipient", "Order Status"));
-        System.out.println(" ===================================================================================================================== ");
+        System.out.println(" ============================================================================================================================================== ");
 
         // Display purchase orders
         purchaseOrderList.forEach(order -> {
@@ -74,13 +74,13 @@ public class ViewPurchaseOrder {
             if (displayedOrders.add(order.getDoc_No())) {
                 System.out.print(orderDetails);
             } else {
-                System.out.println(String.format("| %-20s   %-20s | %-15s | %-15s | %-15s | %-15s |",
+                System.out.println(String.format("| %-20s   %-20s | %-40s | %-15s | %-15s | %-15s |",
                         "", "", order.getItem().getItem_Name(), order.getQuantity(), order.getTransaction_Recipient(),
                         status));
             }
             orderStatusList.add(orderStatus.get());
         });
-                System.out.println(" ===================================================================================================================== ");
+                System.out.println(" ============================================================================================================================================== ");
 
 
         // Select a purchase order by ID
@@ -109,12 +109,10 @@ public class ViewPurchaseOrder {
         Set<String> displayedOrders = new HashSet<>();
 
         // Print header
-        System.out.println(
-                " =============================================== Purchase Orders ===================================================== ");
-        System.out.println(String.format("| %-20s | %-20s | %-15s | %-15s | %-15s | %-15s |",
+        System.out.println(" =========================================================== Purchase Orders ================================================================== ");
+        System.out.println(String.format("| %-20s | %-20s | %-40s | %-15s | %-15s | %-15s |",
                 "Order ID", "Order Date", "Item Name", "Order Quantity", "Order Recipient", "Order Status"));
-        System.out.println(
-                " ===================================================================================================================== ");
+                System.out.println(" ============================================================================================================================================== ");
 
         // Display purchase orders
         purchaseOrderList.forEach(order -> {
@@ -130,13 +128,12 @@ public class ViewPurchaseOrder {
             if (displayedOrders.add(order.getDoc_No())) {
                 System.out.print(orderDetails);
             } else {
-                System.out.println(String.format("| %-20s   %-20s | %-15s | %-15s | %-15s | %-15s |",
+                System.out.println(String.format("| %-20s   %-20s | %-40s | %-15s | %-15s | %-15s |",
                         "", "", order.getItem().getItem_Name(), order.getQuantity(), order.getTransaction_Recipient(),
                         status));
             }
         });
-        System.out.println(
-                " ===================================================================================================================== ");
+        System.out.println(" ============================================================================================================================================== ");
 
         // Select a purchase order by ID
         String selectedOrderID = UserInputHandler.getString("Select Purchase Order by Order ID: ", 7, "^PO[0-9]{5}$");

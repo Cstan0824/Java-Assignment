@@ -74,7 +74,7 @@ public class ViewPurchaseManagement {
             System.out.println("5. Back to Main Menu");
             System.out.println("=============================");
 
-            switch (UserInputHandler.getInteger("Enter choice", 1, 5)) {
+            switch (UserInputHandler.getInteger("Enter choice: ", 1, 5)) {
                 case 1:
                     orderRestock();
                     break;
@@ -86,6 +86,7 @@ public class ViewPurchaseManagement {
                     break;
                 case 4:
                     viewOrderRecords();
+                    ConsoleUI.pause();
                     break;
                 case 5:
                     exit = true; // Exit the loop
@@ -189,6 +190,7 @@ public class ViewPurchaseManagement {
         }
 
         displayOrderDetails(purchaseOrders);
+        ConsoleUI.pause();
 
         // Menu for order modification
         while (!backToPurchaseManagement) {
@@ -231,7 +233,7 @@ public class ViewPurchaseManagement {
                     Item itemToRemove = viewItem.selectItemFromList();
                     if (itemToRemove == null) {
                         System.out.println("Item not selected.");
-                        return;
+                        break;
                     }
 
                     purchaseOrder.setItem(itemToRemove);
@@ -261,7 +263,7 @@ public class ViewPurchaseManagement {
                     Item itemToChange = viewItem.selectItemFromList();
                     if (itemToChange == null) {
                         System.out.println("Item not selected.");
-                        return;
+                        break;
                     }
                     purchaseOrder.setItem(itemToChange);
                     purchaseOrder.Get();
@@ -366,6 +368,7 @@ public class ViewPurchaseManagement {
 
         PurchaseOrder purchaseOrder = purchaseOrders.get(0);
         displayOrderDetails(purchaseOrders);
+        ConsoleUI.pause();
 
         // Display Goods Received Notes
         ArrayList<GoodReceivedNotes> goodReceivedNotesList = GoodReceivedNotes.Get(purchaseOrder.getDoc_No(),
@@ -399,14 +402,13 @@ public class ViewPurchaseManagement {
 
         for (Integer orderStatus : viewPurchaseOrder.getOrderStatusList()) {
             if (orderStatus != StockStatus.RECEIVED.getValue()) {
-
                 PendingStatus = true;
             }
         }
         if (PendingStatus) {
             viewStockStatusMenu(purchaseOrders);
         } else {
-            UserInputHandler.systemPause("Press any key to continue...");
+            ConsoleUI.pause();
         }
     }
 

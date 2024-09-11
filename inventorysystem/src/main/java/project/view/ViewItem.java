@@ -98,7 +98,7 @@ public class ViewItem {
 
     private void displayItemDetails() {
         // Display the list of items
-        
+        System.out.println("\n");
         System.out.println(
                 " =================================================================== Items =========================================================================== ");
         System.out.println(
@@ -338,7 +338,7 @@ public class ViewItem {
 
     public ItemCategory selectItemCategoryFromList() {
         ArrayList<ItemCategory> itemCategories = ItemCategory.GetAll();
-        
+        System.out.println("\n");
         System.out.println(" ================== Item Category ================== ");
         System.out.println(String.format("| %-5s | %-40s |", "No.", "Item Category"));
         System.out.println(" =================================================== ");
