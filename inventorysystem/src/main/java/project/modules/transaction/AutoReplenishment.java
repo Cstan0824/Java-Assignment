@@ -180,7 +180,7 @@ public class AutoReplenishment implements CrudOperation {
 
     public static void ExecuteAutomation() {
         //Create an extra thread to run the automation at the background while the system is running
-        ArrayList<AutoReplenishment> autoReplenishments = GetAll();
+        ArrayList<AutoReplenishment> autoReplenishments = AutoReplenishment.GetAll();
         if (autoReplenishments == null || autoReplenishments.isEmpty()) {
             System.out.println("No Auto Replenishment Items");
             return;
@@ -222,7 +222,9 @@ public class AutoReplenishment implements CrudOperation {
                 _PoNo + ".pdf");
 
         PdfConverter pdf = new PdfConverter(file,
-                new PdfTemplate(purchaseOrder, PdfTemplate.TemplateType.PURCHASE_ORDER));
+                new PdfTemplate(
+                    purchaseOrder,
+                        PdfTemplate.TemplateType.PURCHASE_ORDER));
         pdf.Save();
 
         //Email

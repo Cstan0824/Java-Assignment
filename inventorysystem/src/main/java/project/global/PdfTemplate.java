@@ -439,6 +439,7 @@ public class PdfTemplate {
     }
 
     public PdfTemplate(Transaction _transaction, TemplateType _templateType) {
+        this.purchaseOrders = new ArrayList<>();
         this.purchaseOrders.add(_transaction);
         switch (_templateType) {
             case PURCHASE_ORDER:

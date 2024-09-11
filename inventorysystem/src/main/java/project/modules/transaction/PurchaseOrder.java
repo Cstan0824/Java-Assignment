@@ -65,21 +65,23 @@ public class PurchaseOrder extends Transaction {
         String query;
         boolean QueryExecuted;
         if (this.getItem().getItem_ID() == oldPurchaseOrder.getItem().getItem_ID()) {
-            query = "UPDATE Transaction SET  Transaction_Date = ?, Quantity = ?, Transaction_Recipient = ?, Transaction_Modified_By = ? WHERE Doc_No = ?";
+            query = "UPDATE Transaction SET  Transaction_Date = ?, Quantity = ?, Transaction_Recipient = ?, Transaction_Modified_By = ? WHERE Doc_No = ? AND Item_ID = ?";
             QueryExecuted = connector.PrepareExecuteDML(query,
                     this.getTransaction_Date(),
                     this.getQuantity(),
                     this.getTransaction_Recipient(),
                     this.getTransaction_Modified_By(),
-                    this.getDoc_No());
+                    this.getDoc_No(),
+                    this.getItem().getItem_ID());
         } else {
-            query = "UPDATE Transaction SET Item_ID = ?, Transaction_Date = ?, Quantity = ?, Transaction_Recipient = ?, Transaction_Modified_By = ? WHERE Doc_No = ?";
+            query = "UPDATE Transaction SET Item_ID = ?, Transaction_Date = ?, Quantity = ?, Transaction_Recipient = ?, Transaction_Modified_By = ? WHERE Doc_No = ? AND Item_ID = ?";
             QueryExecuted = connector.PrepareExecuteDML(query,
                     this.getItem().getItem_ID(), this.getTransaction_Date(),
                     this.getQuantity(),
                     this.getTransaction_Recipient(),
                     this.getTransaction_Modified_By(),
-                    this.getDoc_No());
+                    this.getDoc_No(),
+                    this.getItem().getItem_ID());
         }
         connector.Disconnect();
         return QueryExecuted;

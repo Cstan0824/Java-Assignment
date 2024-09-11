@@ -13,7 +13,7 @@ public class App implements Runnable{
         App app = new App(); // Create an instance of App (Thread)
         Thread thread = new Thread(app);
         thread.start(); // Start the thread
-
+                
         ViewUser viewUser = new ViewUser();
         viewUser.menu();
     }
@@ -21,22 +21,16 @@ public class App implements Runnable{
     @Override
     @SuppressWarnings("BusyWait")
     public void run() {
-        System.out.println("Auto Replenishment Process Started");
-        int count = 0;
         while (true) {
             try {
 
-                Thread.sleep(6000); // 60,000 milliseconds = 1 minute - 6000 milliseconds = 6 seconds
                 Schedule.StockOutProcess();
                 AutoReplenishment.ExecuteAutomation();
-                System.out.println("Auto Replenishment Process Ended");
+                Thread.sleep(600000); // 600,000 milliseconds = 10 minute - 6000 milliseconds = 6 seconds
 
-                
             } catch (InterruptedException e) {
                 System.out.println("Thread Error: " + e.getMessage());
             }
-            count++;
-            System.out.println("Auto Replenishment Process: " + count);
         }
     }
 }
