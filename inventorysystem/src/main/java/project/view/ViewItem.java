@@ -98,18 +98,19 @@ public class ViewItem {
 
     private void displayItemDetails() {
         // Display the list of items
+        
         System.out.println(
-                " ========================================================== Items ================================================================ ");
+                " =================================================================== Items =========================================================================== ");
         System.out.println(
-                String.format("| %-5s | %-20s | %-20s | %-20s | %-50s |", "No.", "Item Category", "Vendor", "Item Name",
+                String.format("| %-5s | %-20s | %-20s | %-40s | %-50s |", "No.", "Item Category", "Vendor", "Item Name",
                         "Item Description"));
         System.out.println(
-                " ================================================================================================================================= ");
+                " ===================================================================================================================================================== ");
         for (int i = 0; i < items.size(); i++) {
             System.out.println(String.format("| %-5s %-110s", (i + 1) + ". ", items.get(i))); // Display items with index
         }
         System.out.println(
-                " ================================================================================================================================= ");
+                " ===================================================================================================================================================== ");
     }
 
     // Method to select an item from the list
@@ -320,8 +321,8 @@ public class ViewItem {
         
         this.viewVendor.setVendors();
         item.setVendor(this.viewVendor.selectVendorFromList());
-        item.setItem_name(UserInputHandler.getString("Enter Item Name: ", 1, 50));
-        item.setItem_Desc(UserInputHandler.getString("Enter Item Description: ", 1, 100));
+        item.setItem_name(UserInputHandler.getString("Enter Item Name: ", 1, 40));
+        item.setItem_Desc(UserInputHandler.getString("Enter Item Description: ", 1,50));
         item.setItem_Quantity(UserInputHandler.getInteger("Enter Item Quantity: ", 1, 1000000));
         item.setItem_Price(UserInputHandler.getDouble("Enter Item Price: ", 0, 1000000));
         item.setItem_Created_By(user.getUserId());

@@ -316,7 +316,7 @@ public class Item implements CrudOperation{
     public String toString() {
         this.item_Category.Get();
         //display data in columns
-        return String.format("| %-20s | %-20s | %-20s | %-50s |",
+        return String.format("| %-20s | %-20s | %-40s | %-50s |",
                 this.item_Category.getItem_Type(), this.vendor.getVendor_Name(),
                 this.Item_name, this.Item_Desc);
     }

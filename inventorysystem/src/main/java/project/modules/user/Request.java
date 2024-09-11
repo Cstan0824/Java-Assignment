@@ -15,7 +15,6 @@ public class Request {
     private String Retailer_Password;
     private String Retailer_Address;
     private String Status = "Pending";
-    private String Retailer_Entry_Id;
 
     public Request(String Retailer_ID, String Retailer_name, String Retailer_Password, String Retailer_Email, String Retailer_Address) {
         this.Retailer_ID = Retailer_ID;
@@ -79,19 +78,13 @@ public class Request {
         this.Retailer_Address = Retailer_Address;
     }
     
-    public String getRetailer_Entry_Id() {
-        return Retailer_Entry_Id;
-    }
-    
-    public void setRetailer_Entry_Id(String Retailer_Entry_Id) {
-        this.Retailer_Entry_Id = Retailer_Entry_Id;
-    }
+   
 
 
     
     public boolean saveRequest() // retailer use , so far ok 
     {
-        String sql = "INSERT INTO Request (Request_Id, Retailer_Id, Retailer_Name, Retailer_Email, Retailer_Password, Retailer_Address, Status, Retailer_Entry_Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Request (Request_Id, Retailer_Id, Retailer_Name, Retailer_Email, Retailer_Password, Retailer_Address, Status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         SqlConnector Connector = new SqlConnector();
         Connector.Connect();
@@ -101,7 +94,7 @@ public class Request {
             return false;
         }
 
-        return Connector.PrepareExecuteDML(sql, this.getRequest_ID(), this.getRetailer_ID(), this.getRetailer_Name(), this.getRetailer_Email(), this.getRetailer_Password(), this.getRetailer_Address(), this.Status, this.getRetailer_Entry_Id());
+        return Connector.PrepareExecuteDML(sql, this.getRequest_ID(), this.getRetailer_ID(), this.getRetailer_Name(), this.getRetailer_Email(), this.getRetailer_Password(), this.getRetailer_Address(), this.Status);
 
     }
 
@@ -121,8 +114,6 @@ public class Request {
         boolean requestUpdated = connector.PrepareExecuteDML(updateRequestSQL, this.getRequest_ID());
 
         if (requestUpdated) {
-            
-
                 boolean retailerInserted = connector.PrepareExecuteDML(insertRetailerSQL,this.Retailer_ID, this.Retailer_name, this.Retailer_Password, this.Retailer_Email, this.Retailer_Address, adminId, LocalDateTime.now());
 
             if (retailerInserted) {
@@ -132,12 +123,20 @@ public class Request {
                     this.getRetailer_Email(),
                     "Retailer Registration Approved",
                     new MailTemplate(this.Retailer_ID, MailTemplate.TemplateType.REGISTRATION_APPROVAL));
-                mail.Send();            
+                    
+                if(mail.Send()){
+                    System.out.println("Email sent to retailer.");
+                    ConsoleUI.pause();
+                }
+                else{
+                    System.out.println("Failed to send email to retailer.");
+                    ConsoleUI.pause();
+                }       
 
-                System.out.println("Email sent to retailer.");
             }
             else {
                 System.out.println("Failed to add retailer after approving request.");
+                ConsoleUI.pause();
             }
         } 
         else {
@@ -194,13 +193,13 @@ public class Request {
         }
 
         ConsoleUI.clearScreen();
-        System.out.println("================================================================================================================");
-        System.out.println(" Request ID | Retailer ID | Retailer Name        | Retailer Email            | Retailer Address   | Status   ");
-        System.out.println("================================================================================================================");
+        System.out.println("=================================================================================================================================================================");
+        System.out.println(String.format(" %-10s | %-11s | %-35s | %-50s | %-30s | %-8s ", "Request ID", "Retailer ID", "Retailer Name", "Retailer Email", "Retailer Address", "Status"));
+        System.out.println("=================================================================================================================================================================");
     
         // Data rows
         for (Request request : requests) {
-            System.out.printf(" %-10s | %-11s | %-20s | %-24s | %-18s | %-8s %n",
+            System.out.printf(" %-10s | %-11s | %-35s | %-50s | %-30s | %-8s %n",
                     request.getRequest_ID(),
                     request.getRetailer_ID(),
                     request.getRetailer_Name(),
@@ -209,7 +208,7 @@ public class Request {
                     request.Status);
         }
     
-        System.out.println("================================================================================================================");
+        System.out.println("=================================================================================================================================================================");
     
         return requests;
     }

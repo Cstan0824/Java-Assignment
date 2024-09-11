@@ -8,7 +8,9 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
+import project.global.MailSender;
 import project.global.ConsoleUI;
+import project.global.MailTemplate;
 import project.global.SqlConnector;
 import project.global.UserInputHandler;
 
@@ -120,6 +122,22 @@ public class Retailer extends User {
 
         if(Add()){
             System.out.println("Retailer added successfully.");
+
+            MailSender mail = new MailSender(
+                    this.getUserEmail(),
+                    "Retailer Registration",
+                    new MailTemplate(this.getUserId(), MailTemplate.TemplateType.RETAILER_CREATED));
+                    
+                if(mail.Send()){
+                    System.out.println("Email sent to retailer.");
+                    ConsoleUI.pause();
+                }
+                else{
+                    System.out.println("Failed to send email to retailer.");
+                    ConsoleUI.pause();
+                }       
+
+
             String choice = UserInputHandler.getConfirmation("Any more Retailers to add?");
 
             if (choice.equalsIgnoreCase("Y")) {
@@ -259,6 +277,8 @@ public class Retailer extends User {
     {
         ConsoleUI.clearScreen();
         Request request = new Request();
+
+        request.setRetailer_ID(super.generateUserId("R"));
 
         System.out.print("Enter Retailer Name: ");
         request.setRetailer_Name(scanner.nextLine());

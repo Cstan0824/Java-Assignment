@@ -343,7 +343,14 @@ public class MailTemplate {
                 "Inventory Solution Company";
     }
 
+    private String RETAILER_CREATED(String RetailerID) {
 
+        return "Dear Customer,<br/><br/>" +
+                "We are happy to inform that you have been registered as a retailer.<br/>"  + "This is your Retailer ID : " + RetailerID + " <br> Please let us know if you need any further assistance.<br/><br/>" +
+                "Best regards,<br/>" +
+                "Inventory Solution Company";
+
+    }
 
 
     public enum TemplateType {
@@ -360,7 +367,8 @@ public class MailTemplate {
         REGISTRATION_REJECTION,
         SCHEDULE_CREATION,
         SCHEDULE_CANCELLATION,
-        SCHEDULE_MODIFICATION
+        SCHEDULE_MODIFICATION,
+        RETAILER_CREATED
     }
 
     public MailTemplate(String _Content, TemplateType _templateType) {
@@ -406,6 +414,9 @@ public class MailTemplate {
                 break;
             case REGISTRATION_REJECTION:
                 this.Content = this.REGISTRATION_REJECTION();
+                break;
+            case RETAILER_CREATED:
+                this.Content = this.RETAILER_CREATED(_Content);
                 break;
             default:
                 break;

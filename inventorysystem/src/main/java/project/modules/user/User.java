@@ -363,7 +363,12 @@ public abstract class User {
                 }
 
                 System.out.println("List of " + this.userType + "s");
-
+                if(this.userType.equals("Admin")) {
+                    System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
+                }
+                else {
+                    System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------");
+                }
                 System.out.printf("%-15s | %-20s | %-45s | %-25s | %-10s%n", this.userType + " ID",this.userType + " Name", this.userType + " Email", this.userType + " Password", this.userType + " Registration Date");
                 if(this.userType.equals("Admin")) {
                     System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
@@ -384,6 +389,12 @@ public abstract class User {
                     // Display the user details
                     System.out.printf("%-15s | %-20s | %-45s | %-25s | %-10s%n", userId, userName, userEmail, userPassword , userRegDate);
 
+                }
+                if(this.userType.equals("Admin")) {
+                    System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
+                }
+                else {
+                    System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------");
                 }
                 ConsoleUI.pause();
                 
