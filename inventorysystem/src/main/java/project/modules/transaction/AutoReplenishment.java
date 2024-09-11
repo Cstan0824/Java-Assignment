@@ -181,8 +181,11 @@ public class AutoReplenishment implements CrudOperation {
     public static void ExecuteAutomation() {
         //Create an extra thread to run the automation at the background while the system is running
         ArrayList<AutoReplenishment> autoReplenishments = GetAll();
-
-        autoReplenishments.forEach((AutoReplenishment replenishment) -> {
+        if (autoReplenishments == null || autoReplenishments.isEmpty()) {
+            System.out.println("No Auto Replenishment Items");
+            return;
+        }
+        for (AutoReplenishment replenishment : autoReplenishments) {
             if (replenishment.getItem().getItem_Quantity() <= replenishment.getItem_Threshold()) {
                 int RestockQuantity = replenishment.getItem_Threshold() * 2;
                 //Send Purchase Order
@@ -197,7 +200,7 @@ public class AutoReplenishment implements CrudOperation {
                                 replenishment.getItem().getItem_Quantity() + RestockQuantity);
                 replenishment.getItem().Update();
             }
-        });
+        }
     }
     
     private static void SendPurchaseOrder(AutoReplenishment _replenishment, String _PoNo, int _RestockQuantity) {

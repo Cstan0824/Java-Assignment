@@ -26,7 +26,7 @@ public class App implements Runnable{
         while (true) {
             try {
 
-                Thread.sleep(6000); // 60,000 milliseconds = 1 minute
+                Thread.sleep(6000); // 60,000 milliseconds = 1 minute - 6000 milliseconds = 6 seconds
                 Schedule.StockOutProcess();
                 AutoReplenishment.ExecuteAutomation();
                 System.out.println("Auto Replenishment Process Ended");
