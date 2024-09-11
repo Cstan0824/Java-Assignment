@@ -115,8 +115,6 @@ public class ViewItem {
 
     // Method to select an item from the list
     public Item selectItemFromList() {
-        // Fetch all items
-        setItems();
         if (this.items.isEmpty()) {
             System.out.println("No items available.");
             ConsoleUI.pause();

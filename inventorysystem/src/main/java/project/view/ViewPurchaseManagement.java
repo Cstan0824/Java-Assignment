@@ -180,14 +180,18 @@ public class ViewPurchaseManagement {
 
         // SELECT item to modify
         Transaction purchaseOrder = new PurchaseOrder(purchaseOrders.get(0).getDoc_No());
-
+        System.out.println("Items in purchase orders: ");
         for (PurchaseOrder po : purchaseOrders) {
+            System.out.println(po.getItem().getItem_ID());
             itemsInPurchaseOrders.add(po.getItem());
         }
-
+        System.out.println("Items not in purchase orders: ");
         for (PurchaseOrder po : purchaseOrders) {
-            itemsNotInPurchaseOrders.removeIf(item -> po.getItem().getItem_ID() == item.getItem_ID());
+            System.out.println(po.getItem().getItem_ID());
+            System.out.println(itemsNotInPurchaseOrders.removeIf(item -> po.getItem().getItem_ID() == item.getItem_ID()));
         }
+                UserInputHandler.systemPause("Press Enter to continue...");
+
 
         displayOrderDetails(purchaseOrders);
         ConsoleUI.pause();
