@@ -1,14 +1,16 @@
 package project.start;
 
+import project.global.ConsoleUI;
 import project.modules.schedule.Schedule;
-import project.view.ViewUser;
 import project.modules.transaction.AutoReplenishment;
+import project.view.ViewUser;
 
 
 public class App implements Runnable{
 
     public static void main(String[] args) {
-        //ConsoleUI.welcomeScreen();
+        //System.out.print("\033[47m"); - white screen
+        ConsoleUI.welcomeScreen();
         App app = new App(); // Create an instance of App (Thread)
         Thread thread = new Thread(app);
         thread.start(); // Start the thread
