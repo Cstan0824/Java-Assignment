@@ -1,25 +1,27 @@
 
 
 INSERT INTO Sys_RunNo (Sys_Prefix, Sys_Next, Sys_Desc) VALUES
-('PO', 2, 'Purchase Order'),
-('GRN', 2, 'Good Received Notes'),
+('PO', 3, 'Purchase Order'),
+('GRN', 5, 'Good Received Notes'),
 ('SO', 2, 'Sales Order'),
 ('DO', 2, 'Delivery Order'),
 ('A',6,'Admin'),
-('R',4,'Retailer'),
-('V',4,'Vendor');
+('R',9,'Retailer'),
+('V',6,'Vendor');
 
 INSERT INTO Item_Category (Item_Type) VALUES
 ('Electronics'),
 ('Furniture'),
-('Clothing');
+('Clothing'),
+('Kitchen'),
+('ClayPot);
 
 INSERT INTO Vendor (Vendor_ID, Vendor_Name, Vendor_Address,Vendor_Email, Vendor_Created_By, Vendor_Modified_By) VALUES
 ('V00001', 'Electronics Inc.', '123 Main St, Cityville','samsam@gmail.com', 'A00001', 'A00001'),
 ('V00002', 'FurniCo', '456 Oak St, Townsville','Cstantan@gmail.com', 'A00001', 'A00001'),
 ('V00003', 'Clothing World', '789 Pine St, Villagetown','myDawgGan@gmail.com', 'A00001', 'A00001'),
 ('V00004', 'Kitchen Gordan', 'Setapak, Kuala Lumpur', 'assignmentfreerider@gmail.com','A00001', 'A00001'),
-('V00005', 'ClayPot', 'Klang, Selangor', 'assignmenthelper@gmail.com','A00001','A00001');
+('V00005', 'Bakuteh ClayPot', 'Klang, Selangor', 'assignmenthelper@gmail.com','A00001','A00001');
 
 INSERT INTO `admin` (`Admin_ID`, `Admin_Name`, `Admin_Password`, `Admin_Email`, `OTP_Code`, `OTP_Expiry`, `Admin_Reg_Date`) VALUES
 ('A00001', 'Java123', 'Java@123', 'Java@gmail.com', NULL, '2024-09-02 10:59:32.819874', '2024-09-02'),
