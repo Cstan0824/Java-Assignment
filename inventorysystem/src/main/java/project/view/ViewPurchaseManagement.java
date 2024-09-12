@@ -406,9 +406,7 @@ public class ViewPurchaseManagement {
         }
         if (PendingStatus) {
             viewStockStatusMenu(purchaseOrders);
-        } else {
-            ConsoleUI.pause();
-        }
+        } 
     }
 
     // Helper method to display order details

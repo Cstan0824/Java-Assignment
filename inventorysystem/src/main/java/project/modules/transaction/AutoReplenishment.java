@@ -182,7 +182,6 @@ public class AutoReplenishment implements CrudOperation {
         //Create an extra thread to run the automation at the background while the system is running
         ArrayList<AutoReplenishment> autoReplenishments = AutoReplenishment.GetAll();
         if (autoReplenishments == null || autoReplenishments.isEmpty()) {
-            System.out.println("No Auto Replenishment Items");
             return;
         }
         for (AutoReplenishment replenishment : autoReplenishments) {

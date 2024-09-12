@@ -58,7 +58,7 @@ public class ViewGoodReceivedNotes {
             }
 
             if (OnHandStock == purchaseOrder.getQuantity()) {
-                break;
+                continue;
             }
             //Add to the list
             OnHandStocks.put(purchaseOrder.getItem(), OnHandStock);

@@ -239,7 +239,7 @@ public class Item implements CrudOperation{
             return null;
         }
 
-        String query = "SELECT * FROM item WHERE " + _field + "= ? ;";
+        String query = "SELECT * FROM item WHERE " + _field + "LIKE ? ;";
         ArrayList<Item> items = connector.PrepareExecuteRead(query, Item.class, _value);
 
         connector.Disconnect();

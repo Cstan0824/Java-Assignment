@@ -183,9 +183,9 @@ public class GoodReceivedNotes extends Transaction {
             return false;
         }
         //GRN No
-        String query = "DELETE FROM Transaction WHERE Doc_No = ?;";
+        String query = "DELETE FROM Transaction WHERE Doc_No = ? AND Item_ID = ?;";
 
-        boolean QueryExecuted = connector.PrepareExecuteDML(query, this.getDoc_No());
+        boolean QueryExecuted = connector.PrepareExecuteDML(query, this.getDoc_No(),this.getItem().getItem_ID()); 
 
         connector.Disconnect();
         if (QueryExecuted == false) {
