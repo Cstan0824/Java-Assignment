@@ -58,8 +58,13 @@ public class ViewSchedule {
             distinctTableLine();
             System.out.printf("|");
             for (String columnName : columnNames) {
-                System.out.printf(" %-15s ", columnName);
-                System.out.printf("|");
+                if(columnName.equals("Driver")){
+                    System.out.printf(" %-40s ", columnName);
+                    System.out.printf("|");
+                } else{
+                    System.out.printf(" %-15s ", columnName);
+                    System.out.printf("|");
+                }
             }
             System.out.println("");
             distinctTableLine();
@@ -94,8 +99,13 @@ public class ViewSchedule {
             distinctTableLine();
             System.out.printf("|");
             for (String columnName : columnNames) {
-                System.out.printf(" %-15s ", columnName);
-                System.out.printf("|");
+                if(columnName.equals("Driver")){
+                    System.out.printf(" %-40s ", columnName);
+                    System.out.printf("|");
+                } else{
+                    System.out.printf(" %-15s ", columnName);
+                    System.out.printf("|");
+                }
             }
             System.out.println("");
             distinctTableLine();
@@ -131,6 +141,6 @@ public class ViewSchedule {
     
     
     private static void distinctTableLine(){
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
     }
 }

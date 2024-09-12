@@ -50,7 +50,10 @@ public class Admin extends User {
 
             }
 
+            super.setCurrentUser(User.getLoggedInUserId());
+
         }else {
+            super.setCurrentUser(User.getLoggedInUserId());
             System.out.println("Admin creation failed.");
         }
         
@@ -67,13 +70,14 @@ public class Admin extends User {
         if (!Get()) {
             System.out.println("Admin ID does not exist.");
             String choice = UserInputHandler.getConfirmation("Try again?");
-
+            super.setCurrentUser(User.getLoggedInUserId());
             if (choice.equalsIgnoreCase("Y")) {
                 deleteAdmin();
             } 
             return;  
         } 
         else if (this.getUserId().equals(User.getLoggedInUserId())) {
+            super.setCurrentUser(User.getLoggedInUserId());
             System.out.println("Error: You cannot delete your own account while logged in.");
             return; 
         } 
@@ -84,6 +88,8 @@ public class Admin extends User {
             if(this.Remove()){
                 System.out.println("Admin account deleted successfully.");
 
+                super.setCurrentUser(User.getLoggedInUserId());
+
                 String choice2 = UserInputHandler.getConfirmation("\nDo you want to delete another Admin");
 
                 if (choice2.equalsIgnoreCase("Y")) {
@@ -91,9 +97,11 @@ public class Admin extends User {
                 }
 
             } else {
+                super.setCurrentUser(User.getLoggedInUserId());
                 System.out.println("Admin account deletion failed.");
             }
        } else {
+            super.setCurrentUser(User.getLoggedInUserId());
             System.out.println("Operation cancelled.");
             ConsoleUI.pause();
         }
@@ -110,7 +118,7 @@ public class Admin extends User {
         if (!Get()){
 
             System.out.println("Admin ID does not exist.");
-
+            super.setCurrentUser(User.getLoggedInUserId());
             String choice = UserInputHandler.getConfirmation("Try again?");
 
             if (choice.equalsIgnoreCase("Y")) {
@@ -122,7 +130,6 @@ public class Admin extends User {
         boolean continueEditing = true;
 
         while (continueEditing) {
-
 
             System.out.println("Which field would you like to update?");
             System.out.println("1. Admin Name");
@@ -156,11 +163,13 @@ public class Admin extends User {
             }
     
             super.Update(field, value);
-    
-            String anotherFieldChoice = UserInputHandler.getConfirmation("Would you like to update another field?");
+            
+            
 
+            String anotherFieldChoice = UserInputHandler.getConfirmation("Would you like to update another field?");
             continueEditing = anotherFieldChoice.equalsIgnoreCase("Y");
         }
+        super.setCurrentUser(User.getLoggedInUserId());
     }
 
    
@@ -203,7 +212,7 @@ public class Admin extends User {
             System.out.println("8. Notification Retailer");
             System.out.println("9. Exit");
             System.out.println("===========================================");
-            int choice = UserInputHandler.getInteger("Enter choice: ", 1, 8);
+            int choice = UserInputHandler.getInteger("Enter choice: ", 1, 9);
 
             switch (choice) {
                 case 1:

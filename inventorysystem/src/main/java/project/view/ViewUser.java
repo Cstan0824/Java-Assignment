@@ -97,7 +97,7 @@ public class ViewUser {
                     viewScheduleManagement.retailerMenu();
                     break;
                 case 4:
-                    logOut = true;
+                    menu();
                     break;
                 default:
                     System.out.println("Invalid choice.");

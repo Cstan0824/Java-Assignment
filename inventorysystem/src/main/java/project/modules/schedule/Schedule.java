@@ -351,7 +351,7 @@ public class Schedule implements CrudOperation{
     @Override
     public String toString() {
 
-        String format = "| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |%n";
+        String format = "| %-15s | %-15s | %-15s | %-40s | %-15s | %-15s | %-15s |%n";
 
         this.getVehicle().Get();
         this.getDeliveryOrder().Get();

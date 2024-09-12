@@ -43,7 +43,7 @@ public class ViewVehicle {
             System.out.printf("|");
             for (String columnName : columnNames) {
                 if(columnName.equals("Vehicle Driver")){
-                    System.out.printf(" %-35s ", "Driver Name");
+                    System.out.printf(" %-40s ", "Driver Name");
                     System.out.printf("|");
                 }else{
                 System.out.printf(" %-15s ", columnName);
@@ -93,7 +93,7 @@ public class ViewVehicle {
             System.out.printf("|");
             for (String columnName : columnNames) {
                 if(columnName.equals("Vehicle Driver")){
-                    System.out.printf(" %-35s ", "Driver Name");
+                    System.out.printf(" %-40s ", "Driver Name");
                     System.out.printf("|");
                 }else{
                 System.out.printf(" %-15s ", columnName);
@@ -144,7 +144,7 @@ public class ViewVehicle {
             System.out.printf("|");
             for (String columnName : columnNames) {
                 if(columnName.equals("Vehicle Driver")){
-                    System.out.printf(" %-35s ", "Driver Name");
+                    System.out.printf(" %-40s ", "Driver Name");
                     System.out.printf("|");
                 }else{
                 System.out.printf(" %-15s ", columnName);
@@ -171,6 +171,6 @@ public class ViewVehicle {
 
     private static void distinctTableLine(){
         System.out.println
-        ("---------------------------------------------------------------------------");
+        ("--------------------------------------------------------------------------------");
     }
 }

@@ -84,8 +84,13 @@ public class ViewDeliveryOrder {
                     normalTableLine();
                     System.out.printf("|");
                     for (String columnName : selectedColumnNames) {
-                        System.out.printf(" %-15s ", columnName);
-                        System.out.printf("|");
+                        if (columnName.equals("Item_Name")) {
+                            System.out.printf(" %-40s ", columnName);
+                            System.out.printf("|");
+                        } else {
+                            System.out.printf(" %-15s ", columnName);
+                            System.out.printf("|");
+                        }
                     }
                     System.out.println("");
                     normalTableLine();
@@ -147,8 +152,13 @@ public class ViewDeliveryOrder {
                     normalTableLine();
                     System.out.printf("|");
                     for (String columnName : selectedColumnNames) {
-                        System.out.printf(" %-15s ", columnName);
-                        System.out.printf("|");
+                        if (columnName.equals("Item_Name")) {
+                            System.out.printf(" %-40s ", columnName);
+                            System.out.printf("|");
+                        } else {
+                            System.out.printf(" %-15s ", columnName);
+                            System.out.printf("|");
+                        }
                     }
                     System.out.println("");
                     normalTableLine();
@@ -174,7 +184,7 @@ public class ViewDeliveryOrder {
     
     //display design methods
     private static void normalTableLine(){
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     private static void distinctTableLine(){

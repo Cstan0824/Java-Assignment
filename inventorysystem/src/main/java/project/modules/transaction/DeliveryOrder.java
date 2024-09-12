@@ -289,7 +289,7 @@ public class DeliveryOrder extends Transaction {
      //Display DO (to String)
      @Override
      public String toString() {
-         String format = "| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |%n";
+         String format = "| %-15s | %-15s | %-40s | %-15s | %-15s | %-15s | %-15s |%n";
          this.getItem().Get();
          // Format the fields according to the placeholders
          return String.format(format,

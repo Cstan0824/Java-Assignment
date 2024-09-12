@@ -181,6 +181,7 @@ public class ViewScheduleManagement {
                         System.out.println("Failed to cancel delivery order " + deliveryOrder.getDoc_No());
                     }
                 }
+                ConsoleUI.pause();
             }
         }
     }
@@ -228,8 +229,13 @@ public class ViewScheduleManagement {
                 distinctTableLine();
                 System.out.printf("|");
                 for (String columnName : columnNames) {
-                    System.out.printf(" %-15s ", columnName);
-                    System.out.printf("|");
+                    if(columnName.equals("Driver")){
+                        System.out.printf(" %-40s ", columnName);
+                        System.out.printf("|");
+                    } else{
+                        System.out.printf(" %-15s ", columnName);
+                        System.out.printf("|");
+                    }
                 }
                 System.out.println("");
                 distinctTableLine();
@@ -296,8 +302,13 @@ public class ViewScheduleManagement {
                 distinctTableLine();
                 System.out.printf("|");
                 for (String columnName : columnNames) {
-                    System.out.printf(" %-15s ", columnName);
-                    System.out.printf("|");
+                    if(columnName.equals("Driver")){
+                        System.out.printf(" %-40s ", columnName);
+                        System.out.printf("|");
+                    } else{
+                        System.out.printf(" %-15s ", columnName);
+                        System.out.printf("|");
+                    }
                 }
                 System.out.println("");
                 distinctTableLine();
@@ -490,7 +501,7 @@ public class ViewScheduleManagement {
                 System.out.printf("|");
                 for (String columnName : columnNames) {
                     if(columnName.equals("Vehicle Driver")){
-                        System.out.printf(" %-35s ", "Driver Name");
+                        System.out.printf(" %-40s ", "Driver Name");
                         System.out.printf("|");
                     }else{
                     System.out.printf(" %-15s ", columnName);
@@ -535,7 +546,20 @@ public class ViewScheduleManagement {
                 ArrayList<Schedule> schedules = Schedule.GetAllForCancel(vehicle);
                 if (schedules != null && !schedules.isEmpty()) {
                     for (Schedule schedule : schedules) {
-                        schedule.Remove();
+                        if(schedule.Remove()){
+
+                            MailSender mail;
+                            Retailer retailer = new Retailer();
+                            DeliveryOrder deliveryOrder = DeliveryOrder.Get(schedule.getDeliveryOrder().getDoc_No());
+                            retailer.setUserId(deliveryOrder.getTransaction_Recipient());
+                            retailer.Get();
+                            mail = new MailSender(
+                            retailer.getUserEmail(),
+                            "Delivery Schedule Cancelled",
+                            new MailTemplate(deliveryOrder.getDoc_No(), MailTemplate.TemplateType.SCHEDULE_CANCELLATION));
+                            mail.Send();
+
+                        }
                     }
                 }
 
@@ -655,7 +679,7 @@ public class ViewScheduleManagement {
 
     //design
     private static void distinctTableLine(){
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     private static void vehicleTableLine(){

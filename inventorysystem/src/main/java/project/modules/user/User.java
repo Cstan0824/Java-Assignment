@@ -133,6 +133,18 @@ public abstract class User {
         this.userAddress = userAddress;
     }
 
+    public void setCurrentUser(String userID) {
+
+        this.userId = userID;
+        Admin admin = new Admin();
+        admin.setUserId(userID);
+        admin.Get();
+        this.userName = admin.getUserName();
+        this.userPassword = admin.getUserPassword();
+        this.userEmail = admin.getUserEmail();
+
+    }
+
     public abstract boolean Add(); 
     public abstract void UserMenu(); 
    
