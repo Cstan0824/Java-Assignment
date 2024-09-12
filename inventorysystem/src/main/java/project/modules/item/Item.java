@@ -316,9 +316,9 @@ public class Item implements CrudOperation{
     public String toString() {
         this.item_Category.Get();
         //display data in columns
-        return String.format("| %-20s | %-20s | %-40s | %-50s |",
+        return String.format("| %-20s | %-20s | %-40s | %-50s | %-20s |",
                 this.item_Category.getItem_Type(), this.vendor.getVendor_Name(),
-                this.Item_name, this.Item_Desc);
+                this.Item_name, this.Item_Desc, this.Item_Price);
     }
 
     //Constructor
