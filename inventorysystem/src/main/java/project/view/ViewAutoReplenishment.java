@@ -122,20 +122,20 @@ public class ViewAutoReplenishment {
         //display auto replenishment details
         //print header
         this.autoReplenishments = AutoReplenishment.GetAll();
-        System.out.println("======================================= Auto Replenishment Details =======================================");
-        System.out.println(String.format("| %-5s | %-20s | %-50s | %-20s |", "No.", "Item Name",
+        System.out.println("================================================= Auto Replenishment Details ==================================================");
+        System.out.println(String.format("| %-5s | %-40s | %-50s | %-20s |", "No.", "Item Name",
                 "Item Description", "Threshold Level"));
-        System.out.println("===========================================================================================================");
+        System.out.println("===============================================================================================================================");
         //print data
         for (int i = 0; i < autoReplenishments.size(); i++) {
             AutoReplenishment autoReplenishment = autoReplenishments.get(i);
             System.out.println(
-                    String.format("| %-5s | %-20s | %-50s | %-20s |", (i + 1) + ".",
+                    String.format("| %-5s | %-40s | %-50s | %-20s |", (i + 1) + ".",
                             autoReplenishment.getItem().getItem_Name(), autoReplenishment.getItem().getItem_Desc(),
                             autoReplenishment.getItem_Threshold()));
         }
 
-        System.out.println("===========================================================================================================");
+        System.out.println("===============================================================================================================================");
     }
     
     public AutoReplenishment selectAutoReplenishmentFromList() {

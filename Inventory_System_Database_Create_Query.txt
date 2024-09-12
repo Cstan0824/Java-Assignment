@@ -95,6 +95,7 @@ CREATE TABLE Retailer (
   Retailer_Password VARCHAR(255) NOT NULL,
   Retailer_Email VARCHAR(100) NOT NULL,
   OTP_Code VARCHAR(6),
+  OTP_Expiry timestamp(6) NOT NULL DEFAULT current_timestamp(6) ON UPDATE current_timestamp(6),
   Retailer_Reg_Date DATE NOT NULL DEFAULT CURRENT_DATE,
   Retailer_Address VARCHAR(255) NOT NULL,
   Retailer_Created_By VARCHAR(100),

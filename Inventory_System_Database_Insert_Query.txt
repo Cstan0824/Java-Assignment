@@ -125,3 +125,4 @@ INSERT INTO Vehicle (Vehicle_Plate, Vehicle_Type, Driver) VALUES
 INSERT INTO `request` (`Retailer_ID`, `Retailer_Name`, `Retailer_Email`, `Retailer_Password`, `Retailer_Address`, `Status`) VALUES
 ('R00006', 'Millionare', 'blabla@gmail.com', '$$$$$$$$', 'Ba Sang Bakuteh', 'Approved'),
 ('R00008', 'Siti Harrison', 'harr@gmail.com', 'harrison@123', 'Johor Bahru, Selangor', 'Pending');
+

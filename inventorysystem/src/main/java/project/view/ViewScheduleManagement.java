@@ -453,13 +453,18 @@ public class ViewScheduleManagement {
                 //display added vehicle
                 String[] columnNames = {"Vehicle Plate", "Vehicle Type", "Vehicle Driver"};
 
-                System.out.println("New Vehicle Details");
+                System.out.println("\n\nNew Vehicle Details");
 
                 vehicleTableLine();
                 System.out.printf("|");
                 for (String columnName : columnNames) {
+                    if(columnName.equals("Vehicle Driver")){
+                        System.out.printf(" %-40s ", "Driver Name");
+                        System.out.printf("|");
+                    }else{
                     System.out.printf(" %-15s ", columnName);
                     System.out.printf("|");
+                    }
                 }
                 System.out.println("");
                 vehicleTableLine();
@@ -684,7 +689,7 @@ public class ViewScheduleManagement {
 
     private static void vehicleTableLine(){
         System.out.println
-        ("---------------------------------------------------------------------------");
+        ("--------------------------------------------------------------------------------");
     }   
 
 }

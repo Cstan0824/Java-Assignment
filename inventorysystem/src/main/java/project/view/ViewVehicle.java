@@ -131,8 +131,7 @@ public class ViewVehicle {
     }
     
 
-    public void
-    displayVehicleList() {
+    public void displayVehicleList() {
         this.vehicleList = Vehicle.GetAll();
         int totalVehicle = 0;
 

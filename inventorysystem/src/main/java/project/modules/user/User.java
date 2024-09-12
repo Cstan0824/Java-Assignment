@@ -15,6 +15,7 @@ import project.global.MailTemplate;
 import project.global.SqlConnector;
 import project.global.SystemRunNo;
 import project.global.UserInputHandler;
+import project.view.ViewUser;
 
 public abstract class User {
     //private data field can be only access by the class itself
@@ -213,11 +214,11 @@ public abstract class User {
 
         if(checking)
         {
-            System.out.println("Update successful");
+            System.out.println("\nUpdate successful");
         }
         else
         {
-            System.out.println("Update failed");
+            System.out.println("\nUpdate failed");
         }
     }
     
@@ -318,7 +319,7 @@ public abstract class User {
 
         // Case 3: Maximum attempts reached
         if (attempts >= MAX_ATTEMPTS) {
-            System.out.println("Maximum attempts reached. Please try again later.");
+            System.out.println("\n\nMaximum attempts reached. Please try again later.\n");
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -376,17 +377,17 @@ public abstract class User {
 
                 System.out.println("\n\nList of " + this.userType + "s");
                 if(this.userType.equals("Admin")) {
-                    System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
+                    System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------------");
                 }
                 else {
-                    System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------");
+                    System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------");
                 }
-                System.out.printf("%-15s | %-20s | %-45s | %-25s | %-10s%n", this.userType + " ID",this.userType + " Name", this.userType + " Email", this.userType + " Password", this.userType + " Registration Date");
+                System.out.printf("%-15s | %-40s | %-45s | %-25s | %-10s%n", this.userType + " ID",this.userType + " Name", this.userType + " Email", this.userType + " Password", this.userType + " Registration Date");
                 if(this.userType.equals("Admin")) {
-                    System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
+                    System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------------");
                 }
                 else {
-                    System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------");
+                    System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------");
                 }
                 
                 
@@ -399,14 +400,14 @@ public abstract class User {
                     this.userRegDate = result.getDate(5).toLocalDate();
     
                     // Display the user details
-                    System.out.printf("%-15s | %-20s | %-45s | %-25s | %-10s%n", userId, userName, userEmail, userPassword , userRegDate);
+                    System.out.printf("%-15s | %-40s | %-45s | %-25s | %-10s%n", userId, userName, userEmail, userPassword , userRegDate);
 
                 }
                 if(this.userType.equals("Admin")) {
-                    System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
+                    System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------------");
                 }
                 else {
-                    System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------");
+                    System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------");
                 }
                 ConsoleUI.pause();
                 
@@ -444,9 +445,9 @@ public abstract class User {
         this.Connector.Disconnect();
 
         if (checking) {
-            System.out.println("OTP generated successfully.");
+            System.out.println("\n\nOTP generated successfully.");
         } else {
-            System.out.println("OTP generation failed.");
+            System.out.println("\n\nOTP generation failed.");
         }
 
     }
@@ -455,7 +456,7 @@ public abstract class User {
     {  
         
 
-        System.out.print("Enter the OTP sent to your email: ");
+        System.out.print("\nEnter the OTP sent to your email: ");
         String userOTP = scanner.nextLine();
 
     
@@ -494,14 +495,11 @@ public abstract class User {
             // Show password and then enter menu
 
         } else if (userOTP.equals(this.otpCode)) {
-            System.out.println("OTP verified successfully!");
+            System.out.println("\n\nOTP verified successfully!");
             System.out.println("Your password is: " + this.getUserPassword());
-            try {
-                Thread.sleep(3000);
-                handleLogin();
-            } catch (InterruptedException e) {
-                System.out.println("Thread interrupted.");
-            }
+            ConsoleUI.pause();
+            ViewUser viewUser = new ViewUser();
+            viewUser.menu();
         }
         else{
             System.out.println("Invalid OTP. Please try again.");

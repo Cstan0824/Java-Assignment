@@ -130,8 +130,9 @@ public class Admin extends User {
         boolean continueEditing = true;
 
         while (continueEditing) {
-
-            System.out.println("Which field would you like to update?");
+            ConsoleUI.clearScreen();
+            displayAllUsers();
+            System.out.println("\n\nWhich field would you like to update?");
             System.out.println("1. Admin Name");
             System.out.println("2. Admin Password");
             System.out.println("3. Admin Email");
@@ -166,7 +167,7 @@ public class Admin extends User {
             
             
 
-            String anotherFieldChoice = UserInputHandler.getConfirmation("Would you like to update another field?");
+            String anotherFieldChoice = UserInputHandler.getConfirmation("\nWould you like to update another field?");
             continueEditing = anotherFieldChoice.equalsIgnoreCase("Y");
         }
         super.setCurrentUser(User.getLoggedInUserId());
@@ -282,6 +283,7 @@ public class Admin extends User {
                 String moreRequests = UserInputHandler.getConfirmation("Do you want to handle more requests");
 
                 if (moreRequests.equalsIgnoreCase("Y")) {
+                    ConsoleUI.clearScreen();
                     Notification(); // Recursively call the method to handle more requests
                 } 
             } else {

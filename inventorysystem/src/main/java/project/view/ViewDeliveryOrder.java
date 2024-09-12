@@ -63,7 +63,7 @@ public class ViewDeliveryOrder {
             distinctTableLine();
             for (DeliveryOrder DO : deliveryOrderList) {
                 System.out.print(DO.distinctToString());
-               
+                totalSalesOrder++;
                 distinctTableLine();
             }
 

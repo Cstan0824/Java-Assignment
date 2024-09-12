@@ -54,7 +54,7 @@ public class MailTemplate {
                 "              <td>" +
                 "                <img" +
                 "                  alt=\"\"" +
-                "                  src=\"https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1663574980688_114990/archisketch-logo\""
+                "                  src=\"https://e1.pxfuel.com/desktop-wallpaper/169/320/desktop-wallpaper-inventory-management-system-backgrounds.jpg"
                 +
                 "                  height=\"30px\"" +
                 "                />" +
@@ -102,7 +102,7 @@ public class MailTemplate {
                 "                font-weight: 500;" +
                 "              \"" +
                 "            >" +
-                "              Hey Tomy," +
+                "              Hey User," +
                 "            </p>" +
                 "            <p" +
                 "              style=\"" +
@@ -113,11 +113,10 @@ public class MailTemplate {
                 "              \"" +
                 "            >" +
                 "              Thank you for choosing Inventory Solution Company. Use the following OTP" +
-                "              to complete the procedure to change your email address. OTP is " +
+                "              to complete the procedure to retrieve your password. OTP is " +
                 "              valid for" +
                 "              <span style=\"font-weight: 600; color: #1f1f1f;\">5 minutes</span>." +
-                "              Do not share this code with others, including Inventory Solution" +
-                "              employees." +
+                "              Do not share this code with others." +
                 "            </p>" +
                 "            <p" +
                 "              style=\"" +
@@ -146,7 +145,7 @@ public class MailTemplate {
                 "        >" +
                 "          Need help? Ask at" +
                 "          <a" +
-                "            href=\"mailto:archisketch@gmail.com\"" +
+                "            href=\"mailto:tarumtmoviesociety@gmail.com\"" +
                 "            style=\"color: #499fb6; text-decoration: none;\"" +
                 "            >tarumtmoviesociety@gmail.com</a" +
                 "          >" +
@@ -181,7 +180,7 @@ public class MailTemplate {
                 "          Inventory Solution Company" +
                 "        </p>" +
                 "        <p style=\"margin: 0; margin-top: 8px; color: #434343;\">" +
-                "          Address 540, City, State." +
+                "          Jalan Genting Kelang, Setapak, 53300 Kuala Lumpur." +
                 "        </p>" +
                 "        <div style=\"margin: 0; margin-top: 16px;\">" +
                 "          <a href=\"\" target=\"_blank\" style=\"display: inline-block;\">" +

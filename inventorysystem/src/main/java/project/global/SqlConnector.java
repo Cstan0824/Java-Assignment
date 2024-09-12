@@ -230,7 +230,6 @@ public class SqlConnector {
                 //Create a new instance of the object
                 T instance = _typeClass.newInstance();
 
-                
 
                 for (Field field : fields) {
                     if (field.getType().isArray()) {
