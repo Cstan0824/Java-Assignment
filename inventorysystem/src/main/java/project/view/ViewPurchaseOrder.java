@@ -46,8 +46,8 @@ public class ViewPurchaseOrder {
         this.purchaseOrderList = PurchaseOrder.GetAll();
     }
 
-    public void setPurchaseOrderList(ArrayList<PurchaseOrder> purchaseOrderList) {
-        this.purchaseOrderList = purchaseOrderList;
+    public void setPurchaseOrderList(ArrayList<PurchaseOrder> _purchaseOrderList) {
+        this.purchaseOrderList = _purchaseOrderList;
     }
 
     // Display and select purchase orders
@@ -105,27 +105,45 @@ public class ViewPurchaseOrder {
     }
     
     public ArrayList<PurchaseOrder> selectPurchaseOrderFromList(StockStatus _OrderStatus) {
-        ArrayList<PurchaseOrder> selectedOrders;
-        Set<String> displayedOrders = new HashSet<>();
+        ArrayList<PurchaseOrder> purchaseOrders = new ArrayList<>();
+        Set<String> appearedOrders = new HashSet<>();
+        for (PurchaseOrder order : this.purchaseOrderList) {
+            purchaseOrders.add(order);
+
+            order.getItem().Get();
+            AtomicInteger orderStatus = new AtomicInteger();
+            order.toString(orderStatus);
+
+            if (orderStatus.get() != _OrderStatus.getValue()) {
+                appearedOrders.add(order.getDoc_No());
+            }
+        }
+        for (String order : appearedOrders) {
+            purchaseOrders.removeIf(purchaseOrder -> purchaseOrder.getDoc_No().equals(order));
+        }
+        this.setPurchaseOrderList(purchaseOrders);
+
 
         // Print header
-        System.out.println(" =========================================================== Purchase Orders ================================================================== ");
+        System.out.println(
+                " =========================================================== Purchase Orders ================================================================== ");
         System.out.println(String.format("| %-20s | %-20s | %-40s | %-15s | %-15s | %-15s |",
                 "Order ID", "Order Date", "Item Name", "Order Quantity", "Order Recipient", "Order Status"));
-                System.out.println(" ============================================================================================================================================== ");
+        System.out.println(
+                " ============================================================================================================================================== ");
 
         // Display purchase orders
-        purchaseOrderList.forEach(order -> {
+        this.purchaseOrderList.forEach(order -> {
             order.getItem().Get();
             //000AH: Use AtomicInteger to store order status
             AtomicInteger orderStatus = new AtomicInteger(); // Placeholder for order status
             String orderDetails = order.toString(orderStatus);
             if (_OrderStatus.getValue() != orderStatus.get()) {
-                return;
+                return; //similiar to continue in for loop
             }
 
             String status = (orderStatus.get() == 2) ? "Received" : (orderStatus.get() == 1) ? "In-Process" : "Pending";
-            if (displayedOrders.add(order.getDoc_No())) {
+            if (appearedOrders.add(order.getDoc_No())) {
                 System.out.print(orderDetails);
             } else {
                 System.out.println(String.format("| %-20s   %-20s | %-40s | %-15s | %-15s | %-15s |",
@@ -133,17 +151,18 @@ public class ViewPurchaseOrder {
                         status));
             }
         });
-        System.out.println(" ============================================================================================================================================== ");
+        System.out.println(
+                " ============================================================================================================================================== ");
 
         // Select a purchase order by ID
         String selectedOrderID = UserInputHandler.getString("Select Purchase Order by Order ID: ", 7, "^PO[0-9]{5}$");
 
-        selectedOrders = PurchaseOrder.Get(selectedOrderID);
-        if (selectedOrders == null || selectedOrders.isEmpty()) {
+        purchaseOrders = PurchaseOrder.Get(selectedOrderID);
+        if (purchaseOrders == null || purchaseOrders.isEmpty()) {
             System.out.println("No purchase order found with the specified ID.");
             return null;
         }
-        return selectedOrders;
+        return purchaseOrders;
     }
 
     // Follow up on the status of a purchase order
