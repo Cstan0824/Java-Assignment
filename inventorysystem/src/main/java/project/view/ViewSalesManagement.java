@@ -148,21 +148,19 @@ public class ViewSalesManagement {
     private void viewOrderRecords() {
         
         if (user.getUserType().equals("Admin") || user.getUserType().equals("Retailer")) {
-            boolean error = false;
-            do {
-                ConsoleUI.clearScreen();
-                ArrayList<SalesOrder> salesOrders = viewSalesOrder.selectSalesOrderFromList();
-                if (salesOrders == null || salesOrders.isEmpty()){
-                    if (user.getUserType().equals("Admin")) {
-                        System.out.println("No Sales Order found.");
-                        error = true;
-                    }
-                    if (user.getUserType().equals("Retailer")) {
-                        System.out.println("No Sales Order found.");
-                        return;
-                    }
+            
+            ConsoleUI.clearScreen();
+            ArrayList<SalesOrder> salesOrders = viewSalesOrder.selectSalesOrderFromList();
+            if (salesOrders == null || salesOrders.isEmpty()){
+                if (user.getUserType().equals("Admin")) {
+                    System.out.println("No Sales Order found.");
+                    ConsoleUI.pause();
                 }
-            }while (error);
+                else if (user.getUserType().equals("Retailer")) {
+                    System.out.println("No Sales Order found.");
+                    ConsoleUI.pause();
+                }
+            }
 
         }
          

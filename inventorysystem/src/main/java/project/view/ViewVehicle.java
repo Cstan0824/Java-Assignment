@@ -35,15 +35,20 @@ public class ViewVehicle {
         this.vehicleList = Vehicle.GetAll();
         int totalVehicle = 0;
 
-        String[] columnNames = {"Vehicle Plate", "Vehicle Type", "Vehicle Status"};
+        String[] columnNames = {"Vehicle Plate", "Vehicle Type", "Vehicle Driver"};
 
         if (vehicleList != null && !vehicleList.isEmpty()) {
             System.out.println("Vehicle List");
             distinctTableLine();
             System.out.printf("|");
             for (String columnName : columnNames) {
+                if(columnName.equals("Vehicle Driver")){
+                    System.out.printf(" %-35s ", "Driver Name");
+                    System.out.printf("|");
+                }else{
                 System.out.printf(" %-15s ", columnName);
                 System.out.printf("|");
+                }
             }
             System.out.println("");
             distinctTableLine();
@@ -80,15 +85,20 @@ public class ViewVehicle {
         this.vehicleList = Vehicle.GetAll(timeslot, date);
         int totalVehicle = 0;
     
-        String[] columnNames = {"Vehicle Plate", "Vehicle Type", "Vehicle Status"};
+        String[] columnNames = {"Vehicle Plate", "Vehicle Type", "Vehicle Driver"};
     
         if (vehicleList != null && !vehicleList.isEmpty()) {
             System.out.println("Vehicle List");
             distinctTableLine();
             System.out.printf("|");
             for (String columnName : columnNames) {
+                if(columnName.equals("Vehicle Driver")){
+                    System.out.printf(" %-35s ", "Driver Name");
+                    System.out.printf("|");
+                }else{
                 System.out.printf(" %-15s ", columnName);
                 System.out.printf("|");
+                }
             }
             System.out.println("");
             distinctTableLine();
@@ -133,8 +143,13 @@ public class ViewVehicle {
             distinctTableLine();
             System.out.printf("|");
             for (String columnName : columnNames) {
+                if(columnName.equals("Vehicle Driver")){
+                    System.out.printf(" %-35s ", "Driver Name");
+                    System.out.printf("|");
+                }else{
                 System.out.printf(" %-15s ", columnName);
                 System.out.printf("|");
+                }
             }
             System.out.println("");
             distinctTableLine();
@@ -156,6 +171,6 @@ public class ViewVehicle {
 
     private static void distinctTableLine(){
         System.out.println
-        ("-------------------------------------------------------");
+        ("---------------------------------------------------------------------------");
     }
 }

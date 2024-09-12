@@ -208,7 +208,7 @@ public class AutoReplenishment implements CrudOperation {
         purchaseOrder.setDoc_No(_PoNo);
         purchaseOrder.setQuantity(_RestockQuantity);
         purchaseOrder.setItem(_replenishment.getItem());
-        purchaseOrder.setTransaction_Recipient("Vendor Name");
+        purchaseOrder.setTransaction_Recipient(_replenishment.getItem().getVendor().getVendor_Name());
         purchaseOrder.setTransaction_Created_By("System");
         purchaseOrder.setTransaction_Modified_By("System");
         purchaseOrder.Add();

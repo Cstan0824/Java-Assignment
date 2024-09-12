@@ -1,15 +1,14 @@
 package project.start;
 
-import project.global.ConsoleUI;
 import project.modules.schedule.Schedule;
-import project.modules.transaction.AutoReplenishment;
 import project.view.ViewUser;
+import project.modules.transaction.AutoReplenishment;
 
 
 public class App implements Runnable{
 
     public static void main(String[] args) {
-        ConsoleUI.welcomeScreen();
+        //ConsoleUI.welcomeScreen();
         App app = new App(); // Create an instance of App (Thread)
         Thread thread = new Thread(app);
         thread.start(); // Start the thread
@@ -23,11 +22,9 @@ public class App implements Runnable{
     public void run() {
         while (true) {
             try {
-
                 Schedule.StockOutProcess();
                 AutoReplenishment.ExecuteAutomation();
                 Thread.sleep(600000); // 600,000 milliseconds = 10 minute - 6000 milliseconds = 6 seconds
-
             } catch (InterruptedException e) {
                 System.out.println("Thread Error: " + e.getMessage());
             }

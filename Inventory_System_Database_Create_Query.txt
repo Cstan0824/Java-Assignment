@@ -122,5 +122,6 @@ CREATE TABLE `request` (
   `Retailer_Email` varchar(128) NOT NULL,
   `Retailer_Password` varchar(128) NOT NULL,
   `Retailer_Address` varchar(128) NOT NULL,
-  `Status` varchar(128) NOT NULL
+  `Status` varchar(128) NOT NULL,
+  PRIMARY KEY (Request_ID)
 )

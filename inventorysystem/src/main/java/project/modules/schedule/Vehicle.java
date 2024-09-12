@@ -196,7 +196,7 @@ public class Vehicle implements CrudOperation {
     @Override
     public String toString(){
 
-        String format = "| %-15s | %-15s | %-15s |%n";
+        String format = "| %-15s | %-15s | %-35s |%n";
 
         return String.format(format, this.getVehicle_Plate(), this.getVehicle_Type(), this.getDriver());
 

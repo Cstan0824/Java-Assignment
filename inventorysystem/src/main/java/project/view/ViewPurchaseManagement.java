@@ -86,7 +86,6 @@ public class ViewPurchaseManagement {
                     break;
                 case 4:
                     viewOrderRecords();
-                    ConsoleUI.pause();
                     break;
                 case 5:
                     exit = true; // Exit the loop
@@ -108,6 +107,7 @@ public class ViewPurchaseManagement {
         String poNo = new PurchaseOrder().GenerateDocNo();
         viewItem.setItems();
         do {
+            ConsoleUI.clearScreen();
             PurchaseOrder purchaseOrder = new PurchaseOrder();
             if (viewItem.getItems().isEmpty()) {
                 break;
@@ -426,9 +426,9 @@ public class ViewPurchaseManagement {
         System.out.println("============================================\n");
 
         // Display item details
-        System.out.println("\n ==================== Items in Purchase Order ======================= ");
-        System.out.println(String.format("| %-20s | %-20s | %-20s |", "Item Name", "Order Quantity", "Item Price"));
-        System.out.println(" ==================================================================== ");
+        System.out.println("\n ============================== Items in Purchase Order ================================= ");
+        System.out.println(String.format("| %-40s | %-20s | %-20s |", "Item Name", "Order Quantity", "Item Price"));
+        System.out.println(" ======================================================================================== ");
 
         double totalPrice = 0;
 
@@ -436,15 +436,15 @@ public class ViewPurchaseManagement {
             order.getItem().Get();
             double orderPrice = order.getItem().getItem_Price() * order.getQuantity();
             totalPrice += orderPrice;
-            System.out.println(String.format("| %-20s | %-20d | %-20.2f |",
+            System.out.println(String.format("| %-40s | %-20d | %-20.2f |",
                     order.getItem().getItem_Name(),
                     order.getQuantity(),
                     order.getItem().getItem_Price()));
         }
 
-        System.out.println(" ==================================================================== ");
-        System.out.println(String.format("| %56s %7.2f |", "Total Price: ", totalPrice));
-        System.out.println(" ==================================================================== \n");
+        System.out.println(" ======================================================================================== ");
+        System.out.println(String.format("| %73s %12.2f |", "Total Price (in MYR): ", totalPrice));
+        System.out.println(" ======================================================================================== \n");
     }
 
     // Helper method to display Goods Received Notes

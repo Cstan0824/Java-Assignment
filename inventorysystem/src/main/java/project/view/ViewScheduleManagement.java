@@ -151,17 +151,12 @@ public class ViewScheduleManagement {
     private void viewDORecords() {
         ConsoleUI.clearScreen();
         if (user.getUserType().equals("Admin") || user.getUserType().equals("Retailer")) {
-            boolean error = false;
-            do {
-                ArrayList<DeliveryOrder> deliveryOrders = viewDeliveryOrder.selectDeliveryOrderFromList();
-                if (deliveryOrders == null || deliveryOrders.isEmpty()){
-                    System.out.println("No Delivery Order found.");
-                    error = true;
-                }
-            }while (error);
-
+            ArrayList<DeliveryOrder> deliveryOrders = viewDeliveryOrder.selectDeliveryOrderFromList();
+            if (deliveryOrders == null || deliveryOrders.isEmpty()){
+                System.out.println("No Delivery Order found.");
+                ConsoleUI.pause();
+            }
         }
-
     }
 
     //cancel DO so that can edit Sales Order
@@ -494,8 +489,13 @@ public class ViewScheduleManagement {
                 vehicleTableLine();
                 System.out.printf("|");
                 for (String columnName : columnNames) {
+                    if(columnName.equals("Vehicle Driver")){
+                        System.out.printf(" %-35s ", "Driver Name");
+                        System.out.printf("|");
+                    }else{
                     System.out.printf(" %-15s ", columnName);
                     System.out.printf("|");
+                    }
                 }
                 System.out.println("");
                 vehicleTableLine();
@@ -660,7 +660,7 @@ public class ViewScheduleManagement {
 
     private static void vehicleTableLine(){
         System.out.println
-        ("-------------------------------------------------------");
+        ("---------------------------------------------------------------------------");
     }   
 
 }
