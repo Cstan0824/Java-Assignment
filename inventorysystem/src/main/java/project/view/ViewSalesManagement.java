@@ -256,7 +256,7 @@ public class ViewSalesManagement {
 
             do {
             ConsoleUI.clearScreen();
-            Item item = viewItem.selectItemFromList();
+            Item item = viewItem.selectItemForRetailer();
             SalesOrder salesOrder = new SalesOrder(docNo, item);
             salesOrder.setQuantity(UserInputHandler.getInteger("Enter Quantity (must be greater than 0): ", 1, 1000000));
             salesOrder.setTransaction_Recipient(user.getUserId());

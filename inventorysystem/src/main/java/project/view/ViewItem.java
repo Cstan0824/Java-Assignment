@@ -130,6 +130,35 @@ public class ViewItem {
         return selectedItem;
     }
 
+    public Item selectItemForRetailer() {
+        if (this.items.isEmpty()) {
+            System.out.println("No items available.");
+            ConsoleUI.pause();
+            return null; // Return null if no items are available
+        }
+
+        // Display the list of items
+        System.out.println("\n");
+        System.out.println(
+                " =============================================================================== Items ====================================================================================== ");
+        System.out.println(
+                String.format("| %-5s | %-20s | %-20s | %-40s | %-50s | %-20s |", "No.", "Item Category", "Vendor", "Item Name",
+                        "Item Description", "Price"));
+        System.out.println(" ============================================================================================================================================================================ ");
+
+        for (int i = 0; i < items.size(); i++) {
+            items.get(i).Get();
+            System.out.println(
+                    String.format("| %-5s %-150s", (i + 1) + ". ", items.get(i))); // Display items with index
+        }
+        System.out.println(" ============================================================================================================================================================================ ");
+        
+        Item selectedItem = items
+                .get(UserInputHandler.getInteger("Select Item by No: ", 1, items.size()) - 1);
+        selectedItem.Get();
+        selectedItem.getItemCategory().Get();
+        return selectedItem;
+    }
     public Item selectItemForReplenishment() {
 
         this.items = Item.GetAllForNewReplenishment();
