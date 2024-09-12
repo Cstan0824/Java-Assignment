@@ -362,7 +362,7 @@ public abstract class User {
                     return;
                 }
 
-                System.out.println("List of " + this.userType + "s");
+                System.out.println("\n\nList of " + this.userType + "s");
                 if(this.userType.equals("Admin")) {
                     System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
                 }

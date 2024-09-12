@@ -10,9 +10,13 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 import project.global.CrudOperation;
+import project.global.MailSender;
+import project.global.MailTemplate;
 import project.global.SqlConnector;
 import project.modules.item.Item;
 import project.modules.transaction.DeliveryOrder;
+import project.modules.transaction.SalesOrder;
+import project.modules.user.Retailer;
 
 
 public class Schedule implements CrudOperation{
@@ -323,6 +327,22 @@ public class Schedule implements CrudOperation{
                 }
                 schedule.setStatus(1);
                 schedule.Update();
+
+                String DODocNo = schedule.getDeliveryOrder().getDoc_No();
+                DeliveryOrder deliveryOrder = DeliveryOrder.Get(DODocNo);
+                SalesOrder salesOrder = SalesOrder.Get(deliveryOrder.getSource_Doc_No());
+
+                //add mail notification here
+                MailSender mail;
+                Retailer retailer = new Retailer();
+                
+                retailer.setUserId(deliveryOrder.getTransaction_Recipient());
+                retailer.Get();
+                mail = new MailSender(
+                retailer.getUserEmail(),
+                "Order Delivered",
+                new MailTemplate(salesOrder.getDoc_No(), MailTemplate.TemplateType.SO_DELIVERED));
+                mail.Send();
 
             }
         }

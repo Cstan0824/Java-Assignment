@@ -188,8 +188,7 @@ public class Admin extends User {
     @Override
     public  void UserMenu(){
 
-        User user =  new Retailer();
-        Retailer retailer  =  (Retailer) user ;
+        Retailer retailer = new Retailer();
         boolean exit = false;
         while(!exit){
             ConsoleUI.clearScreen();
@@ -198,10 +197,11 @@ public class Admin extends User {
             System.out.println("2. View Admin");
             System.out.println("3. Update Admin");
             System.out.println("4. Delete Admin");
-            System.out.println("5. Add Retailer");
-            System.out.println("6. Delete Retailer");
-            System.out.println("7. Notification Retailer");
-            System.out.println("8. Exit");
+            System.out.println("5. View Retailer");
+            System.out.println("6. Add Retailer");
+            System.out.println("7. Delete Retailer");
+            System.out.println("8. Notification Retailer");
+            System.out.println("9. Exit");
             System.out.println("===========================================");
             int choice = UserInputHandler.getInteger("Enter choice: ", 1, 8);
 
@@ -219,16 +219,19 @@ public class Admin extends User {
                     deleteAdmin();
                     break;
                 case 5: 
+                    retailer.displayAllUsers();
+                    break;
+                case 6: 
                     retailer.createRetailer();      
                     break;
-                case 6:
+                case 7:
                     retailer.deleteRetailer();
                     break;
-                case 7:
+                case 8:
                     Notification();
                     //implement send notification to retailer
                     break;
-                case 8:
+                case 9:
                     exit = true;
                     break;
                 default:

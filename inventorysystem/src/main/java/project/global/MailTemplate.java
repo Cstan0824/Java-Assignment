@@ -327,6 +327,15 @@ public class MailTemplate {
                 "Inventory Solution Company";
     }
 
+    private String SalesOrderDelivered(String _DocNo) {
+
+        return "Dear Customer,<br/><br/>" +
+                "We are happy to inform that the your Order - " + _DocNo + " has been delivered successfully.<br/>"  + "Please check the receive goods and let us know if you need any further assistance.<br/>" + "Thank you for ordering from us. <br/><br/>" +
+                "Best regards,<br/>" +
+                "Inventory Solution Company";
+
+    }
+    //For User Module
     private String REGISTRATION_APPROVAL(String RetailerID) {
 
         return "Dear Customer,<br/><br/>" +
@@ -368,6 +377,7 @@ public class MailTemplate {
         SCHEDULE_CREATION,
         SCHEDULE_CANCELLATION,
         SCHEDULE_MODIFICATION,
+        SO_DELIVERED,
         RETAILER_CREATED
     }
 
@@ -417,6 +427,9 @@ public class MailTemplate {
                 break;
             case RETAILER_CREATED:
                 this.Content = this.RETAILER_CREATED(_Content);
+                break;
+            case SO_DELIVERED:
+                this.Content = this.SalesOrderDelivered(_Content);
                 break;
             default:
                 break;
