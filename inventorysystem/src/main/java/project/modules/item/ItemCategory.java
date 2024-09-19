@@ -13,16 +13,16 @@ public class ItemCategory {
         return this.Item_Category_ID;
     }
 
-    public void setItem_Category_ID(int Item_Category_ID) {
-        this.Item_Category_ID = Item_Category_ID;
+    public void setItem_Category_ID(int _ItemCategoryID) {
+        this.Item_Category_ID = _ItemCategoryID;
     }
 
     public String getItem_Type() {
         return this.Item_Type;
     }
 
-    public void setItem_Type(String Item_Type) {
-        this.Item_Type = Item_Type;
+    public void setItem_Type(String _ItemType) {
+        this.Item_Type = _ItemType;
     }
 
     //constructor
@@ -30,16 +30,17 @@ public class ItemCategory {
 
     }
 
-    public ItemCategory(int Item_Category_ID, String Item_Type) {
-        this.Item_Category_ID = Item_Category_ID;
-        this.Item_Type = Item_Type;
+    public ItemCategory(int _ItemCategoryID, String _ItemType) {
+        this.Item_Category_ID = _ItemCategoryID;
+        this.Item_Type = _ItemType;
     }
     
+    //methods
     @Override
     public String toString() {
         return String.format("%-40s", this.Item_Type);
     }
-
+    //select all Item Category from database
     public static ArrayList<ItemCategory> GetAll() {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -52,6 +53,7 @@ public class ItemCategory {
         return result;
     }
 
+    //select Item Category based on id
     public boolean Get() {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -73,7 +75,7 @@ public class ItemCategory {
 
         return true;
     }
-
+    //add new Item Category to database
     public boolean Add() {
         SqlConnector connector = new SqlConnector();
         connector.Connect();

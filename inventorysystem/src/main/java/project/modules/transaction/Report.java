@@ -99,7 +99,7 @@ public class Report {
         }
         try {
             URL resource = getClass().getClassLoader()
-                    .getResource("project/Report");
+                    .getResource("java/project/Report");
             this.file = new File(resource.getPath().replace("%20", " "), "YearlySalesReport.pdf");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -130,7 +130,7 @@ public class Report {
         }
         try {
             URL resource = getClass().getClassLoader()
-                    .getResource("project/Report");
+                    .getResource("java/project/Report");
             this.file = new File(resource.getPath().replace("%20", " "), "YearlyPurchaseReport.pdf");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());

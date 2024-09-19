@@ -184,21 +184,21 @@ public class GoodReceivedNotes extends Transaction {
         }
         //GRN No
         String query = "DELETE FROM Transaction WHERE Doc_No = ? AND Item_ID = ?;";
-
+        //delete GRN from database
         boolean QueryExecuted = connector.PrepareExecuteDML(query, this.getDoc_No(),this.getItem().getItem_ID()); 
 
         connector.Disconnect();
         if (QueryExecuted == false) {
             return false;
         }
-
         Transaction goodReceivedNotes = new GoodReceivedNotes(this.getItem(), this.getDoc_No(),
                 this.getSource_Doc_No());
         goodReceivedNotes.Get();
 
         Item item = new Item(this.getItem().getItem_ID());
-
+        //Get the item quantity
         item.Get();
+        //Update the item quantity
         item.setItem_Quantity(Math.max(item.getItem_Quantity() - this.getQuantity(), 0));
 
         return QueryExecuted;
@@ -206,6 +206,7 @@ public class GoodReceivedNotes extends Transaction {
 
     @Override
     //Done
+    //Get the GRN from database
     public boolean Get() {
         SqlConnector connector = new SqlConnector();
 
@@ -223,7 +224,7 @@ public class GoodReceivedNotes extends Transaction {
         if (purchaseOrder == null || purchaseOrder.isEmpty()) {
             return false;
         }
-
+        //Get the GRN and store it to current instance
         Transaction transaction = purchaseOrder.get(0);
         this.setItem(transaction.getItem());
         this.setTransaction_Date(transaction.getTransaction_Date());
@@ -235,7 +236,8 @@ public class GoodReceivedNotes extends Transaction {
 
         return true;
     }
-
+    //Done
+    //Get the GRN from database based on the docNo and document type[PO, GRN]
     public static ArrayList<GoodReceivedNotes> Get(String _DocNo, DocumentType _DocumentType) {
         String query = null;
         switch (_DocumentType) {
@@ -266,7 +268,7 @@ public class GoodReceivedNotes extends Transaction {
 
         return GoodReceivedNotes;
     }
-    
+    //get the GRN from database based on the item and PO NO
     public static ArrayList<GoodReceivedNotes> Get(Item _item, String _SourceDocNo) {
         String query = "SELECT * FROM Transaction WHERE Item_ID = ? AND Source_Doc_No = ? ORDER BY Source_Doc_No, Doc_No;";
 
@@ -298,16 +300,16 @@ public class GoodReceivedNotes extends Transaction {
 
     //Constructor
     public GoodReceivedNotes() {
-        this.setTransaction_Mode(TransactionMode.STOCK_IN);
-        this.setTransaction_Date(new Date(System.currentTimeMillis()));
+        super.setTransaction_Mode(TransactionMode.STOCK_IN);
+        super.setTransaction_Date(new Date(System.currentTimeMillis()));
     }
 
     public GoodReceivedNotes(Item _item, String _DocNo, String _SourceDocNo) {
-        this.setTransaction_Mode(TransactionMode.STOCK_IN);
-        this.setItem(_item);
-        this.setDoc_No(_DocNo);
-        this.setSource_Doc_No(_SourceDocNo);
-        this.setTransaction_Date(new Date(System.currentTimeMillis()));
+        super.setTransaction_Mode(TransactionMode.STOCK_IN);
+        super.setItem(_item);
+        super.setDoc_No(_DocNo);
+        super.setSource_Doc_No(_SourceDocNo);
+        super.setTransaction_Date(new Date(System.currentTimeMillis()));
 
     }
 

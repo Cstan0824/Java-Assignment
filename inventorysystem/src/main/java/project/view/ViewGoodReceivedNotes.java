@@ -36,18 +36,18 @@ public class ViewGoodReceivedNotes {
     }
 
     // Method to add Goods Received Notes
-    public void addGoodsReceivedNotes(String poNo, String grnNo) {
+    public void addGoodsReceivedNotes(String _poNo, String _grnNo) {
 
         HashMap<Item, Integer> OnHandStocks = new HashMap<>();
         this.items.clear();
 
-        this.purchaseOrders = PurchaseOrder.Get(poNo);
+        this.purchaseOrders = PurchaseOrder.Get(_poNo);
 
         //get items and OnhandStock from purchaseOrders
+        //calculate the On hand stock
         for (Transaction purchaseOrder : this.purchaseOrders) {
             purchaseOrder.getItem().Get();
-
-            this.goodReceivedNotes = GoodReceivedNotes.Get(purchaseOrder.getItem(), poNo);
+            this.goodReceivedNotes = GoodReceivedNotes.Get(purchaseOrder.getItem(), _poNo);
             int OnHandStock = 0;
             if (goodReceivedNotes == null || goodReceivedNotes.isEmpty()) {
                 this.items.add(purchaseOrder.getItem());
@@ -56,15 +56,15 @@ public class ViewGoodReceivedNotes {
             for (GoodReceivedNotes grn : goodReceivedNotes) {
                 OnHandStock += grn.getQuantity();
             }
-
+            //Check if the On Hand Stock is equal to the quantity of the purchase order - order status
             if (OnHandStock == purchaseOrder.getQuantity()) {
                 continue;
             }
-            //Add to the list
+            //Add to the list of On Hand Stocks
             OnHandStocks.put(purchaseOrder.getItem(), OnHandStock);
             this.items.add(purchaseOrder.getItem());
         }
-
+        //Check if there is no purchase order
         if (this.purchaseOrders.isEmpty()) {
             System.out.println("No Purchase Orders available.");
             return;
@@ -84,7 +84,7 @@ public class ViewGoodReceivedNotes {
             }
             
             // Get Virtual Stock
-            Transaction purchaseOrder = new PurchaseOrder(item, poNo);
+            Transaction purchaseOrder = new PurchaseOrder(item, _poNo);
             purchaseOrder.Get();
             purchaseOrder.setItem(item); //idk why need this line but it works
 
@@ -100,8 +100,8 @@ public class ViewGoodReceivedNotes {
                     UserInputHandler.getInteger("Enter Quantity: ", 1,
                             maxQuantity));
             goodReceivedNote.setItem(item);
-            goodReceivedNote.setDoc_No(grnNo);
-            goodReceivedNote.setSource_Doc_No(poNo);
+            goodReceivedNote.setDoc_No(_grnNo);
+            goodReceivedNote.setSource_Doc_No(_poNo);
             goodReceivedNote.setTransaction_Created_By(user.getUserId());
             goodReceivedNote.setTransaction_Modified_By(user.getUserId());
             goodReceivedNote.setTransaction_Date(new Date());
@@ -125,13 +125,13 @@ public class ViewGoodReceivedNotes {
     }
 
     // Method to edit Goods Received Notes
-    public void editGoodReceivedNotes(Transaction goodReceivedNote) {
+    public void editGoodReceivedNotes(Transaction _goodReceivedNote) {
         int OnHandStock = 0;
-        Transaction purchaseOrder = new PurchaseOrder(goodReceivedNote.getItem(),
-                goodReceivedNote.getSource_Doc_No());
+        Transaction purchaseOrder = new PurchaseOrder(_goodReceivedNote.getItem(),
+                _goodReceivedNote.getSource_Doc_No());
         purchaseOrder.Get();
         this.goodReceivedNotes = GoodReceivedNotes.Get(purchaseOrder.getItem(),
-                goodReceivedNote.getSource_Doc_No());
+                _goodReceivedNote.getSource_Doc_No());
         
         if (goodReceivedNotes == null || goodReceivedNotes.isEmpty()) {
             return;
@@ -140,14 +140,15 @@ public class ViewGoodReceivedNotes {
         for (GoodReceivedNotes grn : goodReceivedNotes) {
             OnHandStock += grn.getQuantity();
         }
-
-        goodReceivedNote.setQuantity(
+        //Set the new Quantity based on the purchase order quantity 
+        //Range from 1 to the difference of the purchase order quantity and the On Hand Stock
+        _goodReceivedNote.setQuantity(
                 UserInputHandler.getInteger("Enter Quantity: ", 1,
-                        purchaseOrder.getQuantity() - (OnHandStock - goodReceivedNote.getQuantity())));
-        goodReceivedNote.setTransaction_Modified_By(user.getUserId());
+                        purchaseOrder.getQuantity() - (OnHandStock - _goodReceivedNote.getQuantity())));
+        _goodReceivedNote.setTransaction_Modified_By(user.getUserId());
 
         //Update
-        if (!goodReceivedNote.Update()) {
+        if (!_goodReceivedNote.Update()) {
             System.out.println("Failed to update Good Received Notes.");
             return;
         }
@@ -156,12 +157,13 @@ public class ViewGoodReceivedNotes {
     }
 
     // Method to remove Goods Received Notes
-    public void removeGoodsReceivedNotes(Transaction goodReceivedNote) {
+    public void removeGoodsReceivedNotes(Transaction _goodReceivedNote) {
         if (!UserInputHandler.getConfirmation("Are you sure you want to remove this Good Received Notes?")
                 .equalsIgnoreCase("Y")) {
             return;
         }
-        GoodReceivedNotes.Get(goodReceivedNote.getDoc_No(), GoodReceivedNotes.DocumentType.GOOD_RECEIVED_NOTES)
+        //Remove the GRN from database based on PO no
+        GoodReceivedNotes.Get(_goodReceivedNote.getDoc_No(), GoodReceivedNotes.DocumentType.GOOD_RECEIVED_NOTES)
                     .forEach(grn -> {
                         if (grn != null) {
                             grn.Remove();
@@ -170,8 +172,8 @@ public class ViewGoodReceivedNotes {
     }
 
     // Method to select a Goods Received Note from the list
-    public Transaction selectGoodReceivedNotesFromList(String poNo) {
-        this.goodReceivedNotes = GoodReceivedNotes.Get(poNo, GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
+    public Transaction selectGoodReceivedNotesFromList(String _poNo) {
+        this.goodReceivedNotes = GoodReceivedNotes.Get(_poNo, GoodReceivedNotes.DocumentType.PURCHASE_ORDER);
         if (this.goodReceivedNotes == null || this.goodReceivedNotes.isEmpty()) {
             return null;
         }

@@ -28,7 +28,8 @@ public class ViewAutoReplenishment {
     public void setAutoReplenishment() {
         this.autoReplenishments = AutoReplenishment.GetAll();
     }
-
+    //Methods
+    
     //Menu for Auto Replenishment
     public void menu() {
         boolean exit = true;
@@ -61,7 +62,7 @@ public class ViewAutoReplenishment {
             }
         }
     }
-
+    
     //Method to view Auto Replenishment
     public void viewAutoReplenishment() {
         ConsoleUI.clearScreen();
@@ -93,7 +94,7 @@ public class ViewAutoReplenishment {
     public void updateAutoReplenishment() {
         ConsoleUI.clearScreen();
         AutoReplenishment autoReplenishment = selectAutoReplenishmentFromList();
-        //Update Threshold level
+        //Update Threshold level based on selected autoReplenishment object
         autoReplenishment.setItem_Threshold(UserInputHandler.getInteger("Enter new threshold level: ", 1, 100000));
         if(autoReplenishment.Update()){
             System.out.println("Auto Replenishment for " + autoReplenishment.getItem().getItem_Name() + " has been updated successfully.");
@@ -108,7 +109,7 @@ public class ViewAutoReplenishment {
     public void deleteAutoReplenishment() {
         ConsoleUI.clearScreen();
         AutoReplenishment autoReplenishment = selectAutoReplenishmentFromList();
-
+        //Delete Auto Replenishment based on selected autoReplenishment object
         if(autoReplenishment.Remove()){
             System.out.println("Auto Replenishment for " + autoReplenishment.getItem().getItem_Name() + " has been deleted successfully.");
             ConsoleUI.pause();

@@ -60,6 +60,7 @@ public class AutoReplenishment implements CrudOperation {
 
     //Methods
     @Override
+    //Get AutoReplenishment based on Item ID
     public boolean Get() {
 
         if (item.getItem_ID() < 0) {
@@ -112,6 +113,7 @@ public class AutoReplenishment implements CrudOperation {
     }
 
     @Override
+    //Add AutoReplenishment to database
     public boolean Add() {
         if (item.getItem_ID() < 0) {
             return false;
@@ -133,6 +135,7 @@ public class AutoReplenishment implements CrudOperation {
     }
 
     @Override
+    //Remove AutoReplenishment from database
     public boolean Remove() {
         if (item.getItem_ID() < 0) {
             return false;
@@ -156,6 +159,7 @@ public class AutoReplenishment implements CrudOperation {
     }
 
     @Override
+    //Update AutoReplenishment in database
     public boolean Update() {
         if (item.getItem_ID() < 0) {
             return false;
@@ -178,6 +182,11 @@ public class AutoReplenishment implements CrudOperation {
         return QueryExecuted;
     }
 
+
+    //Execute Automation
+    //Check if the item quantity is less than the threshold
+    //If yes, generate PO and send it to vendor
+    //Generate PDF
     public static void ExecuteAutomation() {
         //Create an extra thread to run the automation at the background while the system is running
         ArrayList<AutoReplenishment> autoReplenishments = AutoReplenishment.GetAll();
@@ -192,16 +201,12 @@ public class AutoReplenishment implements CrudOperation {
                 String PO_NO = purchaseOrder.GenerateDocNo();
 
                 SendPurchaseOrder(replenishment, PO_NO, RestockQuantity);
-
-                //Update Item Quantity
-                replenishment.getItem()
-                        .setItem_Quantity(
-                                replenishment.getItem().getItem_Quantity() + RestockQuantity);
-                replenishment.getItem().Update();
             }
         }
     }
     
+    //Send Purchase Order to Vendor
+    //Generate PDF
     private static void SendPurchaseOrder(AutoReplenishment _replenishment, String _PoNo, int _RestockQuantity) {
         //Purchase Order
         Transaction purchaseOrder = new PurchaseOrder();
@@ -233,7 +238,4 @@ public class AutoReplenishment implements CrudOperation {
         purchaseOrderMail.AttachFile(file);
         purchaseOrderMail.Send();
     }
-
-    
-    
 }

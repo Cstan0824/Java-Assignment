@@ -112,6 +112,8 @@ public class ViewPurchaseManagement {
             if (viewItem.getItems().isEmpty()) {
                 break;
             }
+            // Input restock details
+            // Select item to restock
             Item item = viewItem.selectItemFromList();
             purchaseOrder.setQuantity(
                     UserInputHandler.getInteger("Enter Quantity: ", 1, 100000));
@@ -124,7 +126,7 @@ public class ViewPurchaseManagement {
             purchaseOrders.add(purchaseOrder);
             // Add Stock Confirmation
             ArrayList<Item> items = viewItem.getItems();
-            items.remove(item);
+            items.remove(item); //remove from item list once selected
             viewItem.setItems(items);
             if (items.isEmpty()) {
                 System.out.println("No more items available for restocking.");
@@ -138,12 +140,14 @@ public class ViewPurchaseManagement {
             _purchaseOrder.Add();
             if (!orders.containsKey(_purchaseOrder.getItem().getVendor())) {
                 orders.put(_purchaseOrder.getItem().getVendor(), new ArrayList<>());
+                //add to orders if the vendor is not founded inside HashSet
             }
             orders.get(_purchaseOrder.getItem().getVendor()).add(_purchaseOrder);
         });
 
         // Send email to vendors
         for (Map.Entry<Vendor, ArrayList<Transaction>> entry : orders.entrySet()) {
+            //generate PO
             URL resource = getClass().getClassLoader()
                     .getResource("project/global/Pdf");
             file = new File(
@@ -152,7 +156,8 @@ public class ViewPurchaseManagement {
             pdf = new PdfConverter(file,
                     new PdfTemplate(entry.getValue(), PdfTemplate.TemplateType.PURCHASE_ORDER));
             pdf.Save();
-
+            
+            //Send PO to different Vendor
             mail = new MailSender(
                     entry.getKey().getVendor_Email(),
                     "Purchase Order",
@@ -171,6 +176,7 @@ public class ViewPurchaseManagement {
         ArrayList<Item> itemsInPurchaseOrders = new ArrayList<>();
         ArrayList<Item> itemsNotInPurchaseOrders = Item.GetAll();
 
+        //only display pending status's order - user only available to modify PENDING order
         viewPurchaseOrder.setPurchaseOrderList();
         ArrayList<PurchaseOrder> purchaseOrders = viewPurchaseOrder.selectPurchaseOrderFromList(StockStatus.PENDING);
         if (purchaseOrders == null || purchaseOrders.isEmpty()) {
@@ -205,7 +211,7 @@ public class ViewPurchaseManagement {
 
             switch (UserInputHandler.getInteger("Enter choice: ", 1, 4)) {
                 case 1:
-                    viewItem.setItems(itemsNotInPurchaseOrders);
+                    viewItem.setItems(itemsNotInPurchaseOrders); //display item that havent selected in PO
                     Item item = viewItem.selectItemFromList();
                     if (item == null) {
                         break;
@@ -223,19 +229,21 @@ public class ViewPurchaseManagement {
                     purchaseOrder.setTransaction_Created_By(user.getUserId());
 
                     purchaseOrder.Add();
-                    itemsNotInPurchaseOrders.remove(item);
+                    //update the item list status
+                    itemsNotInPurchaseOrders.remove(item); 
                     itemsInPurchaseOrders.add(item);
+
                     orderModified = true;
                     break;
                 case 2:
-                    viewItem.setItems(itemsInPurchaseOrders);
+                    viewItem.setItems(itemsInPurchaseOrders); //display item that is selected in PO
                     Item itemToRemove = viewItem.selectItemFromList();
                     if (itemToRemove == null) {
                         System.out.println("Item not selected.");
                         break;
                     }
-
-                    purchaseOrder.setItem(itemToRemove);
+                    //remove the selected Item
+                    purchaseOrder.setItem(itemToRemove); 
 
                     if (!UserInputHandler
                             .getConfirmation("Are you sure you want to remove this Purchase Order?")
@@ -248,6 +256,7 @@ public class ViewPurchaseManagement {
                         if (itemsInPurchaseOrders.size() == 1) {
                             System.out.println("Purchase Order is empty. Removing Purchase Order.");
                         }
+                        //Update Item list status
                         itemsInPurchaseOrders.remove(itemToRemove);
                         itemsNotInPurchaseOrders.add(itemToRemove);
 
@@ -257,7 +266,7 @@ public class ViewPurchaseManagement {
                     orderModified = true;
                     break;
                 case 3:
-
+                    //display item that is selected in PO and modify the Order quantity
                     viewItem.setItems(itemsInPurchaseOrders);
                     Item itemToChange = viewItem.selectItemFromList();
                     if (itemToChange == null) {
@@ -267,7 +276,7 @@ public class ViewPurchaseManagement {
                     purchaseOrder.setItem(itemToChange);
                     purchaseOrder.Get();
                     System.out.println("Current Quantity: " + purchaseOrder.getQuantity());
-
+                    //enter new order quantity
                     purchaseOrder.setQuantity(
                             UserInputHandler.getInteger("Enter Quantity: ", 1,
                                     100000));
@@ -289,6 +298,8 @@ public class ViewPurchaseManagement {
             return;
         }
 
+        //store the PO(value) based on vendors(key) into HashSet
+        //if 2 particular item is handled by one vendor, the system will only send one PO to that vendor
         PurchaseOrder.Get(purchaseOrders.get(0).getDoc_No()).forEach(po -> {
             po.getItem().Get();
             if (!orders.containsKey(po.getItem().getVendor())) {
@@ -302,6 +313,7 @@ public class ViewPurchaseManagement {
         File file;
         PdfConverter pdf;
         for (Map.Entry<Vendor, ArrayList<Transaction>> entry : orders.entrySet()) {
+            //generate Pdf file
             URL resource = getClass().getClassLoader()
                     .getResource("project/global/Pdf");
             file = new File(
@@ -311,6 +323,7 @@ public class ViewPurchaseManagement {
                     new PdfTemplate(entry.getValue(), PdfTemplate.TemplateType.PURCHASE_ORDER));
             pdf.Save();
 
+            //send REORDERING to Vendor
             mail = new MailSender(
                     entry.getKey().getVendor_Email(),
                     "Reordering",
@@ -326,6 +339,7 @@ public class ViewPurchaseManagement {
     private void orderCancellation() {
         Set<Vendor> vendors = new HashSet<>();
         viewPurchaseOrder.setPurchaseOrderList();
+        //select the PO from list - PENDING status only
         ArrayList<PurchaseOrder> purchaseOrders = viewPurchaseOrder.selectPurchaseOrderFromList(StockStatus.PENDING);
         if (purchaseOrders == null || purchaseOrders.isEmpty()) {
             return;
@@ -339,7 +353,7 @@ public class ViewPurchaseManagement {
                 .equalsIgnoreCase("Y")) {
             return;
         }
-
+        //remove the selected PO 
         purchaseOrders.forEach(_purchaseOrder -> {
             _purchaseOrder.Remove();
             vendors.add(_purchaseOrder.getItem().getVendor());
@@ -360,7 +374,7 @@ public class ViewPurchaseManagement {
     private void viewOrderRecords() {
         boolean PendingStatus = false;
         viewPurchaseOrder.setPurchaseOrderList();
-        ArrayList<PurchaseOrder> purchaseOrders = viewPurchaseOrder.selectPurchaseOrderFromList();
+        ArrayList<PurchaseOrder> purchaseOrders = viewPurchaseOrder.selectPurchaseOrderFromList(); //select PO from list
         if (purchaseOrders == null || purchaseOrders.isEmpty()) {
             return;
         }
@@ -501,8 +515,9 @@ public class ViewPurchaseManagement {
                     viewPurchaseOrder.followUpStatus(_purchaseOrders);
                     break;
                 case 2:
+                    //generate GRN no
                     String grnNo = goodReceivedNotes.GenerateDocNo();
-                    this.viewGoodReceivedNotes.addGoodsReceivedNotes(_purchaseOrders.get(0).getDoc_No(), grnNo);
+                    this.viewGoodReceivedNotes.addGoodsReceivedNotes(_purchaseOrders.get(0).getDoc_No(), grnNo); //add GRN
                     orderManaged = true;
                     if (this.viewGoodReceivedNotes.getItems().isEmpty()) {
                         backToPurchaseManagement = true;
@@ -511,6 +526,7 @@ public class ViewPurchaseManagement {
                     }
                     break;
                 case 3:
+                    //select GRN form list to modify based on the selected PO
                     goodReceivedNotes = this.viewGoodReceivedNotes
                             .selectGoodReceivedNotesFromList(_purchaseOrders.get(0).getDoc_No());
                     if (goodReceivedNotes == null) {
@@ -522,6 +538,7 @@ public class ViewPurchaseManagement {
                     orderManaged = true;
                     break;
                 case 4:
+                    //select GRN from list to remove based on the selected PO
                     goodReceivedNotes = this.viewGoodReceivedNotes
                             .selectGoodReceivedNotesFromList(_purchaseOrders.get(0).getDoc_No());
                     if (goodReceivedNotes == null) {
@@ -569,12 +586,14 @@ public class ViewPurchaseManagement {
                 for (GoodReceivedNotes notes : goodReceivedNotesList) {
                     totalReceived += notes.getQuantity();
                 }
+                //check if the order has received all the stock
                 if (totalReceived < order.getQuantity()) {
                     isFullyReceived = false;
                     break;
                 }
             }
             if (isFullyReceived) {
+                //send order confirmation if the stock is fully received
                 MailSender mail = new MailSender(
                         entry.getKey().getVendor_Email(),
                         "Order Confirmation",

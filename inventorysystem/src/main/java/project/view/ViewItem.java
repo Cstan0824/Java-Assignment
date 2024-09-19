@@ -19,8 +19,8 @@ public class ViewItem {
         return this.items;
     }
 
-    public void setItems(ArrayList<Item> items) {
-        this.items = items;
+    public void setItems(ArrayList<Item> _items) {
+        this.items = _items;
     }
 
     public void setItems() {
@@ -130,6 +130,7 @@ public class ViewItem {
         return selectedItem;
     }
 
+    // Method to select an item for retailer
     public Item selectItemForRetailer() {
         if (this.items.isEmpty()) {
             System.out.println("No items available.");
@@ -142,23 +143,28 @@ public class ViewItem {
         System.out.println(
                 " =============================================================================== Items ====================================================================================== ");
         System.out.println(
-                String.format("| %-5s | %-20s | %-20s | %-40s | %-50s | %-20s |", "No.", "Item Category", "Vendor", "Item Name",
+                String.format("| %-5s | %-20s | %-20s | %-40s | %-50s | %-20s |", "No.", "Item Category", "Vendor",
+                        "Item Name",
                         "Item Description", "Price (in MYR)"));
-        System.out.println(" ============================================================================================================================================================================ ");
+        System.out.println(
+                " ============================================================================================================================================================================ ");
 
         for (int i = 0; i < items.size(); i++) {
             items.get(i).Get();
             System.out.println(
                     String.format("| %-5s %-150s", (i + 1) + ". ", items.get(i))); // Display items with index
         }
-        System.out.println(" ============================================================================================================================================================================ ");
-        
+        System.out.println(
+                " ============================================================================================================================================================================ ");
+
         Item selectedItem = items
                 .get(UserInputHandler.getInteger("Select Item by No: ", 1, items.size()) - 1);
         selectedItem.Get();
         selectedItem.getItemCategory().Get();
         return selectedItem;
     }
+    
+    // Method to select an item for replenishment
     public Item selectItemForReplenishment() {
 
         this.items = Item.GetAllForNewReplenishment();
@@ -185,9 +191,6 @@ public class ViewItem {
             return;
         }
 
-        
-        
-
         //Select details to edit from menu
         boolean exit = false;
         while (!exit) {
@@ -200,7 +203,6 @@ public class ViewItem {
             System.out.println(" Item Description: " + item.getItem_Desc());
             System.out.println(" Item Price: " + item.getItem_Price());
             System.out.println(" ============================================================ \n");
-
 
             System.out.println("========== Edit Item ==========");
             System.out.println("1. Edit Item Category");
@@ -256,7 +258,7 @@ public class ViewItem {
                     }
                     break;
                 case 4:
-                    ConsoleUI.clearScreen(); 
+                    ConsoleUI.clearScreen();
                     item.setItem_Desc(UserInputHandler.getString("Enter Item Description: ", 1, 100));
                     // Update the item details
                     if (item.Update()) {
@@ -287,10 +289,11 @@ public class ViewItem {
                     exit = true;
                     break;
             }
-            
+
         }
     }
 
+    // Method to search for an item
     private void searchItem() {
         // Search for items based on the search field and value with a menu
         ConsoleUI.clearScreen();
@@ -303,7 +306,7 @@ public class ViewItem {
 
         switch (UserInputHandler.getInteger("Select an option: ", 1, 4)) {
             case 1:
-                this.items = Item.Get("Item_Name", UserInputHandler.getString("\nEnter Item Name: ",  1,50));
+                this.items = Item.Get("Item_Name", UserInputHandler.getString("\nEnter Item Name: ", 1, 50));
 
                 if (this.items == null || this.items.isEmpty()) {
                     System.out.println("No items found.");
@@ -340,22 +343,23 @@ public class ViewItem {
         }
     }
 
+    // Method to add a new item
     private Item addNewItem() {
         // Add a new item to the list
         Item item = new Item();
         this.viewVendor.setVendors();
         //display Item category on menu
         item.setItemCategory(selectItemCategoryFromList());
-        
+
         this.viewVendor.setVendors();
         item.setVendor(this.viewVendor.selectVendorFromList());
         item.setItem_name(UserInputHandler.getString("Enter Item Name: ", 1, 40));
-        item.setItem_Desc(UserInputHandler.getString("Enter Item Description: ", 1,50));
+        item.setItem_Desc(UserInputHandler.getString("Enter Item Description: ", 1, 50));
         item.setItem_Quantity(UserInputHandler.getInteger("Enter Item Quantity: ", 1, 1000000));
         item.setItem_Price(UserInputHandler.getDouble("Enter Item Price: ", 0, 1000000));
         item.setItem_Created_By(user.getUserId());
         item.setItem_Modified_By(user.getUserId());
-        if(item.Add()) {
+        if (item.Add()) {
             System.out.println("Item added successfully.");
             return item;
         } else {
@@ -364,6 +368,7 @@ public class ViewItem {
         }
     }
 
+    // Method to select an item category from the list
     public ItemCategory selectItemCategoryFromList() {
         ArrayList<ItemCategory> itemCategories = ItemCategory.GetAll();
         System.out.println("\n");

@@ -70,7 +70,7 @@ public class ViewReport {
                 return;
             }
 
-            //open report file 
+            //open report file if user wants to open the file
             if (Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
                 try {
                     Desktop.getDesktop().open(report.getFile());

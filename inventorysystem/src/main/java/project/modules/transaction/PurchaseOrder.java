@@ -15,7 +15,6 @@ import project.modules.item.Item;
 public class PurchaseOrder extends Transaction {
 
     @Override
-    //Done
     public boolean Add() {
 
         SqlConnector connector = new SqlConnector();
@@ -38,7 +37,6 @@ public class PurchaseOrder extends Transaction {
 
     //Only change vendor or item will use this method
     //Item_ID, Transaction_date, Quantity, Transaction_Receipent
-    //Done
     @Override
     public boolean Update() {
 
@@ -88,7 +86,6 @@ public class PurchaseOrder extends Transaction {
     }
 
     @Override
-    //Done
     //need to check if already received the stock or not
     public boolean Remove() {
         ArrayList<GoodReceivedNotes> goodReceiveNotes = GoodReceivedNotes.Get(this.getDoc_No(),
@@ -117,7 +114,6 @@ public class PurchaseOrder extends Transaction {
 
     @Override
     //Check the stock status and ask user whether they want to proceed with the stock[send mail to the vendor for follow up status]
-    //Done
     public boolean Get() {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -156,6 +152,7 @@ public class PurchaseOrder extends Transaction {
         return "PO" + String.format("%05d", SystemRunNo.Get("PO"));
     }
 
+    //Check the stock status whether it is received, in-process or pending and return it as output parameter
     public String toString(AtomicInteger StockStatus_) {
         //000AH: Use AtomicInteger to store order status
         super.getItem().Get();
@@ -202,7 +199,7 @@ public class PurchaseOrder extends Transaction {
 
     
 
-
+    //Check the stock status whether it is received, in-process or pending based on item and PO NO
     public static Transaction Get(Item _item, String _DocNo) {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -222,6 +219,7 @@ public class PurchaseOrder extends Transaction {
         return purchaseOrders.get(0);
     }
 
+    //get all the purchase order based on the PO NO
     public static ArrayList<PurchaseOrder> Get(String _DocNo) {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -236,6 +234,7 @@ public class PurchaseOrder extends Transaction {
         return purchaseOrders;
     }
 
+    //get all the purchase order
     public static ArrayList<PurchaseOrder> GetAll() {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -259,6 +258,7 @@ public class PurchaseOrder extends Transaction {
     }
     
     @Override
+    //display the details and status of the purchase order
     public String toString() {
         super.getItem().Get();
 
@@ -318,5 +318,4 @@ public class PurchaseOrder extends Transaction {
                 _Transaction_Recipient,
                 _Transaction_Created_By, _Transaction_Modified_By);
     }
-
 }

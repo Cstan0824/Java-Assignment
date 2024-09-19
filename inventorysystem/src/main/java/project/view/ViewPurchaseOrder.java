@@ -58,15 +58,17 @@ public class ViewPurchaseOrder {
         Set<String> displayedOrders = new HashSet<>();
 
         // Print header
-        System.out.println(" =========================================================== Purchase Orders ================================================================== ");
+        System.out.println(
+                " =========================================================== Purchase Orders ================================================================== ");
         System.out.println(String.format("| %-20s | %-20s | %-40s | %-15s | %-15s | %-15s |",
-                "Order ID","Order Date", "Item Name", "Order Quantity", "Order Recipient", "Order Status"));
-        System.out.println(" ============================================================================================================================================== ");
+                "Order ID", "Order Date", "Item Name", "Order Quantity", "Order Recipient", "Order Status"));
+        System.out.println(
+                " ============================================================================================================================================== ");
 
         // Display purchase orders
         purchaseOrderList.forEach(order -> {
             order.getItem().Get();
-            AtomicInteger orderStatus = new AtomicInteger(); 
+            AtomicInteger orderStatus = new AtomicInteger();
             //display the order details and if the PO already displayed, skip and only display its item details 
             String orderDetails = order.toString(orderStatus);
             String status = (orderStatus.get() == 2) ? "Received" : (orderStatus.get() == 1) ? "In-Process" : "Pending";
@@ -80,12 +82,11 @@ public class ViewPurchaseOrder {
             }
             orderStatusList.add(orderStatus.get());
         });
-                System.out.println(" ============================================================================================================================================== ");
-
+        System.out.println(
+                " ============================================================================================================================================== ");
 
         // Select a purchase order by ID
-        String selectedOrderID = UserInputHandler.getString("Select Purchase Order by Order ID"
-                , 7, "^PO[0-9]{5}$");
+        String selectedOrderID = UserInputHandler.getString("Select Purchase Order by Order ID", 7, "^PO[0-9]{5}$");
 
         // Filter selected order(s)
         AtomicInteger orderIndex = new AtomicInteger(0);
@@ -104,6 +105,7 @@ public class ViewPurchaseOrder {
         return selectedOrders;
     }
     
+    //only display purchase orders with the specified status - Received, In-Process, Pending
     public ArrayList<PurchaseOrder> selectPurchaseOrderFromList(StockStatus _OrderStatus) {
         ArrayList<PurchaseOrder> purchaseOrders = new ArrayList<>();
         Set<String> appearedOrders = new HashSet<>();
@@ -165,7 +167,7 @@ public class ViewPurchaseOrder {
         return purchaseOrders;
     }
 
-    // Follow up on the status of a purchase order
+    // Follow up on the status of a purchase order - send email to vendor to follow up the status of the purchase order
     public void followUpStatus(ArrayList<PurchaseOrder> _purchaseOrders) {
         Set<String> vendorID = new HashSet<>();
         _purchaseOrders.forEach(order -> {

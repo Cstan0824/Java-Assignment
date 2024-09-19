@@ -34,7 +34,6 @@ public class Item implements CrudOperation{
 
     //Item_Category
     public void setItemCategory(ItemCategory _itemCategory) {
-        
         this.item_Category = _itemCategory;
     }
 
@@ -58,9 +57,6 @@ public class Item implements CrudOperation{
     }
 
     public void setItem_name(String _ItemName) {
-        if (_ItemName == null) {
-            throw new IllegalArgumentException("Item_name cannot be null");
-        }
         this.Item_name = _ItemName;
     }
 
@@ -70,9 +66,6 @@ public class Item implements CrudOperation{
     }
 
     public void setItem_Desc(String _ItemDesc) {
-        if (_ItemDesc == null) {
-            throw new IllegalArgumentException("Item_Desc cannot be null");
-        }
         this.Item_Desc = _ItemDesc;
     }
 
@@ -82,9 +75,6 @@ public class Item implements CrudOperation{
     }
 
     public void setItem_Quantity(int _ItemQuantity) {
-        if (_ItemQuantity < 0) {
-            throw new IllegalArgumentException("Item_Quantity cannot be negative");
-        }
         this.Item_Quantity = _ItemQuantity;
     }
 
@@ -94,9 +84,6 @@ public class Item implements CrudOperation{
     }
 
     public void setItem_Price(double _ItemPrice) {
-        if (_ItemPrice < 0) {
-            throw new IllegalArgumentException("Item_Price cannot be negative");
-        }
         this.Item_Price = _ItemPrice;
     }
 
@@ -119,9 +106,18 @@ public class Item implements CrudOperation{
         this.Item_Modified_By = _ItemModifiedBy;
     }
 
+    //Constructor
+    public Item() {
+    }
+
+    public Item(Integer _Id) {
+        this.Item_ID = _Id;
+    }
+
 
     //Methods
     @Override
+    //Add new item to database
     public boolean Add() {
         SqlConnector connector = new SqlConnector();
 
@@ -141,46 +137,44 @@ public class Item implements CrudOperation{
     }
 
     
-    /***
-     * @params: Pass in the Item ID
-     * @return: Item object
-     * @summary: Read the item from the database    
-    } */
-   @Override
-   public final boolean Get() {
-       SqlConnector connector = new SqlConnector();
-       connector.Connect();
-       if (!connector.isConnected()) {
-           return false;
-       }
+    
+    @Override
+    //Get item from database based on item id
+    public final boolean Get() {
+        SqlConnector connector = new SqlConnector();
+        connector.Connect();
+        if (!connector.isConnected()) {
+            return false;
+        }
 
-       String query = "SELECT * FROM item WHERE Item_ID = ?;";
-       ArrayList<Item> items = connector.PrepareExecuteRead(query, Item.class, this.Item_ID);
+        String query = "SELECT * FROM item WHERE Item_ID = ?;";
+        ArrayList<Item> items = connector.PrepareExecuteRead(query, Item.class, this.Item_ID);
 
-       connector.Disconnect();
+        connector.Disconnect();
 
-       if (items == null || items.isEmpty()) {
-           return false;
-       }
+        if (items == null || items.isEmpty()) {
+            return false;
+        }
 
-       Item item = items.get(0); //get the first result
-       item.getItemCategory().Get(); //get the item category from the item category id
-       item.getVendor().Get(); //get the vendor from the vendor id
+        Item item = items.get(0); //get the first result
+        item.getItemCategory().Get(); //get the item category from the item category id
+        item.getVendor().Get(); //get the vendor from the vendor id
 
-       this.Item_ID = item.getItem_ID();
-       this.item_Category = item.getItemCategory();
-       this.vendor = item.getVendor();
-       this.Item_name = item.getItem_Name();
-       this.Item_Desc = item.getItem_Desc();
-       this.Item_Quantity = item.getItem_Quantity();
-       this.Item_Price = item.getItem_Price();
-       this.Item_Created_By = item.getItem_Created_By();
-       this.Item_Modified_By = item.getItem_Modified_By();
+        this.Item_ID = item.getItem_ID();
+        this.item_Category = item.getItemCategory();
+        this.vendor = item.getVendor();
+        this.Item_name = item.getItem_Name();
+        this.Item_Desc = item.getItem_Desc();
+        this.Item_Quantity = item.getItem_Quantity();
+        this.Item_Price = item.getItem_Price();
+        this.Item_Created_By = item.getItem_Created_By();
+        this.Item_Modified_By = item.getItem_Modified_By();
 
-       return true;
+        return true;
 
-   }
+    }
 
+    //Get all items from database
     public static ArrayList<Item> GetAll() {
 
         SqlConnector connector = new SqlConnector();
@@ -205,7 +199,7 @@ public class Item implements CrudOperation{
 
         return items;
     }
-
+    //Get all items from database that are not in autoreplenishment table
     public static ArrayList<Item> GetAllForNewReplenishment() {
 
         SqlConnector connector = new SqlConnector();
@@ -230,7 +224,7 @@ public class Item implements CrudOperation{
 
         return items;
     }
-
+    //Get all items from database based on a field and value
     public static ArrayList<Item> Get(String _field, String _value) {
 
         SqlConnector connector = new SqlConnector();
@@ -258,6 +252,7 @@ public class Item implements CrudOperation{
     }
 
     @Override
+    //Update item in database based on Item ID
     public boolean Update() {
         SqlConnector connector = new SqlConnector();
         connector.Connect();
@@ -279,6 +274,7 @@ public class Item implements CrudOperation{
     }
 
     @Override
+    //Remove item in database based on Item ID
     public boolean Remove() {
 
         SqlConnector connector = new SqlConnector();
@@ -297,16 +293,18 @@ public class Item implements CrudOperation{
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    //Check if item's value is equal to another item's value
+    public boolean equals(Object _obj) {
+        if (this == _obj)
             return true;
-        if (obj == null || getClass() != obj.getClass())
+        if (_obj == null || getClass() != _obj.getClass())
             return false;
-        Item item = (Item) obj;
+        Item item = (Item) _obj;
         return Objects.equals(this.Item_ID, item.getItem_ID()); // Compare based on logical attribute
     }
 
     @Override
+    //for HashSet and HashMap - idk why need this but it resolve the problem
     public int hashCode() {
         return Objects.hash(this.Item_ID); // Hash code based on logical attribute
     }
@@ -321,11 +319,5 @@ public class Item implements CrudOperation{
                 this.Item_name, this.Item_Desc, this.Item_Price);
     }
 
-    //Constructor
-    public Item() {
-    }
-
-    public Item(Integer _Id) {
-        this.Item_ID = _Id;
-    }
+    
 }
