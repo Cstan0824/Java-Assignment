@@ -32,7 +32,7 @@ public class PdfConverter {
 
             document.close();
 
-            System.out.println("PDF created and stored temporarily at: " + this.file.getAbsolutePath());
+            //System.out.println("PDF created and stored temporarily at: " + this.file.getAbsolutePath());
             return true;
 
         } catch (DocumentException | IOException e) {
