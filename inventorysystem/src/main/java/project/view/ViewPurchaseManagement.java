@@ -418,9 +418,10 @@ public class ViewPurchaseManagement {
                 PendingStatus = true;
             }
         }
+        UserInputHandler.systemPause("Press Enter to continue...");
         if (PendingStatus) {
             viewStockStatusMenu(purchaseOrders);
-        } 
+        }
     }
 
     // Helper method to display order details
