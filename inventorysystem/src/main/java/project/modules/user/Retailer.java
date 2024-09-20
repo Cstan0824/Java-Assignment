@@ -104,6 +104,7 @@ public class Retailer extends User {
         }
     }
 
+    // for the admin use  , to let them create retailer and then send the retailer an email for the retailer ID
     public void createRetailer() {
 
         ConsoleUI.clearScreen();
@@ -149,6 +150,7 @@ public class Retailer extends User {
         }
     }
 
+    // just show the retailer details 
     public void viewRetailer() {
         ConsoleUI.clearScreen();
         System.out.println("This is your Retailer Details: ");
@@ -156,7 +158,8 @@ public class Retailer extends User {
         
     }
 
-    public void deleteRetailer() { //can work
+    // for admin use also , to let them delete retailer
+    public void deleteRetailer() { 
         ConsoleUI.clearScreen();
         displayAllUsers();
         this.setUserId(UserInputHandler.getString("Enter Retailer ID to delete", "^[ARV][0-9]{5}$"));
@@ -192,7 +195,7 @@ public class Retailer extends User {
         }
     }
 
-    
+    // for admin and retailer use , to let them update their details
     public void UpdateRetailer() {
         ConsoleUI.clearScreen();
         super.displayUserDetails();
@@ -273,6 +276,7 @@ public class Retailer extends User {
         }
     }
 
+    // just register the retailer and send the request to the admin
     public void Register() // can work
     {
         ConsoleUI.clearScreen();

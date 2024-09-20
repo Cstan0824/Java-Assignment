@@ -24,21 +24,26 @@ public class Admin extends User {
 
     
 
-
-    public void createAdmin()  // can work , validated  ,  redirected
+    // prompt the user to enter 
+    public void createAdmin() 
     {
         ConsoleUI.clearScreen();
-        this.setUserId(super.generateUserId("A"));
 
-        this.setUserName(UserInputHandler.getString("Enter Admin Name", 3));
+        // generate user id 
+        this.setUserId(super.generateUserId("A"));  
 
+        // validate and ask for user name
+        this.setUserName(UserInputHandler.getString("Enter Admin Name", 3));  
+
+        // validate and ask for password
         this.setUserPassword(UserInputHandler.getString("Enter Admin Password", "^(?=.*[@#$%^&+=])(?=\\S+$).{5,}$"));
 
-        
+        // enter email 
         System.out.print("Enter Admin Email: ");
         this.setUserEmail(scanner.nextLine());
 
-        if(this.Add()){
+        // perform add function 
+        if(this.Add()){  
 
             System.out.println("Admin with userID " + this.getUserId() +" has been created sucessfully ");
 
@@ -50,7 +55,7 @@ public class Admin extends User {
 
             }
 
-            super.setCurrentUser(User.getLoggedInUserId());
+            super.setCurrentUser(User.getLoggedInUserId());  // for other module use 
 
         }else {
             super.setCurrentUser(User.getLoggedInUserId());
@@ -60,13 +65,14 @@ public class Admin extends User {
     }
     
    
-
+    // delete admin 
     public void deleteAdmin() // can work , validated , X redirect
     {
         ConsoleUI.clearScreen();
         displayAllUsers();
         this.setUserId(UserInputHandler.getString("Enter Admin ID to delete", "^[ARV][0-9]{5}$"));
     
+        // check if the admin id exist
         if (!Get()) {
             System.out.println("Admin ID does not exist.");
             String choice = UserInputHandler.getConfirmation("Try again?");
@@ -76,7 +82,7 @@ public class Admin extends User {
             } 
             return;  
         } 
-        else if (this.getUserId().equals(User.getLoggedInUserId())) {
+        else if (this.getUserId().equals(User.getLoggedInUserId())) {   // to check whether the user is deleting his own account
             super.setCurrentUser(User.getLoggedInUserId());
             System.out.println("Error: You cannot delete your own account while logged in.");
             return; 
@@ -115,6 +121,7 @@ public class Admin extends User {
         displayAllUsers();
         this.setUserId(UserInputHandler.getString("\nEnter Admin ID", "^[ARV][0-9]{5}$"));
 
+        // check if the admin id exist
         if (!Get()){
 
             System.out.println("Admin ID does not exist.");
@@ -163,6 +170,7 @@ public class Admin extends User {
                     continue;
             }
     
+            // perform update function
             super.Update(field, value);
             
             
@@ -175,7 +183,7 @@ public class Admin extends User {
 
    
 
-
+    //add function 
     @Override
     public boolean Add()
     {
@@ -251,13 +259,17 @@ public class Admin extends User {
         }
     }
 
+    // notification from registration of retailer
     public void Notification() {
+        //all pending request are store in arraylist
         ArrayList<Request> pendingRequests = Request.viewRequest();
 
         if (pendingRequests != null && !pendingRequests.isEmpty()) {
             int requestId = UserInputHandler.getInteger("\nEnter Request ID to further proceed: ", 0, Integer.MAX_VALUE);
 
             Request selectedRequest = null;
+            
+            // req hold the request object , pendingRequests hold the arraylist
             for (Request req : pendingRequests) {
                 if (req.getRequest_ID() == requestId) {
                     selectedRequest = req;

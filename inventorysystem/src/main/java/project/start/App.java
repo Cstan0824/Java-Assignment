@@ -17,6 +17,7 @@ public class App implements Runnable{
                 
         ViewUser viewUser = new ViewUser();
         viewUser.menu();
+        
     }
 
     @Override

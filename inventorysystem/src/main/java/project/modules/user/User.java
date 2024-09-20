@@ -261,7 +261,8 @@ public abstract class User {
                 // for sucessful login 
                 String sql = "SELECT * FROM " + this.userType + " WHERE " + this.getUserType() + "_ID = ? AND "
                         + this.getUserType() + "_Password = ?";
-                // for fetching email and reg date
+                        
+                // for fetching email and reg date for OTP use
                 String sql1 = "SELECT * FROM " + this.userType + " WHERE " + this.getUserType() + "_ID = ?";
 
                 try (PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -489,7 +490,7 @@ public abstract class User {
         }
         
 
-    
+        // check whether the OTP is expired or not
         if (LocalDateTime.now().isAfter(this.otpExpiry)) {
             System.out.println("OTP expired. Please try again.");
             // Show password and then enter menu
@@ -508,6 +509,7 @@ public abstract class User {
 
     }
 
+    // just a mail sender method to send OTP
     private void handleOTP()
     {
         
@@ -532,10 +534,12 @@ public abstract class User {
         ConsoleUI.pause();
     }
     
+    // to auto generate user id
     public String generateUserId(String _prefix) {
         return _prefix + String.format("%05d", SystemRunNo.Get(_prefix));
     }
 
+    // password masking for security
     public static String getPassword() {
         Console console = System.console();
 
