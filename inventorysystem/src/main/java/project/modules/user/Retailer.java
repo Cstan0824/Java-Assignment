@@ -182,9 +182,25 @@ public class Retailer extends User {
 
             if (this.Remove()){
                 System.out.println("\nRetailer deleted successfully.");
+                MailSender mail = new MailSender(
+                    this.getUserEmail(),
+                    "Account deletion notification",
+                    new MailTemplate(this.getUserId(), MailTemplate.TemplateType.RETAILER_DELETED));
+                    
+                if(mail.Send()){
+                    System.out.println("Email sent to retailer.");
+                    ConsoleUI.pause();
+                }
+                else{
+                    System.out.println("Failed to send email to retailer.");
+                    ConsoleUI.pause();
+                }       
+
                 String choice1 = UserInputHandler.getConfirmation("\nDo you want to delete more Retailer?");
                 if (choice1.equalsIgnoreCase("Y")) {
                     deleteRetailer();
+
+
                 }
             }else{
                 System.out.println("Retailer not deleted.");

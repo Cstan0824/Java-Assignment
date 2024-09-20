@@ -360,6 +360,15 @@ public class MailTemplate {
 
     }
 
+    private String RETAILER_DELETED(String RetailerID) {
+
+        return "Dear Customer,<br/><br/>" +
+                "We regret to inform that your retailer account has been deleted.<br/>"  + "This is your Retailer ID : " + RetailerID + " <br> Please let us know if you need any further assistance.<br/><br/>" +
+                "Best regards,<br/>" +
+                "Inventory Solution Company";
+
+    }
+
 
     public enum TemplateType {
         OTP,
@@ -377,7 +386,8 @@ public class MailTemplate {
         SCHEDULE_CANCELLATION,
         SCHEDULE_MODIFICATION,
         SO_DELIVERED,
-        RETAILER_CREATED
+        RETAILER_CREATED,
+        RETAILER_DELETED 
     }
 
     public MailTemplate(String _Content, TemplateType _templateType) {
@@ -429,6 +439,9 @@ public class MailTemplate {
                 break;
             case SO_DELIVERED:
                 this.Content = this.SalesOrderDelivered(_Content);
+                break;
+            case RETAILER_DELETED:
+                this.Content = this.RETAILER_DELETED(_Content);
                 break;
             default:
                 break;
