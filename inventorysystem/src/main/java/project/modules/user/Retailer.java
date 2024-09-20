@@ -240,9 +240,13 @@ public class Retailer extends User {
             }
 
             this.Update(field, value);
+            Get();
+            
 
             String anotherFieldChoice = UserInputHandler.getConfirmation("Would you like to update another field?");
             continueEditing = anotherFieldChoice.equalsIgnoreCase("Y");
+
+            
         }
 
          // After all updates, redirect to menu

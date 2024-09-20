@@ -522,6 +522,7 @@ public abstract class User {
 
 
     public void displayUserDetails() {  // can work
+        
         System.out.println(this.getUserType()+" ID: " + this.getUserId());
         System.out.println(this.getUserType()+" Name: " + this.getUserName());
         System.out.println(this.getUserType()+" Email: " + this.getUserEmail());
