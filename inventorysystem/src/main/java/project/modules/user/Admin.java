@@ -85,6 +85,7 @@ public class Admin extends User {
         else if (this.getUserId().equals(User.getLoggedInUserId())) {   // to check whether the user is deleting his own account
             super.setCurrentUser(User.getLoggedInUserId());
             System.out.println("Error: You cannot delete your own account while logged in.");
+            ConsoleUI.pause();
             return; 
         } 
     

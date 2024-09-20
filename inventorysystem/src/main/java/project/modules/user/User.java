@@ -394,14 +394,7 @@ public abstract class User {
                 
                 while (result.next()) {
     
-                    this.userId = result.getString(1);
-                    this.userName = result.getString(2);
-                    this.userPassword = result.getString(3);
-                    this.userEmail = result.getString(4);
-                    this.userRegDate = result.getDate(5).toLocalDate();
-    
-                    // Display the user details
-                    System.out.printf("%-15s | %-40s | %-45s | %-25s | %-10s%n", userId, userName, userEmail, userPassword , userRegDate);
+                    System.out.printf("%-15s | %-40s | %-45s | %-25s | %-10s%n", result.getString(1) , result.getString(2), result.getString(3), result.getString(4) , result.getDate(5).toLocalDate());
 
                 }
                 if(this.userType.equals("Admin")) {
