@@ -84,6 +84,11 @@ public class ViewSalesOrder {
                 selectedSalesOrderList = SalesOrder.GetAll(docNo);
 
                 if (selectedSalesOrderList != null && !selectedSalesOrderList.isEmpty()) {
+                    if (user instanceof Retailer) {
+                        if (!selectedSalesOrderList.get(0).getTransaction_Recipient().equals(user.getUserId())) {
+                            return null;
+                        }
+                    }
                     //display and save into array list
                     String[] selectedColumnNames = {"SO No","Item_ID", "Item_Name", "Quantity", "Mode", "Date", "Recipient"};
                     System.out.println("\n\nSales Order List found for Doc No: " + docNo);
