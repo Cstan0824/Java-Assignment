@@ -64,8 +64,8 @@ public class ViewPurchaseManagement {
     public void menu() {
         boolean exit = false;
         while (!exit) {
+            viewPurchaseOrder.setPurchaseOrderList();
             ConsoleUI.clearScreen();
-
             System.out.println("==== Purchase Management ====");
             System.out.println("1. Order Restock");
             System.out.println("2. Order Modification");
@@ -543,6 +543,7 @@ public class ViewPurchaseManagement {
                             .selectGoodReceivedNotesFromList(_purchaseOrders.get(0).getDoc_No());
                     if (goodReceivedNotes == null) {
                         System.out.println("No Goods Received Notes found for this order.");
+                        UserInputHandler.systemPause("Press Enter to continue...");
                         backToPurchaseManagement = true;
                         break;
                     }

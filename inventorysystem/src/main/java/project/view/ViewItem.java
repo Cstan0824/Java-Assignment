@@ -42,6 +42,7 @@ public class ViewItem {
     public void menu() {
         boolean exit = true;
         while (exit) {
+            setItems(); // Refresh the list of items
             ConsoleUI.clearScreen();
             System.out.println("========= Item Management =========");
             System.out.println("1. Add Item");
@@ -66,7 +67,6 @@ public class ViewItem {
                     editItemDetails();
                     break;
                 case 4:
-                    setItems();
                     Item item = selectItemFromList();
                     if (item != null && UserInputHandler.getConfirmation("Are you sure you want to delete this item?")
                             .equalsIgnoreCase("Y")) {      
@@ -75,13 +75,13 @@ public class ViewItem {
                             this.items.remove(item);
                             ConsoleUI.pause();
                         } else {
-                            System.out.println("Error deleting item.");
+                            
+                            System.out.println("Item is currently used by other transaction, unable to remove.");
                             ConsoleUI.pause();
                         }
                     }
                     break;
                 case 5:
-                    setItems();
                     displayItemDetails();
                     ConsoleUI.pause();
                     break;
